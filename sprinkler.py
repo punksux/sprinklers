@@ -34,7 +34,7 @@ def turn_off():
 
 def go():
     if (on):
-        for i in range(0,3):
+        for i in range(0,len(times)):
             print ('Zone ' + str(i+1) + ' on.')
             GPIO.output(zones[i],True)
             print(times[i])
