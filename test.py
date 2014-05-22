@@ -94,7 +94,6 @@ def hello():
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
             if on_pi:
                 GPIO.output(zones[i],True)
-            print(times[i])
             time.sleep(times[i])
             print ('Zone %s off.' %(str(i+1)))
             if on_pi:
