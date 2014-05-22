@@ -1,6 +1,10 @@
 #Settings 
 days_between = .0001
+<<<<<<< HEAD
 time_to_start = '00:35:00'
+=======
+time_to_start = '15:35:00'
+>>>>>>> 69c32ef48ca741f14fe998768f889d2ffc58d4a3
 #zone1_time = 40 
 #zone2_time = 30 
 #zone3_time = 30 
@@ -34,8 +38,13 @@ def turn_off():
 
 def go():
     if (on):
+<<<<<<< HEAD
         for i in range(0,3):
             print ('Zone ' + str(i+1) + ' on.')
+=======
+        for i in range(0,len(times)):
+            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on.')
+>>>>>>> 69c32ef48ca741f14fe998768f889d2ffc58d4a3
             GPIO.output(zones[i],True)
             print(times[i])
             time.sleep(times[i])
