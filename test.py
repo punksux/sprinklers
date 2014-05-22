@@ -68,15 +68,15 @@ def hello():
 
 def hello2():
     for i in range(0,len(times)):
-            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on.')
+            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on: ' + times[i] + " min.")
             GPIO.output(zones[i],True)
-            print(times[i])
             time.sleep(times[i])
             print ('Zone ' + str(i+1) + ' off.')
             GPIO.output(zones[i],False)
             time.sleep(1)
             
 print ("Starting First Time...")
+
 rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
 try:
     sleep(500) # your long-running job goes here...
