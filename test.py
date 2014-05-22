@@ -1,10 +1,11 @@
 #Settings 
 days_between = .0003
-time_to_start = '23:36:00'
+time_to_start = '12:52:00'
 times = [5,4,4] 
 on = True
 zones = [7,11,13]
 location = "84123"
+on_pi=False
 
 rain = 0.00
 day = 20
@@ -40,13 +41,19 @@ class RepeatedTimer(object):
         self.is_running = False
 
 # Get weather
-import urllib2
+if on_pi:
+    import urllib2
+else:
+    from urllib.request import urlopen 
 import json
 
 def check_weather():
-    f = urllib2.urlopen('http://api.wunderground.com/api/c5e9d80d2269cb64/geolookup/conditions/q/%s.json' %(location))
+    if on_pi:
+        f = urllib2.urlopen('http://api.wunderground.com/api/c5e9d80d2269cb64/geolookup/conditions/q/%s.json' %(location))
+    else:
+        f = urlopen('http://api.wunderground.com/api/c5e9d80d2269cb64/geolookup/conditions/q/%s.json' %(location))
     json_string = f.read()
-    parsed_json = json.loads(json_string)
+    parsed_json = json.loads(json_string.decode("utf8"))
     global rain
     rain = parsed_json['current_observation']['precip_today_in']
     f.close()
@@ -55,14 +62,15 @@ def check_weather():
 from datetime import datetime
 import threading, time
 from time import sleep
-import RPi.GPIO as GPIO
+if on_pi:
+    import RPi.GPIO as GPIO
 
-GPIO.setup(7, GPIO.OUT)
-GPIO.setup(11, GPIO.OUT)
-GPIO.setup(13, GPIO.OUT)
-GPIO.output(7,False)
-GPIO.output(11,False)
-GPIO.output(13,False)
+    GPIO.setup(7, GPIO.OUT)
+    GPIO.setup(11, GPIO.OUT)
+    GPIO.setup(13, GPIO.OUT)
+    GPIO.output(7,False)
+    GPIO.output(11,False)
+    GPIO.output(13,False)
 
 now = datetime.now().strftime(FMT)
 print (now)
@@ -83,12 +91,14 @@ def hello():
         rt = RepeatedTimer(day, hello2)
     else:
         for i in range(0,len(times)):
-            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on.')
-            GPIO.output(zones[i],True)
+            print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
+            if on_pi:
+                GPIO.output(zones[i],True)
             print(times[i])
             time.sleep(times[i])
-            print ('Zone ' + str(i+1) + ' off.')
-            GPIO.output(zones[i],False)
+            print ('Zone %s off.' %(str(i+1)))
+            if on_pi:
+                GPIO.output(zones[i],False)
             time.sleep(1)
         print ("Starting Daily...")
         rt = RepeatedTimer(seconds_between, hello2) 
@@ -102,11 +112,13 @@ def hello2():
         rt = RepeatedTimer(day, hello2)
     else:
         for i in range(0,len(times)):
-            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on: ' + str(times[i]) + " min.")
-            GPIO.output(zones[i],True)
+            print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
+            if on_pi:
+             GPIO.output(zones[i],True)
             time.sleep(times[i])
-            print ('Zone ' + str(i+1) + ' off.')
-            GPIO.output(zones[i],False)
+            print ('Zone %s off.' %(str(i+1)))
+            if on_pi:
+                GPIO.output(zones[i],False)
             time.sleep(1)
         rt = RepeatedTimer(seconds_between, hello2)
         
@@ -119,7 +131,8 @@ try:
     sleep(500) # your long-running job goes here...
 finally:
     print("Quitting...")
-    rt2.stop() # better in a try/finally block to make sure the program ends!        
-    GPIO.setup(7, GPIO.IN)
-    GPIO.setup(11, GPIO.IN)
-    GPIO.setup(13, GPIO.IN)
+    rt.stop() # better in a try/finally block to make sure the program ends!        
+    if on_pi:
+        GPIO.setup(7, GPIO.IN)
+        GPIO.setup(11, GPIO.IN)
+        GPIO.setup(13, GPIO.IN)
