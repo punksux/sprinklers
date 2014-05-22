@@ -43,6 +43,9 @@ import RPi.GPIO as GPIO
 GPIO.setup(7, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
 GPIO.setup(13, GPIO.OUT)
+GPIO.output(7,False)
+GPIO.output(11,False)
+GPIO.output(13,False)
 
 now = datetime.now().strftime(FMT)
 print (now)
@@ -68,7 +71,7 @@ def hello():
 
 def hello2():
     for i in range(0,len(times)):
-            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on: ' + times[i] + " min.")
+            print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on: ' + str(times[i]) + " min.")
             GPIO.output(zones[i],True)
             time.sleep(times[i])
             print ('Zone ' + str(i+1) + ' off.')
@@ -81,4 +84,8 @@ rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
 try:
     sleep(500) # your long-running job goes here...
 finally:
-    rt.stop() # better in a try/finally block to make sure the program ends!        
+    print("Quitting...")
+    rt2.stop() # better in a try/finally block to make sure the program ends!        
+    GPIO.setup(7, GPIO.IN)
+    GPIO.setup(11, GPIO.IN)
+    GPIO.setup(13, GPIO.IN)
