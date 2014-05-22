@@ -1,6 +1,6 @@
 #Settings 
 days_between = .0003
-time_to_start = '15:32:00'
+time_to_start = '00:26:00'
 times = [5,4,4] 
 on = True
 zones = [7,11,13]
@@ -38,6 +38,11 @@ class RepeatedTimer(object):
 from datetime import datetime
 import threading, time
 from time import sleep
+import RPi.GPIO as GPIO
+
+GPIO.setup(7, GPIO.OUT)
+GPIO.setup(11, GPIO.OUT)
+GPIO.setup(13, GPIO.OUT)
 
 now = datetime.now().strftime(FMT)
 print (now)
@@ -52,26 +57,27 @@ def hello():
     rt.stop()
     for i in range(0,len(times)):
             print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on.')
-            #GPIO.output(zones[i],True)
+            GPIO.output(zones[i],True)
             print(times[i])
             time.sleep(times[i])
             print ('Zone ' + str(i+1) + ' off.')
-            #GPIO.output(zones[i],False)
+            GPIO.output(zones[i],False)
             time.sleep(1)
-    print ("starting...")
+    print ("Starting Daily...")
     rt2 = RepeatedTimer(seconds_between, hello2) 
 
 def hello2():
     for i in range(0,len(times)):
             print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on.')
-            #GPIO.output(zones[i],True)
+            GPIO.output(zones[i],True)
             print(times[i])
             time.sleep(times[i])
             print ('Zone ' + str(i+1) + ' off.')
-            #GPIO.output(zones[i],False)
+            GPIO.output(zones[i],False)
             time.sleep(1)
             
-print ("starting...")
+print ("Starting First Time...")
+
 rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
 try:
     sleep(500) # your long-running job goes here...
