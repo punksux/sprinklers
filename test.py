@@ -1,14 +1,14 @@
 #Settings 
-days_between = .0003
-time_to_start = '12:52:00'
-times = [5,4,4] 
+days_between = .5
+time_to_start = '22:00:00'
+times = [40,30,30] 
 on = True
 zones = [7,11,13]
 location = "84123"
-on_pi=False
+on_pi=True
 
 rain = 0.00
-day = 20
+day = 86400
 seconds_between = days_between * day
 FMT = '%H:%M:%S'
 
@@ -94,7 +94,7 @@ def hello():
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
             if on_pi:
                 GPIO.output(zones[i],True)
-            time.sleep(times[i])
+            time.sleep(times[i]*60)
             print ('Zone %s off.' %(str(i+1)))
             if on_pi:
                 GPIO.output(zones[i],False)
@@ -114,7 +114,7 @@ def hello2():
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
             if on_pi:
              GPIO.output(zones[i],True)
-            time.sleep(times[i])
+            time.sleep(times[i]*60)
             print ('Zone %s off.' %(str(i+1)))
             if on_pi:
                 GPIO.output(zones[i],False)
@@ -127,7 +127,7 @@ rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
 
     
 try:
-    sleep(500) # your long-running job goes here...
+    sleep(5000000) # your long-running job goes here...
 finally:
     print("Quitting...")
     rt.stop() # better in a try/finally block to make sure the program ends!        
