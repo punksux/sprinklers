@@ -1,11 +1,11 @@
 #Settings 
 days_between = .5
-time_to_start = '22:00:00'
+time_to_start = '12:00:00'
 times = [40,30,30] 
 on = True
 zones = [7,11,13]
 location = "84123"
-on_pi=True
+on_pi=False
 
 rain = 0.00
 day = 86400
@@ -72,14 +72,18 @@ if on_pi:
     GPIO.output(11,False)
     GPIO.output(13,False)
 
-now = datetime.now().strftime(FMT)
+now = datetime.now()
 print (now)
 
-run_at = datetime.strptime(time_to_start, FMT) - datetime.strptime(now, FMT) 
+splits = time_to_start.split(":")
+time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]))
+print (time_to_start)
+
+run_at = time_to_start - now 
 print (run_at)
 
 delay = run_at.total_seconds()
-print (delay)
+print ('Starting in ' + str(delay/60) + 'min')
 
 def hello():
     global rt
@@ -127,7 +131,7 @@ rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
 
     
 try:
-    sleep(5000000) # your long-running job goes here...
+    sleep(300000) # your long-running job goes here...
 finally:
     print("Quitting...")
     rt.stop() # better in a try/finally block to make sure the program ends!        
