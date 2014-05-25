@@ -1,12 +1,12 @@
 #Settings 
 days_between = .5
-time_to_start = '15:04:00'
+time_to_start = '23:00:00'
 times = [40,30,30] 
 on = True
 zones = [7,11,13]
 location = "84123"
-on_pi=False
-weather_test = 1.0
+on_pi=True
+weather_test = 100
 
 rain = 0.00
 day = 86400
@@ -49,7 +49,7 @@ else:
 import json
 
 def check_weather():
-    if weather_test == 0:
+    if weather_test == 100:
         if on_pi:
             f = urllib2.urlopen('http://api.wunderground.com/api/c5e9d80d2269cb64/geolookup/conditions/q/%s.json' %(location))
         else:
@@ -88,7 +88,7 @@ if run_at.total_seconds() < 0:
     run_at = (time_to_start.replace(day=time_to_start.day+1)) - now
 
 delay = run_at.total_seconds()
-print ('Starting in ' + str(delay/60) + ' min')
+print ('Starting in ' + str(round(delay/60,2)) + ' min')
 
 def hello():
     global rt
@@ -99,17 +99,18 @@ def hello():
         print ('Canceling for rain')
         rt = RepeatedTimer(day, hello)
     else:
+        rt = RepeatedTimer(seconds_between, hello)
         for i in range(0,len(times)):
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
             if on_pi:
                 GPIO.output(zones[i],True)
-            time.sleep(times[i])
-            print ('Zone %s off.' %(str(i+1)))
+            time.sleep(times[i]*60)
+            print ('%s - Zone %s off.' %(str(datetime.now()),str(i+1)))
             if on_pi:
                 GPIO.output(zones[i],False)
-            time.sleep(1)
+            time.sleep(5)
         #print ("Starting Daily...")
-        rt = RepeatedTimer(seconds_between, hello) 
+        
 
 ##def hello2():
 ##    global rt

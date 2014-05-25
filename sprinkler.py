@@ -1,6 +1,6 @@
 #Settings 
 days_between = .0001
-time_to_start = '15:35:00'
+time_to_start = '15:59:00'
 #zone1_time = 40 
 #zone2_time = 30 
 #zone3_time = 30 
@@ -19,6 +19,9 @@ import RPi.GPIO as GPIO
 GPIO.setup(7, GPIO.OUT)
 GPIO.setup(11, GPIO.OUT)
 GPIO.setup(13, GPIO.OUT)
+GPIO.output(7,True)
+GPIO.output(11,True)
+GPIO.output(13,True)
 
 now = datetime.now().strftime(FMT)
 print (now)
@@ -36,12 +39,12 @@ def go():
     if (on):
         for i in range(0,len(times)):
             print (str(datetime.now()) + ' - Zone ' + str(i+1) + ' on.')
-            GPIO.output(zones[i],True)
+            GPIO.output(zones[i],False)
             print(times[i])
             time.sleep(times[i])
             print ('Zone ' + str(i+1) + ' off.')
-            GPIO.output(zones[i],False)
-            time.sleep(30)
+            GPIO.output(zones[i],True)
+            time.sleep(4)
         threading.Timer(seconds_between, go).start()
 
 threading.Timer(delay, go).start()
