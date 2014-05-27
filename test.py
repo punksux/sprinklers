@@ -1,6 +1,6 @@
 #Settings 
 days_between = .5
-time_to_start = '23:00:00'
+time_to_start = '17:00:00'
 times = [40,30,30] 
 on = True
 zones = [7,11,13]
@@ -63,7 +63,7 @@ def check_weather():
         rain = str(weather_test)
 
 #Set up GPIO
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading, time
 from time import sleep
 if on_pi:
@@ -72,9 +72,9 @@ if on_pi:
     GPIO.setup(7, GPIO.OUT)
     GPIO.setup(11, GPIO.OUT)
     GPIO.setup(13, GPIO.OUT)
-    GPIO.output(7,False)
-    GPIO.output(11,False)
-    GPIO.output(13,False)
+    GPIO.output(7,True)
+    GPIO.output(11,True)
+    GPIO.output(13,True)
 
 now = datetime.now()
 print (now)
@@ -88,7 +88,10 @@ if run_at.total_seconds() < 0:
     run_at = (time_to_start.replace(day=time_to_start.day+1)) - now
 
 delay = run_at.total_seconds()
-print ('Starting in ' + str(round(delay/60,2)) + ' min')
+#print ('Starting in ' + str(round(delay/60,2)) + ' min')
+sec = timedelta(seconds=delay)
+d = datetime(1,1,1) + sec
+print ("Starting in %d hours and %d minutes" %(d.hour, d.minute))
 
 def hello():
     global rt
@@ -103,11 +106,11 @@ def hello():
         for i in range(0,len(times)):
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
             if on_pi:
-                GPIO.output(zones[i],True)
+                GPIO.output(zones[i],False)
             time.sleep(times[i]*60)
             print ('%s - Zone %s off.' %(str(datetime.now()),str(i+1)))
             if on_pi:
-                GPIO.output(zones[i],False)
+                GPIO.output(zones[i],True)
             time.sleep(5)
         #print ("Starting Daily...")
         
