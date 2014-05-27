@@ -19,7 +19,7 @@ thread.start()
 
 @app.route('/')
 def my_form():
-    return render_template("index.html")
+    return render_template("index.html", **no)
 
 @app.route('/', methods=['POST'])
 def my_form_post():
@@ -33,9 +33,6 @@ def my_form_post():
 if __name__ == '__main__':
     app.run()
 
-def change(text):
-    global no
-    no = str(text)
 
 
 
