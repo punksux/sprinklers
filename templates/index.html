@@ -1,15 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <body>
     <h1>Stop or start sprinklers</h1>
     <h2></h2>
 	<ul>
-	<li>Word: {{ no }}</li>
+	<li>Days apart: {{ days }}</li>
+	<li>Zone 1 length: {{ zones.zone1.length }}</li>
+	<li>Zone 2 length: {{ zones.zone2.length }}</li>
+	<li>Zone 3 length: {{ zones.zone3.length }}</li>
 	</ul>
+	
     <form action="." method="POST">
+	How many days apart?
 	<input type="textbox" name="text">
-        <input type="submit" name="my-form" value="Stop">
+	
+	<p>Zone 1: {% if zones.zone1.on %}On{% else %}Off{% endif %}</p>
+	<p>Length: <input type="textbox" name="zone1"></p>
+	<p>
+	{% if zones.zone1.on == true %}
+		<a href="/zone1/off">Turn off</a></p>
+	{% else %}
+		<a href="/zone1/on">Turn on</a>
+	{% endif %}	
+	</p>
+	
+	<p>Zone 2: {% if zones.zone2.on %}On{% else %}Off{% endif %}</p>
+	<p>Length: <input type="textbox" name="zone2"></p>
+	<p>
+	{% if zones.zone2.on == true %}
+		<a href="/zone2/off">Turn off</a></p>
+	{% else %}
+		<a href="/zone2/on">Turn on</a>
+	{% endif %}	
+	</p>
+	
+	<p>Zone 3: {% if zones.zone3.on %}On{% else %}Off{% endif %}</p>
+	<p>Length: <input type="textbox" name="zone3"></p>
+	<p>
+	{% if zones.zone3.on == true %}
+		<a href="/zone3/off">Turn off</a></p>
+	{% else %}
+		<a href="/zone3/on">Turn on</a>
+	{% endif %}	
+	</p>
+    <p>
+	<input type="submit" name="my-form" value="Change"></p>
     </form>
-	<button onclick="alert('Geocode: ' + {{ no }})" />
 </body>
 </html>
