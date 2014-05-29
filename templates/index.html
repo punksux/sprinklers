@@ -3,7 +3,7 @@
 
 <body>
     <h1>Stop or start sprinklers</h1>
-    <h2></h2>
+    <h3>{{ rain }} inches of rain today.</h3>
 	<ul>
 	<li>Days apart: {{ days }}</li>
 	<li>Zone 1 length: {{ zones.zone1.length }}</li>
@@ -15,7 +15,9 @@
 	How many days apart?
 	<input type="textbox" name="text">
 	
-	<p>Zone 1: {% if zones.zone1.on %}On{% else %}Off{% endif %}</p>
+	<p />
+	<div class="zone1">
+	<p style="display:inline">Zone 1: {% if zones.zone1.on %}<div style="color:green;display:inline">On</div>{% else %}<div style="color:red;display:inline">Off</div>{% endif %}</p>
 	<p>Length: <input type="textbox" name="zone1"></p>
 	<p>
 	{% if zones.zone1.on == true %}
@@ -24,8 +26,10 @@
 		<a href="/zone1/on">Turn on</a>
 	{% endif %}	
 	</p>
+	</div>
 	
-	<p>Zone 2: {% if zones.zone2.on %}On{% else %}Off{% endif %}</p>
+	<div class="zone2">
+	<p  style="display:inline">Zone 2: {% if zones.zone2.on %}<div style="color:green;display:inline">On</div>{% else %}<div style="color:red;display:inline">Off</div>{% endif %}</p>
 	<p>Length: <input type="textbox" name="zone2"></p>
 	<p>
 	{% if zones.zone2.on == true %}
@@ -34,8 +38,10 @@
 		<a href="/zone2/on">Turn on</a>
 	{% endif %}	
 	</p>
+	</div>
 	
-	<p>Zone 3: {% if zones.zone3.on %}On{% else %}Off{% endif %}</p>
+	<div class="zone3">
+	<p  style="display:inline">Zone 3: {% if zones.zone3.on %}<div style="color:green;display:inline">On</div>{% else %}<div style="color:red;display:inline">Off</div>{% endif %}</p>
 	<p>Length: <input type="textbox" name="zone3"></p>
 	<p>
 	{% if zones.zone3.on == true %}
@@ -44,6 +50,8 @@
 		<a href="/zone3/on">Turn on</a>
 	{% endif %}	
 	</p>
+	</div>
+	
     <p>
 	<input type="submit" name="my-form" value="Change"></p>
     </form>

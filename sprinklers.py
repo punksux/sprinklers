@@ -1,9 +1,10 @@
 #Settings 
-time_to_start = '17:32:00'
+time_to_start = '19:32:00'
 on = True
 location = "84123"
-on_pi=True
+on_pi=False
 weather_test = 0
+rain = 0.00
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7},
     'zone2' : {'length':30,'on':False,'pinNo':11},
@@ -11,17 +12,21 @@ zones = {
     }
 templateData = {
    'days' : 3,
-   'zones' : zones
+   'zones' : zones,
+   'rain' : rain
    }
 
 #Setup
-rain = 0.00
 day = 86400
+seconds_between = 0.0
 def get_seconds():
     global seconds_between
     seconds_between = templateData['days'] * day
+    print (seconds_between)
 get_seconds()    
 FMT = '%H:%M:%S'
+system_running = 0
+total_sprink_time = 0
 
 #Set up Flask
 from flask import Flask, request, render_template, url_for, flash, redirect
@@ -109,6 +114,7 @@ sec = timedelta(seconds=delay)
 d = datetime(1,1,1) + sec
 print ("Starting in %d hours and %d minutes" %(d.hour, d.minute))
 
+# Run program
 def hello():
     global rt
     rt.stop()
@@ -118,42 +124,35 @@ def hello():
         print ('Canceling for rain')
         rt = RepeatedTimer(day, hello)
     else:
-        rt = RepeatedTimer(seconds_between, hello)
+        #rt = RepeatedTimer(seconds_between, hello)
+        global system_running
+        system_running = 1
+        global total_sprink_time
+        total_sprink_time = 0
         for zone in zones:
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),zone.replace('zone', ''),zones[zone]['length']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],False)
             time.sleep(int(zones[zone]['length'])*60)
+            global total_sprink_time
+            total_sprink_time += int(zones[zone]['length'])*60
             print ('%s - Zone %s off.' %(str(datetime.now()),zone.replace('zone', '')))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
             time.sleep(5)
+            global total_sprink_time
+            total_sprink_time += 5
+        global total_sprink_time
+        rt = RepeatedTimer(int(seconds_between)-total_sprink_time, hello)    
+        system_running = 0
         #print ("Starting Daily...")
         
 
-##def hello2():
-##    global rt
-##    rt.stop()
-##    check_weather()
-##    if float(rain) > 0.25:
-##        print ('Canceling for rain')
-##        rt = RepeatedTimer(day, hello2)
-##    else:
-##        for i in range(0,len(times)):
-##            print ('%s - Zone %s on: %s min.' %(str(datetime.now()),str(i+1),str(times[i])))
-##            if on_pi:
-##             GPIO.output(zones[i],True)
-##            time.sleep(times[i]*60)
-##            print ('Zone %s off.' %(str(i+1)))
-##            if on_pi:
-##                GPIO.output(zones[i],False)
-##            time.sleep(1)
-##        rt = RepeatedTimer(seconds_between, hello2)
-        
 print ("Starting First Time...")
 global rt
 rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
     
+# Web part
 try:
     #sleep(300000) # your long-running job goes here...
 
@@ -168,7 +167,7 @@ try:
         zone2 = request.form['zone2']
         zone3 = request.form['zone3']
         if text != '':
-            templateData['days'] = str(text)
+            templateData['days'] = float(text)
             get_seconds()
         if zone1 != '':
             zones['zone1']['length'] = int(zone1)
@@ -180,18 +179,28 @@ try:
 
     @app.route("/<changePin>/<action>")
     def action(changePin, action):
-        if action == "on":
+        if action == "on" and system_running == 0:
             zones[changePin]['on'] = True
-            GPIO.output(zones[changePin]['pinNo'],False)
+            global system_running
+            system_running = 1
+            if on_pi:
+                GPIO.output(zones[changePin]['pinNo'],False)
+            else:
+                print (changePin + " on.")
             #flash("Turned " + changePin + " on.")
         if action == "off":
             zones[changePin]['on'] = False
-            GPIO.output(zones[changePin]['pinNo'],True)
+            global system_running
+            system_running = 0
+            if on_pi:
+                GPIO.output(zones[changePin]['pinNo'],True)
+            else:
+                print (changePin + " off.")    
             #message = "Turned " + changePin + " off."
         return redirect(url_for('my_form'))
         
     if __name__ == '__main__':
-        app.run(debug=True)
+        app.run(host='0.0.0.0')
     
 finally:
     print("Quitting...")
