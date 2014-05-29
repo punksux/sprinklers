@@ -1,8 +1,8 @@
 #Settings 
-time_to_start = '15:25:00'
+time_to_start = '17:32:00'
 on = True
 location = "84123"
-on_pi=False
+on_pi=True
 weather_test = 0
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7},
@@ -17,7 +17,10 @@ templateData = {
 #Setup
 rain = 0.00
 day = 86400
-seconds_between = templateData['days'] * day
+def get_seconds():
+    global seconds_between
+    seconds_between = templateData['days'] * day
+get_seconds()    
 FMT = '%H:%M:%S'
 
 #Set up Flask
@@ -120,7 +123,7 @@ def hello():
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),zone.replace('zone', ''),zones[zone]['length']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],False)
-            time.sleep(zones[zone]['length'])#*60)
+            time.sleep(int(zones[zone]['length'])*60)
             print ('%s - Zone %s off.' %(str(datetime.now()),zone.replace('zone', '')))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
@@ -166,6 +169,7 @@ try:
         zone3 = request.form['zone3']
         if text != '':
             templateData['days'] = str(text)
+            get_seconds()
         if zone1 != '':
             zones['zone1']['length'] = int(zone1)
         if zone2 != '':
@@ -178,9 +182,11 @@ try:
     def action(changePin, action):
         if action == "on":
             zones[changePin]['on'] = True
+            GPIO.output(zones[changePin]['pinNo'],False)
             #flash("Turned " + changePin + " on.")
         if action == "off":
             zones[changePin]['on'] = False
+            GPIO.output(zones[changePin]['pinNo'],True)
             #message = "Turned " + changePin + " off."
         return redirect(url_for('my_form'))
         
