@@ -1,8 +1,8 @@
 #Settings 
-time_to_start = '19:32:00'
+time_to_start = '20:00:00'
 on = True
 location = "84123"
-on_pi=False
+on_pi=True
 weather_test = 0
 rain = 0.00
 zones = {
@@ -127,7 +127,7 @@ def hello():
         #rt = RepeatedTimer(seconds_between, hello)
         global system_running
         system_running = 1
-        global total_sprink_time
+        #global total_sprink_time
         total_sprink_time = 0
         for zone in zones:
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),zone.replace('zone', ''),zones[zone]['length']))
@@ -140,9 +140,9 @@ def hello():
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
             time.sleep(5)
-            global total_sprink_time
+            #global total_sprink_time
             total_sprink_time += 5
-        global total_sprink_time
+        #global total_sprink_time
         rt = RepeatedTimer(int(seconds_between)-total_sprink_time, hello)    
         system_running = 0
         #print ("Starting Daily...")
