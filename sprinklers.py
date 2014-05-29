@@ -1,8 +1,8 @@
 #Settings 
-time_to_start = '20:00:00'
+time_to_start = '21:00:00'
 on = True
 location = "84123"
-on_pi=True
+on_pi=False
 weather_test = 0
 rain = 0.00
 zones = {

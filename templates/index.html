@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<head>
+<link type="text/css" rel="stylesheet" href="/static/stylesheet.css" />
+</head>
 <body>
-    <h1>Stop or start sprinklers</h1>
+    <div id="content">
+	<div id="header">
+	<h1>Stop or start sprinklers</h1>
     <h3>{{ rain }} inches of rain today.</h3>
+	</div>
+	
+	<div id="Settings">
 	<ul>
 	<li>Days apart: {{ days }}</li>
 	<li>Zone 1 length: {{ zones.zone1.length }}</li>
 	<li>Zone 2 length: {{ zones.zone2.length }}</li>
 	<li>Zone 3 length: {{ zones.zone3.length }}</li>
 	</ul>
-	
-    <form action="." method="POST">
+	</div>
+    
+	<div id="form">
+	<form action="." method="POST">
 	How many days apart?
 	<input type="textbox" name="text">
 	
@@ -55,5 +64,7 @@
     <p>
 	<input type="submit" name="my-form" value="Change"></p>
     </form>
+	</div>
+	</div>
 </body>
 </html>
