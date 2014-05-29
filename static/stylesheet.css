@@ -1,7 +1,141 @@
+#body {font-family:Arial}
+
 #content {width:800px;
-		border:2px solid #000000;
+		border:1px solid #000000;
+		border-radius:10px;
 		padding:10px;
 		margin-left:auto;
 		margin-right:auto}
+
+#header {padding-bottom:10px;
+		position:relative;}
 		
-h1, h3 {text-align:center}		
+#headerbg {width:100%;
+			height:150px;
+			border-radius:10px}		
+		
+#header h1 {
+		position:absolute;
+		top:-20px;
+		left:50px;
+		font-size:50px;
+		font-family:Arial;
+		color:white;
+		text-shadow: 3px 3px 5px #333333;}
+
+#header h2 {
+		position:absolute;
+		top:85px;
+		left:55px;
+		font-size:20px;
+		font-family:Arial;
+		color:white;
+		text-shadow: 3px 3px 5px #333333;}
+
+#settings {border:1px solid #000000;
+		border-radius:10px;
+		width:35%;
+		float:right;
+		font-family:Arial;
+		}
+
+#settings ul {list-style-type:none}		
+		
+#settings h2 {text-align:center;
+			margin:5px;
+			font-family:Arial}		
+
+#form {position:relative}
+
+#general {
+		border:1px solid black;
+		border-radius:10px;
+		width:60%;
+		height:120px;
+		position:relative;
+		margin-top:0px;
+		padding-left:10px;
+		padding-top:0px;
+		font-family:Arial
+}
+			
+#zone1 {border:1px solid black;
+		border-radius:10px;
+		width:60%;
+		height:120px;
+		position:relative;
+		margin-top:10px;
+		padding-left:10px;
+		padding-top:0px}
+
+#hh {font-size:30px;
+	font-family:Arial;				
+	float:left;
+	top:5px;
+	position:absolute
+	}	
+
+.on-off {position:absolute;
+		right:10px;
+		top:10px;
+		float:right}
+
+.on{background-color:#33CC33;
+	width:10px;
+	height:10px;
+	border-radius:100%;
+	border:1px solid #006600}
+
+.off {background-color:red;
+	width:10px;
+	height:10px;
+	border-radius:100%;
+	border:1px solid #7A0000}
+
+.button {border:1px solid black;
+		border-radius:0px;
+		border-bottom-right-radius:5px;
+		background-color:#52A3CC;
+		background:-moz-linear-gradient(top, #b8c6df 0%, #6d88b7 100%);
+		box-shadow: 1px 1px 3px #333333;
+		width:100px;
+		height:40px;
+		position:absolute;
+		right:10px;
+		bottom:10px;
+		text-align:center
+		}
+		
+.button span {font: bold 1em/1.5em sans-serif;
+		color:white;
+		width:100px;
+		height:40px;
+		text-shadow: 1px 1px 2px #333333;
+		vertical-align: middle;
+		line-height: 40px; 
+		}		
+
+.button:hover{background-color:#3081AA;
+				background:-moz-linear-gradient(top, #6d88b7 0%, #b8c6df 100%);}
+
+.input {float:left;
+		position:absolute;
+		top:50px;
+		left:40px;
+		font-family:Arial}
+
+.input2 {float:left;
+		position:absolute;
+		top:80px;
+		left:40px;
+		font-family:Arial}		
+		
+#applyButton {
+		width:60%;
+		position:relative;
+		margin-top:10px;
+		padding-left:10px;
+		padding-top:0px;
+		text-align:center
+}		
+		

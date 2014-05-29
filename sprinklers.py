@@ -1,19 +1,19 @@
 #Settings 
-time_to_start = '21:00:00'
 on = True
 location = "84123"
 on_pi=False
 weather_test = 0
 rain = 0.00
 zones = {
-    'zone1' : {'length':40,'on':False,'pinNo':7},
-    'zone2' : {'length':30,'on':False,'pinNo':11},
-    'zone3' : {'length':30,'on':False,'pinNo':13},
+    'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
+    'zone2' : {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
+    'zone3' : {'length':30,'on':False,'pinNo':13, 'name':'Zone 3'},
     }
 templateData = {
    'days' : 3,
    'zones' : zones,
-   'rain' : rain
+   'rain' : rain,
+   'time_to_start' : '21:00:00'
    }
 
 #Setup
@@ -101,7 +101,7 @@ if on_pi:
 now = datetime.now()
 print (now)
 
-splits = time_to_start.split(":")
+splits = templateData['time_to_start'].split(":")
 time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
 
 run_at = time_to_start - now
@@ -133,12 +133,14 @@ def hello():
             print ('%s - Zone %s on: %s min.' %(str(datetime.now()),zone.replace('zone', ''),zones[zone]['length']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],False)
+                zones[zone]['on'] = True
             time.sleep(int(zones[zone]['length'])*60)
             global total_sprink_time
             total_sprink_time += int(zones[zone]['length'])*60
             print ('%s - Zone %s off.' %(str(datetime.now()),zone.replace('zone', '')))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
+                zones[zone]['on'] = False
             time.sleep(5)
             #global total_sprink_time
             total_sprink_time += 5
@@ -163,12 +165,15 @@ try:
     @app.route('/', methods=['POST'])
     def my_form_post():
         text = request.form['text']
+        ttime = request.form['start']
         zone1 = request.form['zone1']
         zone2 = request.form['zone2']
         zone3 = request.form['zone3']
         if text != '':
             templateData['days'] = float(text)
             get_seconds()
+        if ttime != '':
+            templateData['time_to_start'] = str(ttime)
         if zone1 != '':
             zones['zone1']['length'] = int(zone1)
         if zone2 != '':
