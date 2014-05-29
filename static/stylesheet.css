@@ -118,6 +118,12 @@
 .button:hover{background-color:#3081AA;
 				background:-moz-linear-gradient(top, #6d88b7 0%, #b8c6df 100%);}
 
+.button:active{
+		right:8px;
+		bottom:8px;
+		box-shadow: 0px 0px 3px #333333;
+}
+				
 .input {float:left;
 		position:absolute;
 		top:50px;
