@@ -12,7 +12,7 @@ templateData = {
    'days' : 3,
    'zones' : zones,
    'rain' : 0.0,
-   'time_to_start' : '20:19:00',
+   'time_to_start' : '14:59:00',
    'message' : ''
    }
 

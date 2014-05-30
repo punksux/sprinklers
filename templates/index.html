@@ -4,6 +4,7 @@
 <!--<meta name=viewport content="width=device-width, initial-scale=1">-->
 <meta name="viewport" content="width=device-width, initial-scale=.43, maximum-scale=.43, user-scalable=0"/>
 <link type="text/css" rel="stylesheet" href="/static/stylesheet.css" />
+<link type="text/css" rel="stylesheet" href="/static/stylesheetMobile.css" media="only screen and (max-width: 999px)" />
 <script type="text/javascript">
 			window.onload = function(){
 				document.getElementById("body").setAttribute("class","loaded");
@@ -20,7 +21,7 @@
 	
 	<div id="rightC">
 	<div id="settings">
-		<h2>Settings</h2>
+		<div id="hh1">Settings</div>
 		<ul>
 			<li>Days apart: {{ days }}</li>
 			<li>Start time: {{ time_to_start }}</li>
@@ -33,6 +34,11 @@
 	{% if message != '' %}
 	<div class="messages">{{ message }}</div>
 	{% endif %}
+	
+	
+	<div id="stupidImages">
+	</div>
+	
     </div>
 	
 	<div id="form">
@@ -41,7 +47,7 @@
 		<div id="hh">General</div>
 		<span class="input">
 			How many days apart:
-			<input type="textbox" name="text">
+			<input type="number" name="text">
 		</span>
 		<p />
 		<span class="input2">
@@ -59,7 +65,7 @@
 			{% endif %}
 		</div>
 		<div class="input">
-			Run length: <p /> <input type="textbox" name="{{x}}">
+			Run length: <p /> <input type="number" name="{{x}}">
 		</div>
 		<div class="buttonP">
 			{% if zones[x].on == true %}
@@ -72,7 +78,9 @@
 	{% endfor %}
 	
     <div id="applyButton">
-	<input type="submit" name="my-form" value="Apply"></div>
+		<input type="submit" name="my-form" value="Apply">
+	</div>
+	
     </form>
 	</div>
 	</div>
