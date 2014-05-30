@@ -1,8 +1,8 @@
 #Settings 
 on = True
 location = "84123"
-on_pi=False
-weather_test = 1
+on_pi=True
+weather_test = 100
 #rain = 0.00
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
