@@ -1,9 +1,8 @@
 #Settings 
 on = True
 location = "84123"
-on_pi=True
-weather_test = 100
-#rain = 0.00
+on_pi=False
+weather_test = 0
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
     'zone2' : {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
@@ -13,7 +12,8 @@ templateData = {
    'days' : 3,
    'zones' : zones,
    'rain' : 0.0,
-   'time_to_start' : '15:18:00'
+   'time_to_start' : '20:19:00',
+   'message' : ''
    }
 
 #Setup
@@ -94,9 +94,9 @@ if on_pi:
     GPIO.setup(7, GPIO.OUT)
     GPIO.setup(11, GPIO.OUT)
     GPIO.setup(13, GPIO.OUT)
-    GPIO.output(7,True)
-    GPIO.output(11,True)
-    GPIO.output(13,True)
+    GPIO.output(7,False)
+    GPIO.output(11,False)
+    GPIO.output(13,False)
 
 now = datetime.now()
 print (now)
@@ -125,30 +125,30 @@ def hello():
         print ('Canceling for rain')
         rt = RepeatedTimer(day, hello)
     else:
-        #rt = RepeatedTimer(seconds_between, hello)
         global program_running
         program_running = 1
-        #global total_sprink_time
+        templateData['message'] = 'Running Program'
+        
         total_sprink_time = 0
         for zone in zones:
             print ('%s - %s on: %s min.' %(str(datetime.now()),zones[zone]['name'],zones[zone]['length']))
             if on_pi:
-                GPIO.output(zones[zone]['pinNo'],False)
+                GPIO.output(zones[zone]['pinNo'],True)
             zones[zone]['on'] = True
             time.sleep(int(zones[zone]['length'])*60)
-            #global total_sprink_time
             total_sprink_time += int(zones[zone]['length'])*60
+
             print ('%s - %s off.' %(str(datetime.now()),zones[zone]['name']))
             if on_pi:
-                GPIO.output(zones[zone]['pinNo'],True)
+                GPIO.output(zones[zone]['pinNo'],False)
             zones[zone]['on'] = False
             time.sleep(5)
-            #global total_sprink_time
             total_sprink_time += 5
-        #global total_sprink_time
+        
         rt = RepeatedTimer(int(seconds_between)-total_sprink_time, hello)    
         program_running = 0
-        #print ("Starting Daily...")
+        templateData['message'] = ''
+        
         
 
 print ("Starting First Time...")
@@ -157,8 +157,7 @@ rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
     
 # Web part
 try:
-    #sleep(300000) # your long-running job goes here...
-
+    
     @app.route('/')
     def my_form():
         return render_template("index.html", **templateData)
@@ -180,7 +179,8 @@ try:
         if zone2 != '':
             zones['zone2']['length'] = int(zone2)
         if zone3 != '':
-            zones['zone3']['length'] = int(zone3)    
+            zones['zone3']['length'] = int(zone3)
+        templateData['message'] = 'Updated Settings'    
         return render_template("index.html", **templateData)
 
     @app.route("/<changePin>/<action>")
@@ -191,18 +191,18 @@ try:
                 zones[changePin]['on'] = True
                 system_running = 1
                 if on_pi:
-                    GPIO.output(zones[changePin]['pinNo'],False)
+                    GPIO.output(zones[changePin]['pinNo'],True)
                 else:
                     print (changePin + " on.")
-                #flash("Turned " + changePin + " on.")
+                templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
             if action == "off":
                 zones[changePin]['on'] = False
                 system_running = 0
                 if on_pi:
-                    GPIO.output(zones[changePin]['pinNo'],True)
+                    GPIO.output(zones[changePin]['pinNo'],False)
                 else:
                     print (changePin + " off.")    
-                #message = "Turned " + changePin + " off."
+                templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
         return redirect(url_for('my_form'))
         
             

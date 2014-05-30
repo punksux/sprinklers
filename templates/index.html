@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
 <!--<meta name=viewport content="width=device-width, initial-scale=1">-->
+<meta name="viewport" content="width=device-width, initial-scale=.43, maximum-scale=.43, user-scalable=0"/>
 <link type="text/css" rel="stylesheet" href="/static/stylesheet.css" />
+<script type="text/javascript">
+			window.onload = function(){
+				document.getElementById("body").setAttribute("class","loaded");
+			}
+		</script>
 </head>
-<body>
+<body id="body">
     <div id="content">
 	<div id="header">
 		<img id="headerbg" src="/static/images/sprinkler.jpg">
@@ -12,6 +18,7 @@
 		<h2>{{ rain }} inches of rain today.</h2>
 	</div>
 	
+	<div id="rightC">
 	<div id="settings">
 		<h2>Settings</h2>
 		<ul>
@@ -22,7 +29,12 @@
 			<li>Zone 3 length: {{ zones.zone3.length }}</li>
 		</ul>
 	</div>
-    
+	
+	{% if message != '' %}
+	<div class="messages">{{ message }}</div>
+	{% endif %}
+    </div>
+	
 	<div id="form">
 	<form action="." method="POST">
 	<div id="general">
