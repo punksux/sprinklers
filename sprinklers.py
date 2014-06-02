@@ -13,7 +13,8 @@ templateData = {
    'zones' : zones,
    'rain' : 0.0,
    'time_to_start' : '14:59:00',
-   'message' : ''
+   'message' : '',
+   'system_running' : False
    }
 
 #Setup
@@ -25,8 +26,8 @@ def get_seconds():
     print (seconds_between)
 get_seconds()    
 FMT = '%H:%M:%S'
-system_running = 0
-program_running = 0
+#system_running = 0
+cycle_running = 0
 total_sprink_time = 0
 
 #Set up Flask
@@ -98,21 +99,24 @@ if on_pi:
     GPIO.output(11,False)
     GPIO.output(13,False)
 
-now = datetime.now()
-print (now)
+def get_start_time():
+    now = datetime.now()
+    print (now)
 
-splits = templateData['time_to_start'].split(":")
-time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
+    splits = templateData['time_to_start'].split(":")
+    time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
 
-run_at = time_to_start - now
-if run_at.total_seconds() < 0:
-    print (time_to_start.replace(day=time_to_start.day+1))
-    run_at = (time_to_start.replace(day=time_to_start.day+1)) - now
+    run_at = time_to_start - now
+    if run_at.total_seconds() < 0:
+        print (time_to_start.replace(day=time_to_start.day+1))
+        run_at = (time_to_start.replace(day=time_to_start.day+1)) - now
 
-delay = run_at.total_seconds()
-sec = timedelta(seconds=delay)
-d = datetime(1,1,1) + sec
-print ("Starting in %d hours and %d minutes" %(d.hour, d.minute))
+    global delay
+    delay = run_at.total_seconds()
+    sec = timedelta(seconds=delay)
+    d = datetime(1,1,1) + sec
+    print ("Starting in %d hours and %d minutes" %(d.hour, d.minute))
+    return delay
 
 # Run program
 def hello():
@@ -125,8 +129,8 @@ def hello():
         print ('Canceling for rain')
         rt = RepeatedTimer(day, hello)
     else:
-        global program_running
-        program_running = 1
+        global cycle_running
+        cycle_running = 1
         templateData['message'] = 'Running Program'
         
         total_sprink_time = 0
@@ -146,15 +150,11 @@ def hello():
             total_sprink_time += 5
         
         rt = RepeatedTimer(int(seconds_between)-total_sprink_time, hello)    
-        program_running = 0
+        cycle_running = 0
         templateData['message'] = ''
         
         
 
-print ("Starting First Time...")
-global rt
-rt = RepeatedTimer(delay, hello) # it auto-starts, no need of rt.start()
-    
 # Web part
 try:
     
@@ -185,16 +185,19 @@ try:
 
     @app.route("/<changePin>/<action>")
     def action(changePin, action):
-        if program_running == 0:
+        if cycle_running == 0:
             global system_running
-            if action == "on" and system_running == 0:
-                zones[changePin]['on'] = True
-                system_running = 1
-                if on_pi:
-                    GPIO.output(zones[changePin]['pinNo'],True)
-                else:
-                    print (changePin + " on.")
-                templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
+            if action == "on":
+                if zones['zone1']['on'] or zones['zone2']['on'] or zones['zone3']['on']:
+                    templateData['messages'] = "Program Running"
+                else:    
+                    zones[changePin]['on'] = True
+                    system_running = 1
+                    if on_pi:
+                        GPIO.output(zones[changePin]['pinNo'],True)
+                    else:
+                        print (changePin + " on.")
+                    templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
             if action == "off":
                 zones[changePin]['on'] = False
                 system_running = 0
@@ -205,8 +208,18 @@ try:
                 templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
         return redirect(url_for('my_form'))
         
-            
-            
+    @app.route("/start")
+    def start_program():
+        if templateData['system_running'] == False:
+            get_start_time()
+            print ("Starting First Time...")
+            print (delay)
+            global rt
+            rt = RepeatedTimer(delay, hello)
+            templateData['message'] = "Ststem Started"
+        return render_template("index.html", **templateData)
+
+    
     if __name__ == '__main__':
         app.run(host='0.0.0.0')
     

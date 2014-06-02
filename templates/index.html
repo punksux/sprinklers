@@ -79,6 +79,14 @@
 	
     <div id="applyButton">
 		<input type="submit" name="my-form" value="Apply">
+		
+		<div class="startButton">
+			{% if system_running %}
+				<a href="/stop"><div class="button"><span>Stop</span></div></a>
+			{% else %}
+				<a href="/start"><div class="button"><span>Start</span></div></a>
+			{% endif %}	
+		</div>
 	</div>
 	
     </form>
