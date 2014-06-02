@@ -40,6 +40,12 @@
 		text-shadow: 3px 3px 5px #333333;
 }
 
+#system_on_off {
+		position:absolute;
+		right:10px;
+		top:10px;
+}
+
 #rightC {
 		float:right;
 		width:35%;
@@ -51,6 +57,7 @@
 		width:100%;
 		font-family:Arial;
 		position:relative;
+		z-index: 1;
 }
 
 #settings ul {list-style-type:none;}		
@@ -65,7 +72,9 @@
 
 .messages {
 		border:1px solid  #b5e026;
-		border-radius:10px;
+		/*border-radius:10px;*/
+		border-bottom-right-radius:5px;
+		border-top-left-radius:15px;
 		width:100%;
 		height:40px;
 		float:right;
@@ -237,8 +246,12 @@
 		margin-top:10px;
 		padding-left:10px;
 		padding-top:0px;
-		text-align:center;
-}		
+		
+}	
+
+#startButton {
+		padding-top:10px;
+}	
 	
 input[type=textbox], input[type=number] {
 	padding:5px; border:2px solid #ccc;
@@ -250,10 +263,11 @@ input[type=textbox]:focus, input[type=number]:focus {border-color:#333; }
 
 input[type=submit] {
 	background:#ccc;
-	background:-moz-radial-gradient(center, ellipse cover, #b5e026 0%, #89b505 100%);
+	background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
 	cursor:pointer;
 	width:100px;
 	height:40px;
+	border:0;
     border-radius: 0px;
 	font: bold 1em/1.5em sans-serif;
 	color:white;
@@ -263,7 +277,7 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
-		background:-moz-radial-gradient(center, ellipse cover, #96bb1b 0%, #709404 100%);
+		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
 		cursor:pointer;
 }
 
@@ -272,3 +286,47 @@ input[type=number]::outer-spin-button {
 		-webkit-appearance: none; 
 		margin: 0; 
 }
+
+.black_overlay{
+        display: none;
+        position: absolute;
+        top: 0%;
+        left: 0%;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index:1001;
+        -moz-opacity: 0.8;
+        opacity:.60;
+        filter: alpha(opacity=60);
+    }
+.white_content {
+        display: none;
+        position: relative;
+		top: -550px;
+        left:-50%;
+        width: 800px;
+        height: 200px;
+        padding: 10px;
+        border: 1px solid black;
+		border-radius:10px;
+        background-color: white;
+        z-index:1002;
+        overflow: auto;
+    }
+	
+#logClose {
+		position:absolute;
+		right:10px;
+		top:10px;
+		border:2px solid red;
+		border-radius:100%;
+		width:20px;
+		height:20px;
+		font: bold 18px sans-serif;
+		color:red;
+		text-align:center;
+		vertical-align:center;
+		line-height:20px;
+				
+}	

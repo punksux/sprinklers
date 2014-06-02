@@ -23,10 +23,9 @@ seconds_between = 0.0
 def get_seconds():
     global seconds_between
     seconds_between = templateData['days'] * day
-    print (seconds_between)
+    #print (seconds_between)
 get_seconds()    
-FMT = '%H:%M:%S'
-#system_running = 0
+#FMT = '%H:%M:%S'
 cycle_running = 0
 total_sprink_time = 0
 
@@ -36,6 +35,11 @@ import time
 from threading import Thread
 
 app = Flask(__name__)
+
+#Set up logging
+import logging
+from logging.handlers import RotatingFileHandler
+#logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename='log.log',level=logging.WARNING)
 
 #Set up timer class
 from threading import Timer
@@ -83,7 +87,7 @@ def check_weather():
         templateData['rain'] = parsed_json['current_observation']['precip_today_in']
         f.close()
     else:
-        templateData['rain'] = str(weather_test)
+        templateData['rain'] = weather_test
 
 #Set up GPIO
 from datetime import datetime, timedelta
@@ -101,21 +105,21 @@ if on_pi:
 
 def get_start_time():
     now = datetime.now()
-    print (now)
+    print(now)
 
     splits = templateData['time_to_start'].split(":")
     time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
 
     run_at = time_to_start - now
     if run_at.total_seconds() < 0:
-        print (time_to_start.replace(day=time_to_start.day+1))
+        print(time_to_start.replace(day=time_to_start.day+1))
         run_at = (time_to_start.replace(day=time_to_start.day+1)) - now
 
     global delay
     delay = run_at.total_seconds()
     sec = timedelta(seconds=delay)
     d = datetime(1,1,1) + sec
-    print ("Starting in %d hours and %d minutes" %(d.hour, d.minute))
+    print("Starting in %d hours and %d minutes" %(d.hour, d.minute))
     return delay
 
 # Run program
@@ -123,26 +127,26 @@ def hello():
     global rt
     rt.stop()
     check_weather()
-    print(templateData['rain'] + " inches of rain")
+    print(str(templateData['rain']) + " inches of rain")
     global total_sprink_time
     if float(templateData['rain']) > 0.125:
-        print ('Canceling for rain')
+        app.logger.warning('Canceling for rain - trying again in 1 day')
         rt = RepeatedTimer(day, hello)
     else:
         global cycle_running
         cycle_running = 1
-        templateData['message'] = 'Running Program'
+        templateData['message'] = 'Running Cycle'
         
         total_sprink_time = 0
         for zone in zones:
-            print ('%s - %s on: %s min.' %(str(datetime.now()),zones[zone]['name'],zones[zone]['length']))
+            app.logger.warning('%s on: %s min.' %(zones[zone]['name'],zones[zone]['length']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
             zones[zone]['on'] = True
             time.sleep(int(zones[zone]['length'])*60)
             total_sprink_time += int(zones[zone]['length'])*60
 
-            print ('%s - %s off.' %(str(datetime.now()),zones[zone]['name']))
+            app.logger.warning('%s off.' %(zones[zone]['name']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],False)
             zones[zone]['on'] = False
@@ -212,19 +216,32 @@ try:
     def start_program():
         if templateData['system_running'] == False:
             get_start_time()
-            print ("Starting First Time...")
-            print (delay)
+            check_weather()
             global rt
             rt = RepeatedTimer(delay, hello)
-            templateData['message'] = "Ststem Started"
-        return render_template("index.html", **templateData)
+            templateData['system_running'] = True
+            templateData['message'] = "System Started"
+        return redirect(url_for('my_form'))
 
+    @app.route("/stop")
+    def stop_program():
+        if templateData['system_running'] == True:
+            global rt
+            rt.stop()
+            templateData['system_running'] = False
+            templateData['message'] = "System Stopped"
+        return redirect(url_for('my_form'))
     
     if __name__ == '__main__':
+        handler = RotatingFileHandler('log.log', 'a', 100000, 1)        
+        handler.setFormatter(logging.Formatter('%(asctime)s -  %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p'))
+        handler.setLevel(logging.WARNING)
+        app.logger.addHandler(handler)
         app.run(host='0.0.0.0')
     
 finally:
     print("Quitting...")
+    global rt
     rt.stop() # better in a try/finally block to make sure the program ends!        
     if on_pi:
         GPIO.setup(7, GPIO.IN)
