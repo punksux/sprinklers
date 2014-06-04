@@ -14,7 +14,8 @@ templateData = {
    'rain' : 0.0,
    'time_to_start' : '14:59:00',
    'message' : '',
-   'system_running' : False
+   'system_running' : False,
+   'log' : {}
    }
 
 #Setup
@@ -164,6 +165,7 @@ try:
     
     @app.route('/')
     def my_form():
+        templateData['log'] = [log.rstrip('\n') for log in open('log.log')]
         return render_template("index.html", **templateData)
 
     @app.route('/', methods=['POST'])

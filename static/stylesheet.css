@@ -330,3 +330,8 @@ input[type=number]::outer-spin-button {
 		line-height:20px;
 				
 }	
+
+#log {
+		position:absolute;
+		top:30px;
+}
