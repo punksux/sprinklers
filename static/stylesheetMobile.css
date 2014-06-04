@@ -1,23 +1,29 @@
-#body {font-family:Arial}
-
+#body {
+		font-family:Arial;
+		overflow:hidden;
+}
 #content {
 		width:800px;
 		border:1px solid #000000;
 		border-radius:10px;
 		padding:10px;
 		margin-left:auto;
-		margin-right:auto
+		margin-right:auto;
+		padding-bottom:0px;
 }
 
 #header {
 		padding-bottom:10px;
+		height:200px;
+		border-radius:10px;
 		position:relative;
 }
 		
 #headerbg {
 		width:100%;
 		height:200px;
-		border-radius:10px
+		border-radius:10px;
+		
 }		
 		
 #header h1 {
@@ -59,7 +65,31 @@
 		font-family:Arial;
 		font-size:30px;
 		text-decoration:none;
-}		
+}
+		
+#logButton {
+		position:relative;
+		left:65px;
+		width:150px;
+		height:50px;
+		border-top-left-radius:10px;
+		border-top-right-radius:10px;
+		background:pink;
+		text-align:center;
+		font:bold 35px sans-serif;
+		color:white;
+		text-decoration:none;
+		text-shadow:1px 1px 2px #333;
+		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
+		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
+		line-height:50px;
+		vertical-align:center;
+}
+
+#logButton:hover {
+		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+		background:-webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+}
 
 .messages {
 		border:1px solid #b5e026;
@@ -154,7 +184,7 @@
 
 .button {
 		border-radius:0px;
-		border-bottom-right-radius:5px;
+		border-bottom-right-radius:9px;
 		border-top-left-radius:15px;
 		background-color:#52A3CC;
 		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
@@ -162,8 +192,8 @@
 		width:200px;
 		height:80px;
 		position:absolute;
-		right:10px;
-		bottom:10px;
+		right:0px;
+		bottom:0px;
 		text-align:center
 }
 		
@@ -179,11 +209,75 @@
 }		
 
 .button:active{
-		right:8px;
-		bottom:8px;
+		right:-1px;
+		bottom:-1px;
 		box-shadow: 0px 0px 3px #333333;
 }
+	
+#startButton {
+		position:absolute;
+		right:80px;
+		bottom:0px;
+		text-decoration:none;
+}
+
+#startButton a {
+		text-decoration:none;
+}
+
+#stopButton {
+		background:-moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+		background:-webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+		border-top-left-radius:15px;
+		border-top-right-radius:15px;
+		width:200px;
+		height:80px;
+		text-align:center;
+		font: bold 35px sans-serif;
+		color:white;
+		text-shadow: 1px 1px 2px #333333;
+		vertical-align: middle;
+		line-height: 80px;
+		text-decoration:none;
+		
+}
 				
+#stopButton:hover {
+		background:-moz-linear-gradient(top, #ee1400 0%, #590101 100%);
+		background:-webkit-linear-gradient(top, #ee1400 0%, #590101 100%);
+		
+}
+
+#stopButton:active {
+	bottom:-1px;
+}
+
+#startButton2 {
+		border-top-left-radius:15px;
+		border-top-right-radius:15px;
+		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
+		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
+		width:200px;
+		height:80px;
+		text-align:center;
+		font: bold 35px sans-serif;
+		color:white;
+		text-shadow: 1px 1px 2px #333333;
+		vertical-align: middle;
+		line-height: 80px;
+		text-decoration:none;
+		
+}
+
+#startButton2:hover {
+		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+		background:-webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+}
+
+#startButton2:active {
+	bottom:-1px;
+}
+	
 #general .input {
 		float:left;
 		position:absolute;
@@ -208,24 +302,31 @@
 }	
 	
 #applyButton {
-		width:60%;
+		width:100%;
 		position:relative;
-		margin-top:10px;
+		margin-top:5px;
 		padding-left:10px;
 		padding-top:0px;
-		height:90px;
-}		
+		bottom:0px;
+		height:85px;
+		
+}			
 
-input[type=textbox], input[type=number]  {
+input[type=time], input[type=number]  {
 	padding:5px; border:2px solid #ccc;
 	border-radius: 5px;
 	width:100px;
 	height:50px;
-	font-size:45px;
+	font-size:35px;
 	font-family:Arial;
+	background-color:white;
+
 }	
 
-input[type=textbox]:focus, input[type=number]:focus {border-color:#333; }
+input[type=time]:focus, input[type=number]:focus {
+		border-color:#333; 
+		box-shadow:0px 0px 5px #b6e026;
+}
 
 input[type=submit] {padding:5px 15px; 
 	background:#ccc;
@@ -236,8 +337,9 @@ input[type=submit] {padding:5px 15px;
 	height:80px;
     border-radius: 5px;
 	font-size:35px;
-	border-bottom-right-radius:5px;
+	border-bottom-right-radius:0px;
 	border-top-left-radius:15px;
+	border-top-right-radius:15px;
 	position:absolute;
 	left:10px;
 }		
@@ -258,10 +360,10 @@ input[type=submit] {padding:5px 15px;
 .white_content {
         display: none;
         position: relative;
-		top: -750px;
+		top: -900px;
         left:-50%;
         width: 800px;
-        height: 400px;
+        height: 600px;
         padding: 10px;
         border: 1px solid black;
 		border-radius:10px;
@@ -269,3 +371,29 @@ input[type=submit] {padding:5px 15px;
         z-index:1002;
         overflow: auto;
     }
+	
+#logClose {
+		position:absolute;
+		right:00px;
+		top:00px;
+		border:4px solid red;
+		border-top:0px;
+		border-right:0px;
+		border-radius:10px;
+		border-top-left-radius:0px;
+		border-bottom-right-radius:0px;
+		width:60px;
+		height:60px;
+		font: bold 28px sans-serif;
+		color:red;
+		text-align:center;
+		vertical-align:center;
+		line-height:60px;
+				
+}	
+
+#log {
+		position:absolute;
+		top:80px;
+		font-size:30px;
+}	

@@ -5,17 +5,20 @@
 
 #content {
 		width:800px;
-		border:1px solid #000000;
+		border:0px solid #000000;
 		border-radius:10px;
-		padding:10px;
+		padding:1px;
 		padding-bottom:0px;
 		margin-left:auto;
 		margin-right:auto;
 		position:relative;
+		background:url("/static/images/sprinklerbg2.jpg");
+		background-size:cover;
+		background-position: right;
 }
 
 #header {
-		padding-bottom:10px;
+		padding-bottom:0px;
 		position:relative;
 		width:100%;
 		height:150px;
@@ -39,7 +42,7 @@
 
 #header h2 {
 		position:absolute;
-		top:100px;
+		top:70px;
 		left:55px;
 		font-size:20px;
 		font-family:Arial;
@@ -60,23 +63,32 @@
 
 #system_on_off {
 		position:absolute;
-		right:10px;
-		top:10px;
+		right:00px;
+		top:00px;
 }
 
 #rightC {
 		float:right;
 		width:35%;
+		position:relative;
+}
+
+#leftC {
+		padding-top:0px;
+		position:relative;
+		
 }
 		
 #settings {
-		border:1px solid #aaa;
-		border-radius:10px;
+		border:0px solid #aaa;
+		border-radius:10px 0px 0px 10px;
 		width:100%;
 		font-family:Arial;
 		position:relative;
 		z-index: 1;
 		background:white;
+		margin-top:16px;
+		box-shadow:2px 2px 5px #333;
 }
 
 #settings ul {list-style-type:none;}		
@@ -115,7 +127,7 @@
 
 .messages {
 		border:1px solid  #b5e026;
-		border-radius:10px;
+		border-radius:10px 0px 0px 10px;
 		/*border-bottom-right-radius:5px;
 		border-top-left-radius:15px;*/
 		width:100%;
@@ -133,18 +145,17 @@
 		opacity:1;
 		transition: opacity 2s linear 4s;
 		background: -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
+		box-shadow:2px 2px 5px #333;
 }
 			
 #body.loaded .messages {
 		opacity:0;
 }			
 
-#form {position:relative;}
-
 #general {
-		border:1px solid #aaa;
-		border-radius:10px;
-		width:60%;
+		border:0px solid #aaa;
+		border-radius:0px 10px 10px 0px;
+		width:498px;
 		height:120px;
 		position:relative;
 		margin-top:0px;
@@ -152,6 +163,7 @@
 		padding-top:0px;
 		font-family:Arial;
 		background:white;
+		box-shadow:2px 2px 5px #333;
 }
 
 #general .input {
@@ -167,9 +179,10 @@
 }
 		
 #zone1 {
-		border:1px solid #aaa;
-		border-radius:10px;
-		width:60%;
+		border:0px solid #aaa;
+		border-radius:0px 10px 10px 0px;
+		box-shadow:2px 2px 5px #333;
+		width:498px;
 		height:120px;
 		position:relative;
 		margin-top:10px;
@@ -195,26 +208,34 @@
 
 .on-off {
 		position:absolute;
-		right:10px;
-		top:10px;
+		right:0px;
+		top:0px;
 		float:right;
 }
 
 .on{
-		background-color:#33CC33;
-		width:10px;
-		height:10px;
-		border-radius:100%;
-		border:1px solid #006600;
-		box-shadow:0px 0px 10px #33CC33;
+		background:-moz-radial-gradient(top left, ellipse cover,   #baffbd 0%, #13ff02 100%);
+		width:20px;
+		height:20px;
+		border-radius:0px 10px 0px 10px;
+		border:1px solid #11cc11;
+		border-top:0px;
+		border-right:0px;
+		box-shadow:-1px 1px 10px #33CC33;
 }
 
 .off {
-		background-color:red;
-		width:10px;
-		height:10px;
-		border-radius:100%;
-		border:1px solid #7A0000;
+		background:-moz-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
+		width:20px;
+		height:20px;
+		border-radius:0px 10px 0px 10px;
+		border:1px solid #9c0000;
+		border-top:0px;
+		border-right:0px;
+}
+
+#system_on_off  .on, #system_on_off  .off {
+		border-radius:0px 0px 0px 10px;
 }
 
 .buttonP{
@@ -283,7 +304,7 @@
 		vertical-align: middle;
 		line-height: 50px;
 		text-decoration:none;
-		
+		box-shadow:2px 2px 5px #333;
 }
 				
 #stopButton:hover {
@@ -308,7 +329,7 @@
 		vertical-align: middle;
 		line-height: 50px;
 		text-decoration:none;
-		
+		box-shadow:2px 2px 5px #333;
 }
 
 #startButton2:hover {
@@ -374,6 +395,7 @@ input[type=submit] {
 		position:absolute;
 		bottom:0px;
 		left:60px;
+		box-shadow:2px 2px 5px #333;
 }
 
 input[type=submit]:hover {
@@ -385,11 +407,11 @@ input[type=submit]:active {
 		bottom:-1px;
 }
 
-input[type=number]::inner-spin-button, 
+/*input[type=number]::inner-spin-button, 
 input[type=number]::outer-spin-button { 
 		-webkit-appearance: none; 
 		margin: 0; 
-}
+}*/
 
 .black_overlay{
         display: none;
@@ -402,7 +424,7 @@ input[type=number]::outer-spin-button {
         z-index:1001;
         -moz-opacity: 0.8;
         opacity:.60;
-        filter: alpha(opacity=60);
+        
     }
 .white_content {
         display: none;
@@ -410,7 +432,7 @@ input[type=number]::outer-spin-button {
 		top: -650px;
         left:-50%;
         width: 800px;
-        height: 350px;
+        height: 370px;
         padding: 10px;
         border: 1px solid black;
 		border-radius:10px;
@@ -421,27 +443,49 @@ input[type=number]::outer-spin-button {
 	
 #logClose {
 		position:absolute;
-		right:10px;
-		top:10px;
-		border:2px solid red;
-		border-radius:100%;
-		width:20px;
-		height:20px;
+		right:0px;
+		top:0px;
+		border-bottom-left-radius:10px;
+		border-top-right-radius:8px;
+		background:-moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+		width:40px;
+		height:30px;
 		font: bold 18px sans-serif;
-		color:red;
+		color:white;
 		text-align:center;
-		vertical-align:center;
-		line-height:20px;
-				
+		vertical-align:middle;
+		line-height:30px;
+		text-shadow:1px 1px 3px #333;		
 }	
+
+#logClose:hover {
+		background:-moz-linear-gradient(top, #ffb0a9 0%, #fc1e1e 100%);
+}
 
 #log {
 		position:absolute;
-		top:70px;
+		top:60px;
+		left:40px;
 }
 
-#imageFloat{
-
+#cover1 {
+		width:10px;
+		height:600px;
+		border:1px solid white;
+		background:white;
+		z-index:5;
+		position:absolute;
+		left:1361px;
+		top:0px;
 }
 
-
+#cover2 {
+		width:700px;
+		height:10px;
+		border:1px solid white;
+		background:white;
+		z-index:5;
+		position:absolute;
+		left:600px;
+		top:745px;
+}

@@ -2,7 +2,7 @@
 on = True
 location = "84123"
 on_pi=False
-weather_test = 0
+weather_test = 6
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
     'zone2' : {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
@@ -15,7 +15,8 @@ templateData = {
    'time_to_start' : '14:59:00',
    'message' : '',
    'system_running' : False,
-   'log' : {}
+   'log' : {},
+   'next_run_date':''
    }
 
 #Setup
@@ -29,6 +30,7 @@ get_seconds()
 #FMT = '%H:%M:%S'
 cycle_running = 0
 total_sprink_time = 0
+cycle_has_run = False
 
 #Set up Flask
 from flask import Flask, request, render_template, url_for, flash, redirect
@@ -36,11 +38,6 @@ import time
 from threading import Thread
 
 app = Flask(__name__)
-
-#Set up logging
-import logging
-from logging.handlers import RotatingFileHandler
-#logging.basicConfig(format='%(asctime)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', filename='log.log',level=logging.WARNING)
 
 #Set up timer class
 from threading import Timer
@@ -131,31 +128,42 @@ def hello():
     print(str(templateData['rain']) + " inches of rain")
     global total_sprink_time
     if float(templateData['rain']) > 0.125:
-        app.logger.warning('Canceling for rain - trying again in 1 day')
+        f = open('log.log','a')
+        f.write('%s - Canceling for rain - trying again in 24 hours.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+        f.close()
         rt = RepeatedTimer(day, hello)
     else:
         global cycle_running
+        global cycle_has_run
         cycle_running = 1
         templateData['message'] = 'Running Cycle'
         
         total_sprink_time = 0
         for zone in zones:
-            app.logger.warning('%s on: %s min.' %(zones[zone]['name'],zones[zone]['length']))
+            f = open('log.log','a')
+            f.write('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name'],zones[zone]['length']))
+            f.close()
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
             zones[zone]['on'] = True
             time.sleep(int(zones[zone]['length'])*60)
             total_sprink_time += int(zones[zone]['length'])*60
 
-            app.logger.warning('%s off.' %(zones[zone]['name']))
+            f = open('log.log','a')
+            f.write('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name']))
+            f.close()
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],False)
             zones[zone]['on'] = False
             time.sleep(5)
             total_sprink_time += 5
         
-        rt = RepeatedTimer(int(seconds_between)-total_sprink_time, hello)    
+        rt = RepeatedTimer(int(seconds_between)-total_sprink_time, hello)
+        global next_time
+        next_time = datetime.now() + timedelta(seconds=int(seconds_between)-total_sprink_time)
+        templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
+        cycle_has_run = True
         templateData['message'] = ''
         
         
@@ -166,7 +174,7 @@ try:
     @app.route('/')
     def my_form():
         templateData['log'] = [log.rstrip('\n') for log in open('log.log')]
-        return render_template("index.html", **templateData)
+        return render_template("index2.html", **templateData)
 
     @app.route('/', methods=['POST'])
     def my_form_post():
@@ -179,7 +187,30 @@ try:
             templateData['days'] = float(text)
             get_seconds()
         if ttime != '':
-            templateData['time_to_start'] = str(ttime)
+            global rt
+            global cycle_has_run
+            if cycle_has_run:
+                if templateData['system_running']:
+                    rt.stop()
+                    templateData['time_to_start'] = str(ttime)
+                    splits = templateData['time_to_start'].split(":")
+                    temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0) - datetime.now()
+                    templateData['next_run_date'] = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0).strftime('%a, %B %d at %I:%M %p')
+                    check_weather()
+                    rt = RepeatedTimer(temp.total_seconds(), hello)
+                else:
+                    templateData['time_to_start'] = str(ttime)
+            else:
+                if templateData['system_running']:
+                    rt.stop()
+                    templateData['time_to_start'] = str(ttime)
+                    get_start_time()
+                    temp = datetime.now() + timedelta(seconds=delay)
+                    templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
+                    check_weather()
+                    rt = RepeatedTimer(delay, hello)
+                else:
+                    templateData['time_to_start'] = str(ttime)
         if zone1 != '':
             zones['zone1']['length'] = int(zone1)
         if zone2 != '':
@@ -187,42 +218,58 @@ try:
         if zone3 != '':
             zones['zone3']['length'] = int(zone3)
         templateData['message'] = 'Updated Settings'    
-        return render_template("index.html", **templateData)
+        return render_template("index2.html", **templateData)
 
     @app.route("/<changePin>/<action>")
     def action(changePin, action):
-        if cycle_running == 0:
-            global system_running
-            if action == "on":
-                if zones['zone1']['on'] or zones['zone2']['on'] or zones['zone3']['on']:
-                    templateData['messages'] = "Program Running"
-                else:    
-                    zones[changePin]['on'] = True
-                    system_running = 1
+        if templateData['system_running']:
+            if cycle_running == 0:
+                global system_running
+                if action == "on":
+                    if zones['zone1']['on'] or zones['zone2']['on'] or zones['zone3']['on']:
+                        templateData['messages'] = "Program Running"
+                    else:    
+                        zones[changePin]['on'] = True
+                        system_running = 1
+                        if on_pi:
+                            GPIO.output(zones[changePin]['pinNo'],True)
+                        else:
+                            print (changePin + " on.")
+                        templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
+                        f = open('log.log','a')
+                        f.write('%s - Manually turned %s on.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
+                        f.close()
+                if action == "off":
+                    zones[changePin]['on'] = False
+                    system_running = 0
                     if on_pi:
-                        GPIO.output(zones[changePin]['pinNo'],True)
+                        GPIO.output(zones[changePin]['pinNo'],False)
                     else:
-                        print (changePin + " on.")
-                    templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
-            if action == "off":
-                zones[changePin]['on'] = False
-                system_running = 0
-                if on_pi:
-                    GPIO.output(zones[changePin]['pinNo'],False)
-                else:
-                    print (changePin + " off.")    
-                templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
+                        print (changePin + " off.")    
+                    templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
+                    f = open('log.log','a')
+                    f.write('%s - Manually turned %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
+                    f.close()
+            else:
+                templateData['message'] = 'Cycle Running'
+        else:
+            templateData['message'] = 'System Not On'
         return redirect(url_for('my_form'))
         
     @app.route("/start")
     def start_program():
         if templateData['system_running'] == False:
             get_start_time()
+            temp = datetime.now() + timedelta(seconds=delay)
+            templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
             check_weather()
             global rt
             rt = RepeatedTimer(delay, hello)
             templateData['system_running'] = True
             templateData['message'] = "System Started"
+            f = open('log.log','a')
+            f.write('%s - System started.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+            f.close()
         return redirect(url_for('my_form'))
 
     @app.route("/stop")
@@ -232,13 +279,12 @@ try:
             rt.stop()
             templateData['system_running'] = False
             templateData['message'] = "System Stopped"
+            f = open('log.log','a')
+            f.write('%s - System stopped.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+            f.close()
         return redirect(url_for('my_form'))
     
     if __name__ == '__main__':
-        handler = RotatingFileHandler('log.log', 'a', 100000, 1)        
-        handler.setFormatter(logging.Formatter('%(asctime)s -  %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p'))
-        handler.setLevel(logging.WARNING)
-        app.logger.addHandler(handler)
         app.run(host='0.0.0.0')
     
 finally:

@@ -1,103 +1,127 @@
-<html>
-  <head>
-    <title>Flask example</title>
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <style>
-      /* Space out content a bit */
-      body {
-        padding-top: 20px;
-        padding-bottom: 20px;
-      }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--<meta name=viewport content="width=device-width, initial-scale=1">-->
+<meta name="viewport" content="width=device-width, initial-scale=.43, maximum-scale=.43, user-scalable=0"/>
+<link type="text/css" rel="stylesheet" href="/static/stylesheet2.css" />
+<link type="text/css" rel="stylesheet" href="/static/stylesheetMobile.css" media="only screen and (max-width: 999px)" />
+<script type="text/javascript">
+			window.onload = function(){
+				document.getElementById("body").setAttribute("class","loaded");
+			}
+		</script>
+</head>
+<body id="body">
+<div id="content">
+	<div id="header">
+		<!--<img id="headerbg" src="/static/images/sprinkler3.jpg">-->
+		<h1>Sprinkler System</h1>
+		<h2>Next run time: {{ next_run_date }}</h2>
+		<h3>{{ rain }} inches of rain today.</h3>
+	</div>
+	
+	<div id="rightC">
+		<div id="settings">
+			<div id="hh1">Settings</div>
+			<ul>
+				<li>Days apart: {{ days }}</li>
+				<li>Start time: {{ time_to_start }}</li>
+				<li>Zone 1 length: {{ zones.zone1.length }}</li>
+				<li>Zone 2 length: {{ zones.zone2.length }}</li>
+				<li>Zone 3 length: {{ zones.zone3.length }}</li>
+			</ul>
+			<a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'"><div id='logButton'>Log</div></a>
+		
+		
+			<div id="system_on_off">
+				{% if system_running %}
+					<div class="on"></div>
+				{% else %}
+					<div class="off"></div>
+				{% endif %}
+			</div>	
+		</div>
+	
+		{% if message != '' %}
+			<div class="messages">{{ message }}</div>
+		{% endif %}
+		
+	</div>
+	
+	<div id="leftC">
+		<div id="form">
+			<form action="." method="POST">
+			<div id="general">
+				<div id="hh">General</div>
+				<span class="input">
+					How many days apart:
+					<input type="number" name="text">
+				</span>
+				<p />
+				<span class="input2">
+					Time to start:
+					<input type="time" name="start">
+				</span>
+			</div>
+	
+			{% for x in zones %}
+				<div id="zone1">
+					<div id="hh">{{ zones[x].name }}</div> 
+					<div class="on-off">
+						{% if zones[x].on %}<div class="on"></div>
+						{% else %}<div class="off"></div>
+						{% endif %}
+					</div>
+					<div class="input">
+						Run length: <p /> <input type="number" name="{{x}}">
+					</div>
+					<div class="buttonP">
+						{% if zones[x].on == true %}
+							<a href="/{{x}}/off"><div class="button"><span>Turn off</span></div></a>
+						{% else %}
+							<a href="/{{x}}/on"><div class="button"><span>Turn on</span></div></a>
+						{% endif %}	
+					</div>
+				</div>
+			{% endfor %}
+	
+			<div id="applyButton">
+				<input type="submit" name="my-form" value="Apply">
+		
+				<div id="startButton">
+					{% if system_running %}
+						<a href="/stop"><div id="stopButton"><span>Stop</span></div></a>
+					{% else %}
+						<a href="/start"><div id="startButton2"><span>Start</span></div></a>
+					{% endif %}	
+				</div>
+			</div>
+	
+			</form>
+		</div>
+	</div>
+</div>
+	
+<div id="cover1"></div>
+<div id="cover2"></div>
+	
+<div style="position: absolute; left: 50%;">
+	<div id="light" class="white_content"><div id="hh">Log: </div>
+		<div id='log'>
+			{% if log|count >= 8 %}
+				{% for x in range(log|count-8,log|count) %}
+					<p>{{  log[x] }}</p>
+				{% endfor %}
+			{% else %}
+				{% for x in range(0,log|count) %}
+					<p>{{  log[x] }}</p>
+				{% endfor %}
+			{% endif %}	
+		</div>
+		<a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'"><div id="logClose">X</div></a>
+	</div>
+</div>
+<div id="fade" class="black_overlay"></div>
 
-      /* Everything but the jumbotron gets side spacing for mobile first views */
-      .header,
-      .marketing,
-      .footer {
-        padding-left: 15px;
-        padding-right: 15px;
-      }
-
-      /* Custom page header */
-      .header {
-        border-bottom: 1px solid #e5e5e5;
-      }
-      /* Make the masthead heading the same height as the navigation */
-      .header h3 {
-        margin-top: 0;
-        margin-bottom: 0;
-        line-height: 40px;
-        padding-bottom: 19px;
-      }
-
-      /* Custom page footer */
-      .footer {
-        padding-top: 19px;
-        color: #777;
-        border-top: 1px solid #e5e5e5;
-      }
-
-      /* Customize container */
-      @media (min-width: 768px) {
-        .container {
-          max-width: 730px;
-        }
-      }
-
-      .container-narrow > hr {
-        margin: 30px 0;
-      }
-
-      /* Supporting marketing content */
-      .marketing {
-        margin: 40px 0;
-      }
-
-      .marketing p + h4 {
-        margin-top: 28px;
-      }
-
-      /* Responsive: Portrait tablets and up */
-      @media screen and (min-width: 768px) {
-        /* Remove the padding we set earlier */
-        .header,
-        .marketing,
-        .footer {
-          padding-left: 0;
-          padding-right: 0;
-        }
-        /* Space out the masthead */
-        .header {
-          margin-bottom: 30px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-     <div class="container">
-      <div class="header">
-        <h3 class="text-muted">Project name</h3>
-      </div>
-
-      <!-- Display flashed messages -->
-      {% with msgs = get_flashed_messages() %}
-        {% if msgs %}
-          {%- for msg in msgs %}
-            <div class="alert alert-info">
-              {{ msg }}
-            </div>
-          {% endfor -%}
-        {% endif %}
-      {% endwith %}
-      
-      <div class="row marketing">
-    <div class="col-lg-12">
-      <a href="/login">Login</a>
-    </div>
-  </div>
-  
-      <div class="footer">
-        <p>&copy; Company 2013</p>
-      </div>
-    </div> <!-- /container -->
-  </body>
+</body>
 </html>
