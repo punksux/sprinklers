@@ -2,7 +2,7 @@
 on = True
 location = "84123"
 on_pi=False
-weather_test = 6
+weather_test = 0
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
     'zone2' : {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
