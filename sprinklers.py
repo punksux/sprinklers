@@ -120,6 +120,17 @@ def get_start_time():
     print("Starting in %d hours and %d minutes" %(d.hour, d.minute))
     return delay
 
+def write_log(message):
+    import os
+    if os.path.getsize('log.log') > 1000000:
+        f = open('log.log','w')
+        f.write(message)
+        f.close()
+    else:
+        f = open('log.log','a')
+        f.write(message)
+        f.close()
+
 # Run program
 def hello():
     global rt
@@ -128,9 +139,7 @@ def hello():
     print(str(templateData['rain']) + " inches of rain")
     global total_sprink_time
     if float(templateData['rain']) > 0.125:
-        f = open('log.log','a')
-        f.write('%s - Canceling for rain - trying again in 24 hours.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
-        f.close()
+        write_log('%s - Canceling for rain - trying again in 24 hours.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         rt = RepeatedTimer(day, hello)
     else:
         global cycle_running
@@ -140,18 +149,14 @@ def hello():
         
         total_sprink_time = 0
         for zone in zones:
-            f = open('log.log','a')
-            f.write('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name'],zones[zone]['length']))
-            f.close()
+            write_log('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name'],zones[zone]['length']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],True)
             zones[zone]['on'] = True
             time.sleep(int(zones[zone]['length'])*60)
             total_sprink_time += int(zones[zone]['length'])*60
 
-            f = open('log.log','a')
-            f.write('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name']))
-            f.close()
+            write_log('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name']))
             if on_pi:
                 GPIO.output(zones[zone]['pinNo'],False)
             zones[zone]['on'] = False
@@ -236,9 +241,7 @@ try:
                         else:
                             print (changePin + " on.")
                         templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
-                        f = open('log.log','a')
-                        f.write('%s - Manually turned %s on.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
-                        f.close()
+                        write_log('%s - Manually turned %s on.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
                 if action == "off":
                     zones[changePin]['on'] = False
                     system_running = 0
@@ -247,9 +250,7 @@ try:
                     else:
                         print (changePin + " off.")    
                     templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
-                    f = open('log.log','a')
-                    f.write('%s - Manually turned %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
-                    f.close()
+                    write_log('%s - Manually turned %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
             else:
                 templateData['message'] = 'Cycle Running'
         else:
@@ -267,9 +268,7 @@ try:
             rt = RepeatedTimer(delay, hello)
             templateData['system_running'] = True
             templateData['message'] = "System Started"
-            f = open('log.log','a')
-            f.write('%s - System started.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
-            f.close()
+            write_log('%s - System started.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         return redirect(url_for('my_form'))
 
     @app.route("/stop")
@@ -279,9 +278,7 @@ try:
             rt.stop()
             templateData['system_running'] = False
             templateData['message'] = "System Stopped"
-            f = open('log.log','a')
-            f.write('%s - System stopped.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
-            f.close()
+            write_log('%s - System stopped.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         return redirect(url_for('my_form'))
     
     if __name__ == '__main__':
