@@ -2,7 +2,7 @@
 on = True
 location = "84123"
 on_pi=False
-weather_test = 0
+weather_test = 100
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
     'zone2' : {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
@@ -25,23 +25,31 @@ seconds_between = 0.0
 def get_seconds():
     global seconds_between
     seconds_between = templateData['days'] * day
-    #print (seconds_between)
-get_seconds()    
-#FMT = '%H:%M:%S'
+get_seconds()
+rt = 0
+
 cycle_running = 0
 total_sprink_time = 0
 cycle_has_run = False
 
-#Set up Flask
+#Imports
 from flask import Flask, request, render_template, url_for, flash, redirect
-import time
-from threading import Thread
+from threading import Thread, Timer
+from datetime import datetime, timedelta
+import threading, time
+from time import sleep
+import os
+if on_pi:
+    import urllib2
+    import RPi.GPIO as GPIO
+else:
+    from urllib.request import urlopen 
+import json
 
+#Set up Flask
 app = Flask(__name__)
 
 #Set up timer class
-from threading import Timer
-
 class RepeatedTimer(object):
     def __init__(self, interval, function, *args, **kwargs):
         self._timer     = None
@@ -68,32 +76,31 @@ class RepeatedTimer(object):
         self.is_running = False
 
 # Get weather
-if on_pi:
-    import urllib2
-else:
-    from urllib.request import urlopen 
-import json
+time_checked = datetime.now()
+time_checked = time_checked.replace(day=1)
 
 def check_weather():
-    if weather_test == 100:
-        if on_pi:
-            f = urllib2.urlopen('http://api.wunderground.com/api/c5e9d80d2269cb64/geolookup/conditions/q/%s.json' %(location))
+    global time_checked
+    temp = datetime.now() - time_checked
+    if temp.total_seconds() > (60*60):
+        #print ('checking weather')
+        if weather_test == 100:
+            weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' %(location))
+            if on_pi:
+                f = urllib2.urlopen(weather_website)
+            else:
+                f = urlopen(weather_website)
+            json_string = f.read()
+            parsed_json = json.loads(json_string.decode("utf8"))
+            templateData['rain'] = parsed_json['current_observation']['precip_today_in']
+            f.close()
+            time_checked = datetime.now()
         else:
-            f = urlopen('http://api.wunderground.com/api/c5e9d80d2269cb64/geolookup/conditions/q/%s.json' %(location))
-        json_string = f.read()
-        parsed_json = json.loads(json_string.decode("utf8"))
-        templateData['rain'] = parsed_json['current_observation']['precip_today_in']
-        f.close()
-    else:
-        templateData['rain'] = weather_test
+            templateData['rain'] = weather_test
+            time_checked = datetime.now()
 
 #Set up GPIO
-from datetime import datetime, timedelta
-import threading, time
-from time import sleep
 if on_pi:
-    import RPi.GPIO as GPIO
-
     GPIO.setup(7, GPIO.OUT)
     GPIO.setup(11, GPIO.OUT)
     GPIO.setup(13, GPIO.OUT)
@@ -120,23 +127,34 @@ def get_start_time():
     print("Starting in %d hours and %d minutes" %(d.hour, d.minute))
     return delay
 
+nday = datetime.now()
+nday = nday.day
+
 def write_log(message):
-    import os
+    tday = datetime.now()
+    tday = tday.day
+    global nday
+    if tday != nday:
+        f = open('log.log','a')
+        f.write('-=\n')
+        f.close()
     if os.path.getsize('log.log') > 1000000:
         f = open('log.log','w')
         f.write(message)
         f.close()
+        nday = tday
     else:
         f = open('log.log','a')
         f.write(message)
         f.close()
+        nday = tday
 
 # Run program
 def hello():
     global rt
     rt.stop()
     check_weather()
-    print(str(templateData['rain']) + " inches of rain")
+    #print(str(templateData['rain']) + " inches of rain")
     global total_sprink_time
     if float(templateData['rain']) > 0.125:
         write_log('%s - Canceling for rain - trying again in 24 hours.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
@@ -179,6 +197,7 @@ try:
     @app.route('/')
     def my_form():
         templateData['log'] = [log.rstrip('\n') for log in open('log.log')]
+        check_weather()
         return render_template("index2.html", **templateData)
 
     @app.route('/', methods=['POST'])
@@ -263,7 +282,6 @@ try:
             get_start_time()
             temp = datetime.now() + timedelta(seconds=delay)
             templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
-            check_weather()
             global rt
             rt = RepeatedTimer(delay, hello)
             templateData['system_running'] = True
@@ -278,6 +296,7 @@ try:
             rt.stop()
             templateData['system_running'] = False
             templateData['message'] = "System Stopped"
+            templateData['next_run_date'] = ''
             write_log('%s - System stopped.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         return redirect(url_for('my_form'))
     

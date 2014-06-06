@@ -58,12 +58,12 @@
 				<div id="hh">General</div>
 				<span class="input">
 					How many days apart:
-					<input type="number" name="text">
+					<input type="number" name="text" min="0" step="any" />
 				</span>
 				<p />
 				<span class="input2">
 					Time to start:
-					<input type="time" name="start">
+					<input type="time" name="start" />
 				</span>
 			</div>
 	
@@ -76,7 +76,7 @@
 						{% endif %}
 					</div>
 					<div class="input">
-						Run length: <p /> <input type="number" name="{{x}}">
+						Run length: <p /> <input type="number" name="{{x}}" />
 					</div>
 					<div class="buttonP">
 						{% if zones[x].on == true %}
@@ -89,7 +89,7 @@
 			{% endfor %}
 	
 			<div id="applyButton">
-				<input type="submit" name="my-form" value="Apply">
+				<input type="submit" name="my-form" value="Apply" />
 		
 				<div id="startButton">
 					{% if system_running %}
@@ -113,11 +113,19 @@
 		<div id='log'>
 			{% if log|count >= 8 %}
 				{% for x in range(log|count-8,log|count) %}
-					<p>{{  log[x] }}</p>
+					{% if log[x] == '-=' %}
+						<div class='line'></div>
+					{% else %}
+						<p>{{  log[x] }}</p>
+					{% endif %}
 				{% endfor %}
 			{% else %}
 				{% for x in range(0,log|count) %}
-					<p>{{  log[x] }}</p>
+					{% if log[x] == '-=' %}
+						<div class='line'></div>
+					{% else %}
+						<p>{{  log[x] }}</p>
+					{% endif %}
 				{% endfor %}
 			{% endif %}	
 		</div>

@@ -129,8 +129,6 @@
 .messages {
 		border:1px solid  #b5e026;
 		border-radius:10px 0px 0px 10px;
-		/*border-bottom-right-radius:5px;
-		border-top-left-radius:15px;*/
 		width:100%;
 		height:40px;
 		float:right;
@@ -489,4 +487,10 @@ input[type=number]::outer-spin-button {
 		position:absolute;
 		left:0px;
 		top:745px;
+}
+
+.line {
+		width:700px;
+		height:1px;
+		background:black;
 }
