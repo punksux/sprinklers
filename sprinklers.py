@@ -1,7 +1,7 @@
 #Settings 
 on = True
 location = "84123"
-on_pi=False
+on_pi=True
 weather_test = 100
 zones = {
     'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
@@ -104,9 +104,9 @@ if on_pi:
     GPIO.setup(7, GPIO.OUT)
     GPIO.setup(11, GPIO.OUT)
     GPIO.setup(13, GPIO.OUT)
-    GPIO.output(7,False)
-    GPIO.output(11,False)
-    GPIO.output(13,False)
+    GPIO.output(7,True)
+    GPIO.output(11,True)
+    GPIO.output(13,True)
 
 def get_start_time():
     now = datetime.now()
@@ -169,14 +169,14 @@ def hello():
         for zone in zones:
             write_log('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name'],zones[zone]['length']))
             if on_pi:
-                GPIO.output(zones[zone]['pinNo'],True)
+                GPIO.output(zones[zone]['pinNo'],False)
             zones[zone]['on'] = True
             time.sleep(int(zones[zone]['length'])*60)
             total_sprink_time += int(zones[zone]['length'])*60
 
             write_log('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name']))
             if on_pi:
-                GPIO.output(zones[zone]['pinNo'],False)
+                GPIO.output(zones[zone]['pinNo'],True)
             zones[zone]['on'] = False
             time.sleep(5)
             total_sprink_time += 5
@@ -256,7 +256,7 @@ try:
                         zones[changePin]['on'] = True
                         system_running = 1
                         if on_pi:
-                            GPIO.output(zones[changePin]['pinNo'],True)
+                            GPIO.output(zones[changePin]['pinNo'],False)
                         else:
                             print (changePin + " on.")
                         templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
@@ -265,7 +265,7 @@ try:
                     zones[changePin]['on'] = False
                     system_running = 0
                     if on_pi:
-                        GPIO.output(zones[changePin]['pinNo'],False)
+                        GPIO.output(zones[changePin]['pinNo'],True)
                     else:
                         print (changePin + " off.")    
                     templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
