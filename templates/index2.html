@@ -29,9 +29,9 @@
 			<ul>
 				<li>Days apart: {{ days }}</li>
 				<li>Start time: {{ time_to_start }}</li>
-				<li>Zone 1 length: {{ zones.zone1.length }}</li>
-				<li>Zone 2 length: {{ zones.zone2.length }}</li>
-				<li>Zone 3 length: {{ zones.zone3.length }}</li>
+				<li>Zone 1 length: {{ zones.0.length }}</li>
+				<li>Zone 2 length: {{ zones.1.length }}</li>
+				<li>Zone 3 length: {{ zones.2.length }}</li>
 			</ul>
 			<a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'"><div id='logButton'>Log</div></a>
 		
@@ -67,7 +67,7 @@
 				</span>
 			</div>
 	
-			{% for x in zones %}
+			{% for x in range(0,zones|count) %}
 				<div id="zone1">
 					<div id="hh">{{ zones[x].name }}</div> 
 					<div class="on-off">
