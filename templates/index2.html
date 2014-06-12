@@ -111,8 +111,8 @@
 <div style="position: absolute; left: 50%;">
 	<div id="light" class="white_content"><div id="hh">Log: </div>
 		<div id='log'>
-			{% if log|count >= 8 %}
-				{% for x in range(log|count-8,log|count) %}
+			{% if log|count >= 12 %}
+				{% for x in range(log|count-12,log|count) %}
 					{% if log[x] == '-=' %}
 						<div class='line'></div>
 					{% else %}

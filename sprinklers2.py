@@ -1,18 +1,20 @@
+with open('settings.ini') as f:
+    content = f.readlines()
 #Settings 
 on = True
 location = "84123"
 on_pi=False
 weather_test = 100
 zones = [
-    {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
-    {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
-    {'length':30,'on':False,'pinNo':13, 'name':'Zone 3'},
+    {'length':content[2],'on':False,'pinNo':7, 'name':'Zone 1'},
+    {'length':content[3],'on':False,'pinNo':11, 'name':'Zone 2'},
+    {'length':content[4],'on':False,'pinNo':13, 'name':'Zone 3'},
     ]
 templateData = {
-   'days' : 3,
+   'days' : content[0],
    'zones' : zones,
    'rain' : 0.0,
-   'time_to_start' : '9:42:00',
+   'time_to_start' : content[1],
    'message' : '',
    'system_running' : False,
    'log' : {},
@@ -41,7 +43,8 @@ from time import sleep
 import os, sys, platform
 
 if platform.uname()[0] != 'Windows':
-    print('poo')
+    print (platform.uname()[0])
+    on_pi=True
 else:    
     print (platform.uname()[0])
     
@@ -89,7 +92,6 @@ def check_weather():
     global time_checked
     temp = datetime.now() - time_checked
     if temp.total_seconds() > (60*60):
-        #print ('checking weather')
         if weather_test == 100:
             weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' %(location))
             if on_pi:
@@ -155,6 +157,14 @@ def write_log(message):
         f.close()
         nday = tday
 
+
+def write_settings(line, value):
+    lines = open('settings.ini', 'r').readlines()
+    lines[line] = value + '\n'
+    out = open('settings.ini', 'w')
+    out.writelines(lines)
+    out.close()
+
 # Run program
 def hello():
     global rt
@@ -219,7 +229,8 @@ try:
         zone2 = request.form['1']
         zone3 = request.form['2']
         if text != '':
-            templateData['days'] = float(text)
+            templateData['days'] = text
+            write_settings(0, text)
             get_seconds()
         if ttime != '':
             global rt
@@ -228,6 +239,7 @@ try:
                 if templateData['system_running']:
                     rt.stop()
                     templateData['time_to_start'] = str(ttime)
+                    write_settings(1, str(ttime))
                     splits = templateData['time_to_start'].split(":")
                     temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0) - datetime.now()
                     templateData['next_run_date'] = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0).strftime('%a, %B %d at %I:%M %p')
@@ -239,6 +251,7 @@ try:
                 if templateData['system_running']:
                     rt.stop()
                     templateData['time_to_start'] = str(ttime)
+                    write_settings(1, str(ttime))
                     get_start_time()
                     temp = datetime.now() + timedelta(seconds=delay)
                     templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
@@ -248,10 +261,13 @@ try:
                     templateData['time_to_start'] = str(ttime)
         if zone1 != '':
             zones[0]['length'] = int(zone1)
+            write_settings(2, zone1)
         if zone2 != '':
             zones[1]['length'] = int(zone2)
+            write_settings(3, zone2)
         if zone3 != '':
             zones[2]['length'] = int(zone3)
+            write_settings(4, zone3)
         templateData['message'] = 'Updated Settings'    
         return render_template("index2.html", **templateData)
 
@@ -316,7 +332,7 @@ try:
     
 finally:
     print("Quitting...")
-    global rt
+    #global rt
     rt.stop() # better in a try/finally block to make sure the program ends!        
     if on_pi:
         GPIO.setup(7, GPIO.IN)
