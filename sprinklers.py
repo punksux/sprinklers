@@ -1,18 +1,20 @@
+with open('settings.ini') as f:
+    content = f.readlines()
 #Settings 
 on = True
 location = "84123"
-on_pi=True
+on_pi=False
 weather_test = 100
-zones = {
-    'zone1' : {'length':40,'on':False,'pinNo':7, 'name':'Zone 1'},
-    'zone2' : {'length':30,'on':False,'pinNo':11, 'name':'Zone 2'},
-    'zone3' : {'length':30,'on':False,'pinNo':13, 'name':'Zone 3'},
-    }
+zones = [
+    {'length':content[2],'on':False,'pinNo':7, 'name':'Zone 1'},
+    {'length':content[3],'on':False,'pinNo':11, 'name':'Zone 2'},
+    {'length':content[4],'on':False,'pinNo':13, 'name':'Zone 3'},
+    ]
 templateData = {
-   'days' : 3,
+   'days' : content[0],
    'zones' : zones,
    'rain' : 0.0,
-   'time_to_start' : '14:59:00',
+   'time_to_start' : content[1],
    'message' : '',
    'system_running' : False,
    'log' : {},
@@ -38,7 +40,14 @@ from threading import Thread, Timer
 from datetime import datetime, timedelta
 import threading, time
 from time import sleep
-import os
+import os, sys, platform
+
+if platform.uname()[0] != 'Windows':
+    print (platform.uname()[0])
+    on_pi=True
+else:    
+    print (platform.uname()[0])
+    
 if on_pi:
     import urllib2
     import RPi.GPIO as GPIO
@@ -83,7 +92,6 @@ def check_weather():
     global time_checked
     temp = datetime.now() - time_checked
     if temp.total_seconds() > (60*60):
-        #print ('checking weather')
         if weather_test == 100:
             weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' %(location))
             if on_pi:
@@ -149,6 +157,14 @@ def write_log(message):
         f.close()
         nday = tday
 
+
+def write_settings(line, value):
+    lines = open('settings.ini', 'r').readlines()
+    lines[line] = value + '\n'
+    out = open('settings.ini', 'w')
+    out.writelines(lines)
+    out.close()
+
 # Run program
 def hello():
     global rt
@@ -166,18 +182,23 @@ def hello():
         templateData['message'] = 'Running Cycle'
         
         total_sprink_time = 0
-        for zone in zones:
-            write_log('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name'],zones[zone]['length']))
+        for i in range(0,len(zones)):
+            write_log('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[i]['name'],zones[i]['length']))
+            print('%s - %s on: %s min.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[i]['name'],zones[i]['length']))
             if on_pi:
-                GPIO.output(zones[zone]['pinNo'],False)
-            zones[zone]['on'] = True
-            time.sleep(int(zones[zone]['length'])*60)
-            total_sprink_time += int(zones[zone]['length'])*60
+                GPIO.output(zones[i]['pinNo'],False)
+            zones[i]['on'] = True
+            time.sleep(int(zones[i]['length'])-5)#*60)
+            total_sprink_time += int(zones[i]['length'])#*60
 
-            write_log('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[zone]['name']))
+            write_log('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[i]['name']))
+            print('%s - %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[i]['name']))
             if on_pi:
-                GPIO.output(zones[zone]['pinNo'],True)
-            zones[zone]['on'] = False
+                if i < len(zones)-1:
+                    GPIO.output(zones[i+1]['pinNo'],False)
+                time.sleep(5)
+                GPIO.output(zones[i]['pinNo'],True)
+            zones[i]['on'] = False
             time.sleep(5)
             total_sprink_time += 5
         
@@ -204,11 +225,12 @@ try:
     def my_form_post():
         text = request.form['text']
         ttime = request.form['start']
-        zone1 = request.form['zone1']
-        zone2 = request.form['zone2']
-        zone3 = request.form['zone3']
+        zone1 = request.form['0']
+        zone2 = request.form['1']
+        zone3 = request.form['2']
         if text != '':
-            templateData['days'] = float(text)
+            templateData['days'] = text
+            write_settings(0, text)
             get_seconds()
         if ttime != '':
             global rt
@@ -217,6 +239,7 @@ try:
                 if templateData['system_running']:
                     rt.stop()
                     templateData['time_to_start'] = str(ttime)
+                    write_settings(1, str(ttime))
                     splits = templateData['time_to_start'].split(":")
                     temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0) - datetime.now()
                     templateData['next_run_date'] = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0).strftime('%a, %B %d at %I:%M %p')
@@ -228,6 +251,7 @@ try:
                 if templateData['system_running']:
                     rt.stop()
                     templateData['time_to_start'] = str(ttime)
+                    write_settings(1, str(ttime))
                     get_start_time()
                     temp = datetime.now() + timedelta(seconds=delay)
                     templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
@@ -236,11 +260,14 @@ try:
                 else:
                     templateData['time_to_start'] = str(ttime)
         if zone1 != '':
-            zones['zone1']['length'] = int(zone1)
+            zones[0]['length'] = int(zone1)
+            write_settings(2, zone1)
         if zone2 != '':
-            zones['zone2']['length'] = int(zone2)
+            zones[1]['length'] = int(zone2)
+            write_settings(3, zone2)
         if zone3 != '':
-            zones['zone3']['length'] = int(zone3)
+            zones[2]['length'] = int(zone3)
+            write_settings(4, zone3)
         templateData['message'] = 'Updated Settings'    
         return render_template("index2.html", **templateData)
 
@@ -250,26 +277,26 @@ try:
             if cycle_running == 0:
                 global system_running
                 if action == "on":
-                    if zones['zone1']['on'] or zones['zone2']['on'] or zones['zone3']['on']:
+                    if zones[0]['on'] or zones[1]['on'] or zones[2]['on']:
                         templateData['messages'] = "Program Running"
-                    else:    
-                        zones[changePin]['on'] = True
+                    else:
+                        zones[int(changePin)]['on'] = True
                         system_running = 1
                         if on_pi:
-                            GPIO.output(zones[changePin]['pinNo'],False)
+                            GPIO.output(zones[int(changePin)]['pinNo'],False)
                         else:
-                            print (changePin + " on.")
-                        templateData['message'] = "Turned " + zones[changePin]['name'] + " on."
-                        write_log('%s - Manually turned %s on.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
+                            print (zones[int(changePin)]['name'] + " on.")
+                        templateData['message'] = "Turned " + zones[int(changePin)]['name'] + " on."
+                        write_log('%s - Manually turned %s on.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[int(changePin)]['name']))
                 if action == "off":
-                    zones[changePin]['on'] = False
+                    zones[int(changePin)]['on'] = False
                     system_running = 0
                     if on_pi:
-                        GPIO.output(zones[changePin]['pinNo'],True)
+                        GPIO.output(zones[int(changePin)]['pinNo'],True)
                     else:
-                        print (changePin + " off.")    
-                    templateData['message'] = "Turned " + zones[changePin]['name'] + " off."
-                    write_log('%s - Manually turned %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[changePin]['name']))
+                        print (zones[int(changePin)]['name'] + " off.")    
+                    templateData['message'] = "Turned " + zones[int(changePin)]['name'] + " off."
+                    write_log('%s - Manually turned %s off.\n' %(datetime.now().strftime('%m/%d/%Y %I:%M %p'),zones[int(changePin)]['name']))
             else:
                 templateData['message'] = 'Cycle Running'
         else:
@@ -305,7 +332,7 @@ try:
     
 finally:
     print("Quitting...")
-    global rt
+    #global rt
     rt.stop() # better in a try/finally block to make sure the program ends!        
     if on_pi:
         GPIO.setup(7, GPIO.IN)
