@@ -21,7 +21,7 @@ templateData = {
     'next_run_date': ''
 }
 
-#Setup
+# Setup
 day = 86400
 seconds_between = 0.0
 
@@ -38,13 +38,13 @@ cycle_running = 0
 total_sprink_time = 0
 cycle_has_run = False
 
-#Imports
-from flask import Flask, request, render_template, url_for, redirect  #, flash
-from threading import Timer  #, Thread
+# Imports
+from flask import Flask, request, render_template, url_for, redirect  # , flash
+from threading import Timer  # , Thread
 from datetime import datetime, timedelta
-#import threading, time
+# import threading, time
 import time
-#from time import sleep
+# from time import sleep
 import os
 import platform
 
@@ -232,7 +232,7 @@ try:
     def my_form():
         templateData['log'] = [log.rstrip('\n') for log in open('log.log')]
         check_weather()
-        return render_template("index2.html", **templateData)
+        return render_template("index.html", **templateData)
 
     @app.route('/', methods=['POST'])
     def my_form_post():
@@ -286,7 +286,7 @@ try:
             zones[2]['length'] = int(zone3)
             write_settings(4, zone3)
         templateData['message'] = 'Updated Settings'
-        return render_template("index2.html", **templateData)
+        return render_template("index.html", **templateData)
 
     @app.route("/<change_pin>/<action>")
     def action(change_pin, action):

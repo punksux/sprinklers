@@ -1,42 +1,33 @@
 #body {
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		overflow:hidden;
 }
 
 #content {
 		width:800px;
-		border:0px solid #000000;
+		border:0 solid #000000;
 		border-radius:10px;
-		padding:1px;
-		margin-left:auto;
+        margin-left:auto;
 		margin-right:auto;
-		padding-bottom:0px;
-		position:relative;
-		background:url("/static/images/sprinklerbg2.jpg");
-		background-size:cover;
-		background-position: -280px;
+        padding: 1px 1px 0;
+        position:relative;
+        background-size:cover;
+        background: url("/static/images/sprinklerbg2.jpg") -280px;
 }
 
 #header {
-		padding-bottom:0px;
+		padding-bottom:0;
 		height:200px;
 		width:100%;
 		position:relative;
 }
-		
-#headerbg {
-		width:100%;
-		height:200px;
-		border-radius:10px;
-		
-}		
-		
+
 #header h1 {
 		position:absolute;
 		top:-20px;
 		left:50px;
 		font-size:60px;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		color:white;
 		text-shadow: 3px 3px 5px #333333;}
 
@@ -45,7 +36,7 @@
 		top:70px;
 		left:55px;
 		font-size:30px;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		color:white;
 		text-shadow: 3px 3px 5px #333333;}
 
@@ -54,7 +45,7 @@
 		top:120px;
 		left:55px;
 		font-size:20px;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		color:white;
 		text-shadow: 3px 3px 5px #333333;
 }		
@@ -71,10 +62,10 @@
 }
 	
 #settings {
-		border:0px solid #aaa;
-		border-radius:10px 0px 0px 10px;
+		border:0 solid #aaa;
+		border-radius:10px 0 0 10px;
 		width:100%;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		font-size:25px;
 		z-index: 1;
 		background:white;
@@ -87,7 +78,7 @@
 #settings #hh1 {
 		text-align:center;
 		margin:5px;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		font-size:30px;
 		text-decoration:none;
 }
@@ -117,23 +108,22 @@
 
 .messages {
 		border:1px solid #b5e026;
-		border-radius:10px 0px 0px 10px;
+		border-radius:10px 0 0 10px;
 		width:100%;
 		height:100px;
 		float:right;
 		margin-top:10px;
 		text-align:center;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		font-size:40px;
 		vertical-align: middle;
 		line-height: 50px;
-		background-color:#b5e026;
-		color:white;
+        color:white;
 		text-shadow: 1px 1px 2px #333333;
 		opacity:1;
 		transition: opacity 2s linear 4s;
-		background: -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
-		box-shadow:2px 2px 5px #333;
+        background: #b5e026 -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
+        box-shadow:2px 2px 5px #333;
 }
 			
 #body.loaded .messages {opacity:0}			
@@ -144,30 +134,30 @@
 }
 
 #general {
-		border:0px solid #aaa;
-		border-radius:0px 10px 10px 0px;
+		border:0 solid #aaa;
+		border-radius:0 10px 10px 0;
 		width:498px;
 		height:220px;
 		position:relative;
-		margin-top:0px;
+		margin-top:0;
 		padding-left:10px;
-		padding-top:0px;
-		font-family:Arial;
+		padding-top:0;
+		font-family:Arial, sans-serif;
 		font-size:30px;
 		background:white;
 		box-shadow:2px 2px 5px #333;
 }
 		
 #zone1 {
-		border:0px solid #aaa;
-		border-radius:0px 10px 10px 0px;
+		border:0 solid #aaa;
+		border-radius:0 10px 10px 0;
 		box-shadow:2px 2px 5px #333;
 		width:498px;
 		height:220px;
 		position:relative;
 		margin-top:10px;
 		padding-left:10px;
-		padding-top:0px;
+		padding-top:0;
 		font-size:30px;
 }
 
@@ -185,7 +175,7 @@
 
 #hh {
 		font-size:40px;
-		font-family:Arial;				
+		font-family:Arial, sans-serif;
 		float:left;
 		top:5px;
 		position:absolute
@@ -193,8 +183,8 @@
 
 .on-off {
 		position:absolute;
-		right:0px;
-		top:0px;
+		right:0;
+		top:0;
 		float:right
 }
 
@@ -203,10 +193,10 @@
 		background:-webkit-radial-gradient(top left, ellipse cover,   #baffbd 0%, #13ff02 100%);
 		width:40px;
 		height:30px;
-		border-radius:0px 10px 0px 10px;
+		border-radius:0 10px 0 10px;
 		border:1px solid #11cc11;
-		border-top:0px;
-		border-right:0px;
+		border-top:0;
+		border-right:0;
 		box-shadow:-1px 1px 10px #33CC33;
 }
 
@@ -215,42 +205,40 @@
 		background:-webkit-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
 		width:40px;
 		height:30px;
-		border-radius:0px 10px 0px 10px;
+		border-radius:0 10px 0 10px;
 		border:1px solid #9c0000;
-		border-top:0px;
-		border-right:0px;
+		border-top:0;
+		border-right:0;
 }
 
 #system_on_off  .on, #system_on_off  .off {
-		border-radius:0px 0px 0px 10px;
+		border-radius:0 0 0 10px;
 }
 
 .buttonP{
 		width:300px;
 		height:40px;
 		position:absolute;
-		right:0px;
-		bottom:0px;
+		right:0;
+		bottom:0;
 }
 
 .button {
-		border-radius:0px;
-		border-bottom-right-radius:9px;
-		border-top-left-radius:15px;
-		background-color:#52A3CC;
+        border-radius: 15px 0 9px 0;
+        background-color:#52A3CC;
 		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
 		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
 		width:200px;
 		height:80px;
 		position:absolute;
-		right:0px;
-		bottom:0px;
+		right:0;
+		bottom:0;
 		text-align:center
 }
 		
 .button span {
 		font-size: 35px;
-		font-family:Arial;
+		font-family:Arial, sans-serif;
 		color:white;
 		width:200px;
 		height:80px;
@@ -262,13 +250,13 @@
 .button:active{
 		right:-1px;
 		bottom:-1px;
-		box-shadow: 0px 0px 3px #333333;
+		box-shadow: 0 0 3px #333333;
 }
 	
 #startButton {
 		position:absolute;
 		right:50px;
-		bottom:0px;
+		bottom:0;
 		text-decoration:none;
 }
 
@@ -334,7 +322,7 @@
 		position:absolute;
 		top:50px;
 		left:40px;
-		font-family:Arial
+		font-family:Arial, sans-serif;
 }
 
 #general .input2 {
@@ -342,7 +330,7 @@
 		position:absolute;
 		top:140px;
 		left:40px;
-		font-family:Arial
+		font-family:Arial, sans-serif;
 }		
 
 #general .input2 input {
@@ -356,9 +344,9 @@
 		width:100%;
 		position:relative;
 		margin-top:5px;
-		margin-bottom:0px;
+		margin-bottom:0;
 		padding-left:10px;
-		padding-top:0px;
+		padding-top:0;
 		bottom:-12px;
 		height:97px;
 }			
@@ -369,14 +357,14 @@ input[type=time], input[type=number]  {
 	width:100px;
 	height:50px;
 	font-size:35px;
-	font-family:Arial;
+	font-family:Arial, sans-serif;
 	background-color:white;
 
 }	
 
 input[type=time]:focus, input[type=number]:focus {
 		border-color:#333; 
-		box-shadow:0px 0px 5px #b6e026;
+		box-shadow:0 0 5px #b6e026;
 }
 
 input[type=submit] {
@@ -387,19 +375,17 @@ input[type=submit] {
 	cursor:pointer;
 	width:200px;
 	height:80px;
-    border-radius: 0px;
-	font-size:35px;
-	border-top-left-radius:15px;
-	border-top-right-radius:15px;
-	position:absolute;
+    font-size:35px;
+    border-radius: 15px 15px 0 0;
+    position:absolute;
 	left:40px;
 }		
 
 .black_overlay{
         display: none;
         position: absolute;
-        top: 0%;
-        left: 0%;
+        top: 0;
+        left: 0;
         width: 100%;
         height: 100%;
         background-color: black;
@@ -427,12 +413,10 @@ input[type=submit] {
 		position:absolute;
 		right:00px;
 		top:00px;
-		border-top:0px;
-		border-right:0px;
-		border-radius:10px;
-		border-top-left-radius:0px;
-		border-bottom-right-radius:0px;
-		background:-moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+		border-top:0;
+		border-right:0;
+    border-radius: 0 10px 0 10px;
+    background:-moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
 		background:-webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
 		width:80px;
 		height:60px;
@@ -463,7 +447,7 @@ input[type=submit] {
 		background:white;
 		z-index:5;
 		position:absolute;
-		top:0px;
+		top:0;
 		left:-moz-calc(50% + 401px);
 		left:-webkit-calc(50% + 401px);
 }
@@ -475,6 +459,6 @@ input[type=submit] {
 		background:white;
 		z-index:5;
 		position:absolute;
-		left:0px;
+		left:0;
 		top:1250px;
 }	
