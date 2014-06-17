@@ -11,8 +11,9 @@
 		margin-right:auto;
         padding: 1px 1px 0;
         position:relative;
+        background: url("/static/images/sprinklerbg2.jpg");
+        background-position: -280px;
         background-size:cover;
-        background: url("/static/images/sprinklerbg2.jpg") -280px;
 }
 
 #header {

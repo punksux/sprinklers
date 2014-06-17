@@ -2,6 +2,13 @@
 		font-family:"Arial", sans-serif;
 		overflow:hidden;
 }
+@media screen and (-webkit-device-pixel-ratio: 1) {
+    /* CSS for low-density screens */
+    #body {
+        background:green;
+    }
+}
+
 
 #content {
 		width:800px;

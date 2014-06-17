@@ -6,20 +6,24 @@ location = "84123"
 on_pi = False
 weather_test = 100
 zones = [
-    {'length': content[2], 'on': False, 'pinNo': 7, 'name': 'Zone 1'},
-    {'length': content[3], 'on': False, 'pinNo': 11, 'name': 'Zone 2'},
-    {'length': content[4], 'on': False, 'pinNo': 13, 'name': 'Zone 3'},
+    {'length': int(content[2].rstrip('\r\n')), 'on': False, 'pinNo': 7, 'name': 'Zone 1'},
+    {'length': int(content[3].rstrip('\r\n')), 'on': False, 'pinNo': 11, 'name': 'Zone 2'},
+    {'length': int(content[4].rstrip('\r\n')), 'on': False, 'pinNo': 13, 'name': 'Zone 3'},
 ]
 templateData = {
-    'days': content[0],
+    'days': int(content[0].rstrip('\r\n')),
     'zones': zones,
     'rain': 0.0,
-    'time_to_start': content[1],
+    'time_to_start': str(content[1].rstrip('\r\n')),
     'message': '',
     'system_running': False,
     'log': {},
     'next_run_date': ''
 }
+
+
+print (templateData['days'])
+print (templateData['time_to_start'])
 
 # Setup
 day = 86400
@@ -32,6 +36,8 @@ def get_seconds():
 
 
 get_seconds()
+print(seconds_between)
+
 rt = 0
 
 cycle_running = 0
@@ -218,6 +224,10 @@ def hello():
 
         rt = RepeatedTimer(int(seconds_between) - total_sprink_time, hello)
         global next_time
+
+        print (seconds_between)
+        print (int(seconds_between) - total_sprink_time)
+
         next_time = datetime.now() + timedelta(seconds=int(seconds_between) - total_sprink_time)
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
@@ -264,6 +274,7 @@ try:
                     rt = RepeatedTimer(temp.total_seconds(), hello)
                 else:
                     templateData['time_to_start'] = str(ttime)
+                    write_settings(1, str(ttime))
             else:
                 if templateData['system_running']:
                     rt.stop()
@@ -276,6 +287,7 @@ try:
                     rt = RepeatedTimer(delay, hello)
                 else:
                     templateData['time_to_start'] = str(ttime)
+                    write_settings(1, str(ttime))
         if zone1 != '':
             zones[0]['length'] = int(zone1)
             write_settings(2, zone1)
