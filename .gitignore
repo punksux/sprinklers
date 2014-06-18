@@ -2,3 +2,5 @@
 .idea
 *.log
 *.ini
+log.log
+settings.ini
