@@ -4,7 +4,7 @@ with open('settings.ini') as f:
 on = True
 location = "84123"
 on_pi = False
-weather_test = 100
+weather_test = 0
 zones = [
     {'length': int(content[2].rstrip('\r\n')), 'on': False, 'pinNo': 7, 'name': 'Zone 1'},
     {'length': int(content[3].rstrip('\r\n')), 'on': False, 'pinNo': 11, 'name': 'Zone 2'},
@@ -21,36 +21,25 @@ templateData = {
     'next_run_date': ''
 }
 
-
-print (templateData['days'])
-print (templateData['time_to_start'])
-
 # Setup
 day = 86400
 seconds_between = 0.0
 
-
 def get_seconds():
     global seconds_between
     seconds_between = templateData['days'] * day
-
-
 get_seconds()
-print(seconds_between)
 
 rt = 0
-
 cycle_running = 0
 total_sprink_time = 0
 cycle_has_run = False
 
 # Imports
-from flask import Flask, request, render_template, url_for, redirect  # , flash
-from threading import Timer  # , Thread
+from flask import Flask, request, render_template, url_for, redirect
+from threading import Timer
 from datetime import datetime, timedelta
-# import threading, time
 import time
-# from time import sleep
 import os
 import platform
 
@@ -198,37 +187,37 @@ def hello():
         global cycle_has_run
         cycle_running = 1
         templateData['message'] = 'Running Cycle'
+        #next_time = datetime.now() + timedelta(seconds=int(seconds_between))
 
         total_sprink_time = 0
         for i in range(0, len(zones)):
             write_log('%s - %s on: %s min.\n' % (
                 datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
-            print('%s - %s on: %s min.\n' % (
-                datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
             if on_pi:
                 GPIO.output(zones[i]['pinNo'], False)
+            else:
+                print('%s - %s on: %s min.\n' % (
+                datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
             zones[i]['on'] = True
-            time.sleep((int(zones[i]['length']) - 5) * 60)
-            total_sprink_time += int(zones[i]['length']) * 60
+            time.sleep((int(zones[i]['length']))) # * 60)
+            total_sprink_time += int(zones[i]['length']) # * 60
 
             write_log('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
-            print('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
             if on_pi:
                 if i < len(zones) - 1:
                     GPIO.output(zones[i + 1]['pinNo'], False)
                 time.sleep(5)
                 GPIO.output(zones[i]['pinNo'], True)
+            else:
+                print('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
             zones[i]['on'] = False
             time.sleep(5)
             total_sprink_time += 5
+            print (total_sprink_time)
 
-        rt = RepeatedTimer(int(seconds_between) - total_sprink_time, hello)
+        rt = RepeatedTimer((int(seconds_between) - total_sprink_time), hello)
         global next_time
-
-        print (seconds_between)
-        print (int(seconds_between) - total_sprink_time)
-
-        next_time = datetime.now() + timedelta(seconds=int(seconds_between) - total_sprink_time)
+        next_time = datetime.now() + timedelta(seconds=(int(seconds_between) - total_sprink_time))
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
         cycle_has_run = True
