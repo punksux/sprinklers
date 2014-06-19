@@ -22,26 +22,20 @@ templateData = {
 }
 
 # Setup
-day = 86400
-seconds_between = 0.0
-
-def get_seconds():
-    global seconds_between
-    seconds_between = templateData['days'] * day
-get_seconds()
-
-rt = 0
+job = None
 cycle_running = 0
-total_sprink_time = 0
 cycle_has_run = False
 
 # Imports
 from flask import Flask, request, render_template, url_for, redirect
-from threading import Timer
 from datetime import datetime, timedelta
 import time
 import os
 import platform
+from apscheduler.scheduler import Scheduler
+
+sched = Scheduler()
+sched.start()
 
 if platform.uname()[0] != 'Windows':
     print(platform.uname()[0])
@@ -59,42 +53,15 @@ import json
 #Set up Flask
 app = Flask(__name__)
 
-#Set up timer class
-class RepeatedTimer(object):
-    def __init__(self, interval, function, *args, **kwargs):
-        self._timer = None
-        self.function = function
-        self.interval = interval
-        self.args = args
-        self.kwargs = kwargs
-        self.is_running = False
-        self.start()
-
-    def _run(self):
-        self.is_running = False
-        self.start()
-        self.function(*self.args, **self.kwargs)
-
-    def start(self):
-        if not self.is_running:
-            self._timer = Timer(self.interval, self._run)
-            self._timer.start()
-            self.is_running = True
-
-    def stop(self):
-        self._timer.cancel()
-        self.is_running = False
-
 # Get weather
 time_checked = datetime.now()
 time_checked = time_checked.replace(day=1)
 
-
 def check_weather():
     global time_checked
     temp = datetime.now() - time_checked
-    if temp.total_seconds() > (60 * 60):
-        if weather_test == 100:
+    if weather_test == 100:
+        if temp.total_seconds() > (60 * 60):
             weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' % location)
             if on_pi:
                 f = urllib2.urlopen(weather_website)
@@ -105,9 +72,8 @@ def check_weather():
             templateData['rain'] = parsed_json['current_observation']['precip_today_in']
             f.close()
             time_checked = datetime.now()
-        else:
-            templateData['rain'] = weather_test
-            time_checked = datetime.now()
+    else:
+        templateData['rain'] = weather_test
 
 #Set up GPIO
 if on_pi:
@@ -120,28 +86,19 @@ if on_pi:
 
 
 def get_start_time():
-    now = datetime.now()
-    print(now)
-
     splits = templateData['time_to_start'].split(":")
-    time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
-
-    run_at = time_to_start - now
-    if run_at.total_seconds() < 0:
-        print(time_to_start.replace(day=time_to_start.day + 1))
-        run_at = (time_to_start.replace(day=time_to_start.day + 1)) - now
-
-    global delay
-    delay = run_at.total_seconds()
-    sec = timedelta(seconds=delay)
-    d = datetime(1, 1, 1) + sec
-    print("Starting in %d hours and %d minutes" % (d.hour, d.minute))
-    return delay
+    ini_time = datetime.strptime(content[5].rstrip('\r\n'), '%Y-%m-%d %H:%M:%S')
+    global time_to_start
+    time_to_start = ini_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
+    print (time_to_start)
+    if (time_to_start - datetime.now()).total_seconds() < 0:
+        time_to_start = time_to_start + timedelta(days=1)
+    write_settings(5, time_to_start)
+    return time_to_start
 
 
 nday = datetime.now()
 nday = nday.day
-
 
 def write_log(message):
     tday = datetime.now()
@@ -165,33 +122,35 @@ def write_log(message):
 
 def write_settings(line, value):
     lines = open('settings.ini', 'r').readlines()
-    lines[line] = value + '\n'
+    lines[line] = str(value) + '\n'
     out = open('settings.ini', 'w')
     out.writelines(lines)
     out.close()
 
+def isTimeFormat(input):
+    try:
+        time.strptime(input, '%H:%M')
+        return True
+    except ValueError:
+        return False
 
 # Run program
 def hello():
-    global rt
-    rt.stop()
     check_weather()
-    #print(str(templateData['rain']) + " inches of rain")
-    global total_sprink_time
+    print(datetime.now())
+    global job
     if float(templateData['rain']) > 0.125:
         write_log(
             '%s - Canceling for rain - trying again in 24 hours.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
-        rt = RepeatedTimer(day, hello)
+        temp = datetime.now() + timedelta(days=1)
+        job = sched.add_date_job(hello, temp)
     else:
         global cycle_running
         global cycle_has_run
+        global next_time
         cycle_running = 1
         templateData['message'] = 'Running Cycle'
-
-        total_sprink_time = 0
-        rt = RepeatedTimer(seconds_between, hello)
-        global next_time
-        next_time = datetime.now() + timedelta(seconds=seconds_between)
+        next_time = datetime.now() + timedelta(days=templateData['days'])
 
         for i in range(0, len(zones)):
             write_log('%s - %s on: %s min.\n' % (
@@ -203,7 +162,6 @@ def hello():
                 datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
             zones[i]['on'] = True
             time.sleep((int(zones[i]['length']))) # * 60)
-            total_sprink_time += int(zones[i]['length']) # * 60
 
             write_log('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
             if on_pi:
@@ -215,11 +173,9 @@ def hello():
                 print('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
             zones[i]['on'] = False
             time.sleep(5)
-            total_sprink_time += 5
 
-        #rt = RepeatedTimer((seconds_between - total_sprink_time), hello)
-        #global next_time
-        #next_time = datetime.now() + timedelta(seconds=(seconds_between - total_sprink_time))
+        job = sched.add_date_job(hello, next_time)
+        write_settings(5, next_time.strftime('%Y-%m-%d %H:%M:%S'))
         print (next_time)
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
@@ -244,42 +200,40 @@ try:
         zone2 = request.form['1']
         zone3 = request.form['2']
         if text != '':
-            templateData['days'] = int(text)
-            write_settings(0, int(text))
-            get_seconds()
+            templateData['days'] = float(text)
+            write_settings(0, text)
         if ttime != '':
-            global rt
-            global cycle_has_run
-            if cycle_has_run:
-                if templateData['system_running']:
-                    rt.stop()
-                    templateData['time_to_start'] = str(ttime)
-                    write_settings(1, str(ttime))
-                    splits = templateData['time_to_start'].split(":")
-                    temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00,
-                                             microsecond=0) - datetime.now()
-                    templateData['next_run_date'] = next_time.replace(hour=int(splits[0]),
-                                                                      minute=int(splits[1]),
-                                                                      second=00,
-                                                                      microsecond=0).strftime('%a, %B %d at %I:%M %p')
-                    check_weather()
-                    rt = RepeatedTimer(temp.total_seconds(), hello)
+            if isTimeFormat(ttime):
+                global cycle_has_run
+                global job
+                if cycle_has_run:
+                    if templateData['system_running']:
+                        sched.unschedule_job(job)
+                        templateData['time_to_start'] = str(ttime)
+                        write_settings(1, str(ttime))
+                        splits = templateData['time_to_start'].split(":")
+                        temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00,
+                                                microsecond=0)
+                        templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
+                        check_weather()
+                        job = sched.add_date_job(hello, temp)
+                    else:
+                        templateData['time_to_start'] = str(ttime)
+                        write_settings(1, str(ttime))
                 else:
-                    templateData['time_to_start'] = str(ttime)
-                    write_settings(1, str(ttime))
+                    if templateData['system_running']:
+                        sched.unschedule_job(job)
+                        templateData['time_to_start'] = str(ttime)
+                        write_settings(1, str(ttime))
+                        get_start_time()
+                        templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
+                        check_weather()
+                        job = sched.add_date_job(hello, time_to_start)
+                    else:
+                        templateData['time_to_start'] = str(ttime)
+                        write_settings(1, str(ttime))
             else:
-                if templateData['system_running']:
-                    rt.stop()
-                    templateData['time_to_start'] = str(ttime)
-                    write_settings(1, str(ttime))
-                    get_start_time()
-                    temp = datetime.now() + timedelta(seconds=delay)
-                    templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
-                    check_weather()
-                    rt = RepeatedTimer(delay, hello)
-                else:
-                    templateData['time_to_start'] = str(ttime)
-                    write_settings(1, str(ttime))
+                templateData['message'] = 'Error: Incorrect Time'
         if zone1 != '':
             zones[0]['length'] = int(zone1)
             write_settings(2, zone1)
@@ -330,10 +284,9 @@ try:
     def start_program():
         if templateData['system_running'] is False:
             get_start_time()
-            temp = datetime.now() + timedelta(seconds=delay)
-            templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
-            global rt
-            rt = RepeatedTimer(delay, hello)
+            templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
+            global job
+            job = sched.add_date_job(hello, time_to_start)
             templateData['system_running'] = True
             templateData['message'] = "System Started"
             write_log('%s - System started.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
@@ -342,8 +295,7 @@ try:
     @app.route("/stop")
     def stop_program():
         if templateData['system_running']:
-            global rt
-            rt.stop()
+            sched.unschedule_job(job)
             templateData['system_running'] = False
             templateData['message'] = "System Stopped"
             templateData['next_run_date'] = ''
@@ -355,8 +307,7 @@ try:
 
 finally:
     print("Quitting...")
-    #global rt
-    #rt.stop()  # better in a try/finally block to make sure the program ends!
+    sched.shutdown()
     if on_pi:
         GPIO.setup(7, GPIO.IN)
         GPIO.setup(11, GPIO.IN)
