@@ -29,6 +29,13 @@
 		height:150px;
 }
 
+#logo {
+		width:100px;
+		height:100px;
+		position:absolute;
+		left:20px;
+}
+
 #header h1 {
 		position:absolute;
 		top:-20px;

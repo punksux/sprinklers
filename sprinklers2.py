@@ -33,6 +33,16 @@ import time
 import os
 import platform
 from apscheduler.scheduler import Scheduler
+from socket import timeout
+import logging
+import logging.handlers
+
+# Set up logging
+my_logger = logging.getLogger('MyLogger')
+my_logger.setLevel(logging.DEBUG)
+handler = logging.handlers.RotatingFileHandler('errors.log', maxBytes=1000000, backupCount=3)
+my_logger.addHandler(handler)
+
 
 sched = Scheduler()
 sched.start()
@@ -46,8 +56,10 @@ else:
 if on_pi:
     import urllib2
     import RPi.GPIO as GPIO
+    import socket
 else:
     from urllib.request import urlopen
+    import urllib.error
 import json
 
 #Set up Flask
@@ -57,20 +69,46 @@ app = Flask(__name__)
 time_checked = datetime.now()
 time_checked = time_checked.replace(day=1)
 
+
 def check_weather():
     global time_checked
     temp = datetime.now() - time_checked
     if weather_test == 100:
         if temp.total_seconds() > (60 * 60):
+            global something_wrong
+            global f
             weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' % location)
             if on_pi:
-                f = urllib2.urlopen(weather_website)
+                try:
+                    f = urllib2.urlopen(weather_website, timeout=3)
+                    something_wrong = False
+                except urllib2.URLError as e:
+                    my_logger.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
+                                    e)
+                    something_wrong = True
+                except socket.timeout:
+                    my_logger.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                    something_wrong = True
             else:
-                f = urlopen(weather_website)
-            json_string = f.read()
-            parsed_json = json.loads(json_string.decode("utf8"))
-            templateData['rain'] = parsed_json['current_observation']['precip_today_in']
-            f.close()
+                try:
+                    f = urlopen(weather_website, timeout=3)
+                    something_wrong = False
+                except urllib.error.URLError as e:
+                    my_logger.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
+                                    e)
+                    something_wrong = True
+                except timeout:
+                    my_logger.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                    something_wrong = True
+
+            if something_wrong:
+                my_logger.error("%s - No Internet" % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                templateData['rain'] = 0.0
+            else:
+                json_string = f.read()
+                parsed_json = json.loads(json_string.decode("utf8"))
+                templateData['rain'] = parsed_json['current_observation']['precip_today_in']
+                f.close()
             time_checked = datetime.now()
     else:
         templateData['rain'] = weather_test
@@ -90,15 +128,17 @@ def get_start_time():
     ini_time = datetime.strptime(content[5].rstrip('\r\n'), '%Y-%m-%d %H:%M:%S')
     global time_to_start
     time_to_start = ini_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
-    print (time_to_start)
+    print(time_to_start)
     if (time_to_start - datetime.now()).total_seconds() < 0:
-        time_to_start = time_to_start + timedelta(days=1)
+        #time_to_start = time_to_start + timedelta(days=1)
+        time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
     write_settings(5, time_to_start)
     return time_to_start
 
 
 nday = datetime.now()
 nday = nday.day
+
 
 def write_log(message):
     tday = datetime.now()
@@ -127,12 +167,14 @@ def write_settings(line, value):
     out.writelines(lines)
     out.close()
 
-def isTimeFormat(input):
+
+def is_time_format(tinput):
     try:
-        time.strptime(input, '%H:%M')
+        time.strptime(tinput, '%H:%M')
         return True
     except ValueError:
         return False
+
 
 # Run program
 def hello():
@@ -159,7 +201,7 @@ def hello():
                 GPIO.output(zones[i]['pinNo'], False)
             else:
                 print('%s - %s on: %s min.\n' % (
-                datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
+                    datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
             zones[i]['on'] = True
             time.sleep((int(zones[i]['length'])) * 60)
 
@@ -176,7 +218,7 @@ def hello():
 
         job = sched.add_date_job(hello, next_time)
         write_settings(5, next_time.strftime('%Y-%m-%d %H:%M:%S'))
-        print (next_time)
+        print(next_time)
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
         cycle_has_run = True
@@ -203,7 +245,7 @@ try:
             templateData['days'] = float(text)
             write_settings(0, text)
         if ttime != '':
-            if isTimeFormat(ttime):
+            if is_time_format(ttime):
                 global cycle_has_run
                 global job
                 if cycle_has_run:
@@ -212,8 +254,7 @@ try:
                         templateData['time_to_start'] = str(ttime)
                         write_settings(1, str(ttime))
                         splits = templateData['time_to_start'].split(":")
-                        temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00,
-                                                microsecond=0)
+                        temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
                         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
                         check_weather()
                         job = sched.add_date_job(hello, temp)

@@ -4,3 +4,6 @@
 *.ini
 log.log
 settings.ini
+settings.ini
+*.log
+*.ini
