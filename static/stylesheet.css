@@ -185,7 +185,7 @@
 	position:absolute;
 }
 		
-#zone1 {
+#zones {
 		border:0 solid #aaa;
 		border-radius:0 10px 10px 0;
 		box-shadow:2px 2px 5px #333;
@@ -198,12 +198,24 @@
 		background:white;
 }
 
+#zones input{
+        width:120px;
+        top:25px;
+        position:absolute;
+}
 		
-#zone1 input {
-		float:left;
-		top:25px;
+#zones .input {
+
+		top:50px;
 		position:absolute;
-}		
+}
+
+#zones .manInput {
+
+        left:220px;
+		top:50px;
+		position:absolute;
+}
 		
 #hh {
 		font-size:30px;
