@@ -185,6 +185,7 @@ def turn_on(zone):
 
 
 def turn_off(zone):
+    zones[int(zone)]['on'] = False
     if on_pi:
         GPIO.output(zones[int(zone)]['pinNo'], True)
     else:
@@ -323,11 +324,7 @@ try:
                             write_log('%s - Manually turned %s on.\n' % (
                                 datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[int(change_pin)]['name']))
                 if action == "off":
-                    zones[int(change_pin)]['on'] = False
-                    if on_pi:
-                        GPIO.output(zones[int(change_pin)]['pinNo'], True)
-                    else:
-                        print(zones[int(change_pin)]['name'] + " off.")
+                    turn_off(change_pin)
                     templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " off."
                     write_log('%s - Manually turned %s off.\n' % (
                         datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[int(change_pin)]['name']))

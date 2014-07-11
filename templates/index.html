@@ -94,13 +94,18 @@
 					</div>
 					<div class="buttonP">
 						{% if zones[x].on == true %}
-							<a href="/{{x}}/off"><div class="button"><span>Manual off</span></div></a>
+							<a href="/{{x}}/off/0"><div class="button"><span>Manual off</span></div></a>
 						{% else %}
-							<a href="#" onclick="this.href='/{{ x }}/on/'+document.getElementById('man{{ x }}').value;"><div class="button"><span>Manual on</span></div></a>
+							<!--<a href="#" onclick="this.href='/{{ x }}/on/'+document.getElementById('man{{ x }}').value;"><div class="button"><span>Manual on</span></div></a>-->
+                            <a href="#" onclick="this.href='/{{ x }}/on/'+document.getElementById('man{{ x }}').value;"><div class="button"><span>Manual on</span></div></a>
 						{% endif %}	
 					</div>
 
 				</div>
+                <script>
+
+                </script>
+
 			{% endfor %}
 	
 			<div id="applyButton">
