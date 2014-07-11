@@ -11,7 +11,7 @@
 		margin-right:auto;
         padding: 1px 1px 0;
         position:relative;
-        background: url("/static/images/sprinklerbg2.jpg");
+        background: url("sprinklerbg2.jpg");
         background-position: -280px;
         background-size:cover;
 }
@@ -111,7 +111,6 @@
 		border:1px solid #b5e026;
 		border-radius:10px 0 0 10px;
 		width:100%;
-		height:100px;
 		float:right;
 		margin-top:10px;
 		text-align:center;
@@ -125,6 +124,8 @@
 		transition: opacity 2s linear 4s;
         background: #b5e026 -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
         box-shadow:2px 2px 5px #333;
+    padding-top:7px;
+    padding-bottom: 7px;
 }
 			
 #body.loaded .messages {opacity:0}			

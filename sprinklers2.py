@@ -14,6 +14,7 @@ templateData = {
     'days': float(content[0].rstrip('\r\n')),
     'zones': zones,
     'rain': 0.0,
+    'rain_total':0.0,
     'time_to_start': str(content[1].rstrip('\r\n')),
     'message': '',
     'system_running': False,
@@ -192,12 +193,20 @@ def turn_off(zone):
         print(zones[int(zone)]['name'] + " off.")
 
 
+def rain_total():
+    check_weather()
+    templateData['rain_total'] += templateData['rain']
+
+sched.add_interval_job(rain_total, hours=24, start_date=datetime.now().replace(hour=11, minute=30, second=00,
+                                                                               microsecond=00))
+
+
 # Run program
 def hello():
     check_weather()
     print(datetime.now())
     global job
-    if float(templateData['rain']) > 0.125:
+    if float(templateData['rain']) > 0.125 or float(templateData['rain_total']) > 0.5:
         write_log(
             '%s - Canceling for rain - trying again in 24 hours.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         temp = datetime.now() + timedelta(days=1)
@@ -238,6 +247,7 @@ def hello():
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
         cycle_has_run = True
+        templateData['rain_total'] = 0.0
         templateData['message'] = ''
 
 
@@ -312,11 +322,11 @@ try:
                     if zones[0]['on'] or zones[1]['on'] or zones[2]['on']:
                         templateData['messages'] = "Program Running"
                     else:
-                        if length != "" or length != 0:
+                        if length != "0":
                             turn_on(change_pin)
                             templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " on for " \
                                                         + length + " minutes."
-                            temp = datetime.now() + timedelta(seconds=int(length))
+                            temp = datetime.now() + timedelta(seconds=int(length)*60)
                             man_job = sched.add_date_job(turn_off, temp, [change_pin])
                         else:
                             turn_on(change_pin)

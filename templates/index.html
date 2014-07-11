@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!--suppress ALL, HtmlFormInputWithoutLabel -->
 <html lang="en">
+
 <head>
 <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
 <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
@@ -11,19 +12,16 @@
 			window.onload = function(){
 				document.getElementById("body").setAttribute("class","loaded");
 			}
-		</script>
-
-
-
-<title>Sprinkler System</title>		
+</script>
+<title>Sprinkler System</title>
 </head>
+
 <body id="body">
 <div id="content">
 	<div id="header">
-		<!--<img id="logo" src="/static/images/SPi.png">-->
 		<h1>Sprinkler System</h1>
 		<h2>Next run time: {{ next_run_date }}</h2>
-		<h3>{{ rain }} inches of rain today.</h3>
+		<h3>{{ rain }} inches of rain today & {{ rain_total }} inches since last run.</h3>
 	</div>
 
 
@@ -87,23 +85,30 @@
 						{% endif %}
 					</div>
 					<div class="input">
-						Run length: <p ></p> <input type="number" name="{{x}}" />
+						Run length: <input type="number" name="{{ x }}" />
 					</div>
                     <div class="manInput">
-						Manual Run Time: <p ></p> <input type="number" id="man{{x}}" value="12" />
+						Manual Run Time: <input type="number" id="man{{ x }}" />
 					</div>
 					<div class="buttonP">
 						{% if zones[x].on == true %}
 							<a href="/{{x}}/off/0"><div class="button"><span>Manual off</span></div></a>
 						{% else %}
-							<!--<a href="#" onclick="this.href='/{{ x }}/on/'+document.getElementById('man{{ x }}').value;"><div class="button"><span>Manual on</span></div></a>-->
-                            <a href="#" onclick="this.href='/{{ x }}/on/'+document.getElementById('man{{ x }}').value;"><div class="button"><span>Manual on</span></div></a>
+                            <a href="#" onclick="GetURL{{ x }}();" id="manOn{{ x }}"><div class="button"><span>Manual on</span></div></a>
 						{% endif %}	
 					</div>
 
 				</div>
                 <script>
-
+                function GetURL{{ x }}()
+                    {
+                        var myAnchor = document.getElementById("manOn{{ x }}");
+                        var myTextBox = document.getElementById("man{{ x }}");
+                        if (myTextBox.value === "") {
+                            myTextBox.value = "0";
+                        }
+                        myAnchor.href = "/{{ x }}/on/" + myTextBox.value;
+                    }
                 </script>
 
 			{% endfor %}
