@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <!--suppress ALL, HtmlFormInputWithoutLabel -->
 <html lang="en">
+
 <head>
 <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
 <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 <meta name="viewport" content="width=device-width, initial-scale=.42, maximum-scale=.42, user-scalable=0"/>
 <link type="text/css" rel="stylesheet" href="/static/stylesheet.css" />
-<link type="text/css" rel="stylesheet" href="/static/jquery.clockpick.1.2.9.css" />
 <link type="text/css" rel="stylesheet" href="/static/stylesheetMobile.css" media="only screen and (max-width: 999px)" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
-    <script src="/static/jquery.clockpick.1.2.9.min.js" type="text/javascript"></script>
-   <!-- <script src="/static/jquery-2.1.1.min.js" type="text/javascript"></script>-->
 <script type="text/javascript">
 			window.onload = function(){
 				document.getElementById("body").setAttribute("class","loaded");
 			}
-		</script>
-
-
-
-<title>Sprinkler System</title>		
+</script>
+<title>Sprinkler System</title>
 </head>
+
 <body id="body">
 <div id="content">
 	<div id="header">
-		<!--<img id="logo" src="/static/images/SPi.png">-->
 		<h1>Sprinkler System</h1>
 		<h2>Next run time: {{ next_run_date }}</h2>
-		<h3>{{ rain }} inches of rain today.</h3>
+		<h3>{{ rain }} inches of rain today & {{ rain_total }} inches since last run.</h3>
 	</div>
 
 
@@ -60,13 +54,6 @@
 		
 	</div>
 
-<script type="text/javascript">
-
-$(document).ready(function(){
-    $('#tp').clockpick({event:'Focus', military:true});
-});
-
-</script>
 
 	<div id="leftC">
 		<div id="form">
@@ -90,7 +77,7 @@ $(document).ready(function(){
 
 
 			{% for x in range(0,zones|count) %}
-				<div id="zone1">
+				<div id="zones">
 					<div id="hh">{{ zones[x].name }}</div> 
 					<div class="on-off">
 						{% if zones[x].on %}<div class="on"></div>
@@ -98,16 +85,33 @@ $(document).ready(function(){
 						{% endif %}
 					</div>
 					<div class="input">
-						Run length: <p ></p> <input type="number" name="{{x}}" />
+						Run length: <input type="number" name="{{ x }}" />
+					</div>
+                    <div class="manInput">
+						Manual Run Time: <input type="number" id="man{{ x }}" />
 					</div>
 					<div class="buttonP">
 						{% if zones[x].on == true %}
-							<a href="/{{x}}/off"><div class="button"><span>Turn off</span></div></a>
+							<a href="/{{x}}/off/0"><div class="button"><span>Manual off</span></div></a>
 						{% else %}
-							<a href="/{{x}}/on"><div class="button"><span>Turn on</span></div></a>
+                            <a href="#" onclick="GetURL{{ x }}();" id="manOn{{ x }}"><div class="button"><span>Manual on</span></div></a>
 						{% endif %}	
 					</div>
+
 				</div>
+                <script>
+                function GetURL{{ x }}()
+                    {
+                        var myAnchor = document.getElementById("manOn{{ x }}");
+                        var myTextBox = document.getElementById("man{{ x }}");
+                        if (myTextBox.value === "") {
+                            myAnchor.href = "/{{ x }}/on/0";
+                        } else {
+                            myAnchor.href = "/{{ x }}/on/" + myTextBox.value;
+                        }
+                    }
+                </script>
+
 			{% endfor %}
 	
 			<div id="applyButton">

@@ -2,14 +2,6 @@
 		font-family:"Arial", sans-serif;
 		overflow:hidden;
 }
-@media screen and (-webkit-device-pixel-ratio: 1) {
-    /* CSS for low-density screens */
-    #body {
-        background:green;
-    }
-}
-
-
 #content {
 		width:800px;
 		border:0 solid #000000;
@@ -19,7 +11,7 @@
 		margin-right:auto;
 		position:relative;
         background-size:cover;
-        background: url("/static/images/sprinklerbg2.jpg") right;
+        background: url("sprinklerbg2.jpg") green right;
 }
 
 #header {
@@ -137,14 +129,13 @@
 		border:1px solid  #b5e026;
 		border-radius:10px 0 0 10px;
 		width:100%;
-		height:40px;
 		float:right;
 		margin-top:10px;
 		text-align:center;
 		font-family:Arial, sans-serif;
 		font-size:20px;
 		vertical-align: middle;
-		line-height: 40px;
+		line-height: 25px;
 		background-color: #b5e026;
 		color:white;
 		text-shadow: 1px 1px 2px #333333;
@@ -153,6 +144,8 @@
 		background: -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
 		background: -webkit-linear-gradient(top, #b6e026 0%, #94ce04 100%);
 		box-shadow:2px 2px 5px #333;
+    padding-top:7px;
+    padding-bottom: 7px;
 }
 			
 #body.loaded .messages {
@@ -185,7 +178,7 @@
 	position:absolute;
 }
 		
-#zone1 {
+#zones {
 		border:0 solid #aaa;
 		border-radius:0 10px 10px 0;
 		box-shadow:2px 2px 5px #333;
@@ -198,12 +191,23 @@
 		background:white;
 }
 
+#zones input {
+    width: 120px;
+    top: 10px;
+    position: relative;
+    display:block;
+}
 		
-#zone1 input {
-		float:left;
-		top:25px;
+#zones .input {
+		top:50px;
 		position:absolute;
-}		
+}
+
+#zones .manInput {
+        left:220px;
+		top:50px;
+		position:absolute;
+}
 		
 #hh {
 		font-size:30px;
@@ -248,8 +252,8 @@
 }
 
 .buttonP{
-		width:300px;
-		height:40px;
+		width:120px;
+		height:50px;
 		position:absolute;
 		right:0;
 		bottom:0;

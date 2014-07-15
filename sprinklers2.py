@@ -14,6 +14,7 @@ templateData = {
     'days': float(content[0].rstrip('\r\n')),
     'zones': zones,
     'rain': 0.0,
+    'rain_total': 0.0,
     'time_to_start': str(content[1].rstrip('\r\n')),
     'message': '',
     'system_running': False,
@@ -176,12 +177,36 @@ def is_time_format(tinput):
         return False
 
 
+def turn_on(zone):
+    zones[int(zone)]['on'] = True
+    if on_pi:
+        GPIO.output(zones[int(zone)]['pinNo'], False)
+    else:
+        print(zones[int(zone)]['name'] + " on.")
+
+
+def turn_off(zone):
+    zones[int(zone)]['on'] = False
+    if on_pi:
+        GPIO.output(zones[int(zone)]['pinNo'], True)
+    else:
+        print(zones[int(zone)]['name'] + " off.")
+
+
+def rain_total():
+    check_weather()
+    templateData['rain_total'] += float(templateData['rain'])
+
+sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=11, minute=30, second=00,
+                                                                             microsecond=00))
+
+
 # Run program
 def hello():
     check_weather()
     print(datetime.now())
     global job
-    if float(templateData['rain']) > 0.125:
+    if float(templateData['rain']) > 0.125 or float(templateData['rain_total']) > 0.5:
         write_log(
             '%s - Canceling for rain - trying again in 24 hours.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         temp = datetime.now() + timedelta(days=1)
@@ -222,6 +247,7 @@ def hello():
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
         cycle_has_run = True
+        templateData['rain_total'] = 0.0
         templateData['message'] = ''
 
 
@@ -287,31 +313,28 @@ try:
         templateData['message'] = 'Updated Settings'
         return render_template("index.html", **templateData)
 
-    @app.route("/<change_pin>/<action>")
-    def action(change_pin, action):
+    @app.route("/<change_pin>/<action>/<length>")
+    def action(change_pin, action, length):
         if templateData['system_running']:
             if cycle_running == 0:
-                global system_running
                 if action == "on":
+                    global man_job
                     if zones[0]['on'] or zones[1]['on'] or zones[2]['on']:
                         templateData['messages'] = "Program Running"
                     else:
-                        zones[int(change_pin)]['on'] = True
-                        system_running = 1
-                        if on_pi:
-                            GPIO.output(zones[int(change_pin)]['pinNo'], False)
+                        if length != "0":
+                            turn_on(change_pin)
+                            templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " on for " \
+                                                      + length + " minutes."
+                            temp = datetime.now() + timedelta(seconds=int(length)*60)
+                            man_job = sched.add_date_job(turn_off, temp, [change_pin])
                         else:
-                            print(zones[int(change_pin)]['name'] + " on.")
-                        templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " on."
-                        write_log('%s - Manually turned %s on.\n' % (
-                            datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[int(change_pin)]['name']))
+                            turn_on(change_pin)
+                            templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " on."
+                            write_log('%s - Manually turned %s on.\n' % (
+                                datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[int(change_pin)]['name']))
                 if action == "off":
-                    zones[int(change_pin)]['on'] = False
-                    system_running = 0
-                    if on_pi:
-                        GPIO.output(zones[int(change_pin)]['pinNo'], True)
-                    else:
-                        print(zones[int(change_pin)]['name'] + " off.")
+                    turn_off(change_pin)
                     templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " off."
                     write_log('%s - Manually turned %s off.\n' % (
                         datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[int(change_pin)]['name']))
