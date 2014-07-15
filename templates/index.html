@@ -105,9 +105,10 @@
                         var myAnchor = document.getElementById("manOn{{ x }}");
                         var myTextBox = document.getElementById("man{{ x }}");
                         if (myTextBox.value === "") {
-                            myTextBox.value = "0";
+                            myAnchor.href = "/{{ x }}/on/0";
+                        } else {
+                            myAnchor.href = "/{{ x }}/on/" + myTextBox.value;
                         }
-                        myAnchor.href = "/{{ x }}/on/" + myTextBox.value;
                     }
                 </script>
 

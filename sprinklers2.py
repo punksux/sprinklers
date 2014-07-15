@@ -14,7 +14,7 @@ templateData = {
     'days': float(content[0].rstrip('\r\n')),
     'zones': zones,
     'rain': 0.0,
-    'rain_total':0.0,
+    'rain_total': 0.0,
     'time_to_start': str(content[1].rstrip('\r\n')),
     'message': '',
     'system_running': False,
@@ -195,10 +195,10 @@ def turn_off(zone):
 
 def rain_total():
     check_weather()
-    templateData['rain_total'] += templateData['rain']
+    templateData['rain_total'] += float(templateData['rain'])
 
-sched.add_interval_job(rain_total, hours=24, start_date=datetime.now().replace(hour=11, minute=30, second=00,
-                                                                               microsecond=00))
+sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=11, minute=30, second=00,
+                                                                             microsecond=00))
 
 
 # Run program
@@ -325,7 +325,7 @@ try:
                         if length != "0":
                             turn_on(change_pin)
                             templateData['message'] = "Turned " + zones[int(change_pin)]['name'] + " on for " \
-                                                        + length + " minutes."
+                                                      + length + " minutes."
                             temp = datetime.now() + timedelta(seconds=int(length)*60)
                             man_job = sched.add_date_job(turn_off, temp, [change_pin])
                         else:
