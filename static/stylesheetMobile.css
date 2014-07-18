@@ -26,7 +26,7 @@
 #header h1 {
 		position:absolute;
 		top:-20px;
-		left:50px;
+		left:30px;
 		font-size:60px;
 		font-family:Arial, sans-serif;
 		color:white;
@@ -35,8 +35,8 @@
 #header h2 {
 		position:absolute;
 		top:70px;
-		left:55px;
-		font-size:30px;
+		left:45px;
+		font-size:35px;
 		font-family:Arial, sans-serif;
 		color:white;
 		text-shadow: 3px 3px 5px #333333;}
@@ -44,8 +44,8 @@
 #header h3 {
 		position:absolute;
 		top:120px;
-		left:55px;
-		font-size:20px;
+		left:45px;
+		font-size:30px;
 		font-family:Arial, sans-serif;
 		color:white;
 		text-shadow: 3px 3px 5px #333333;
@@ -150,7 +150,7 @@
 		box-shadow:2px 2px 5px #333;
 }
 		
-#zone1 {
+#zones {
 		border:0 solid #aaa;
 		border-radius:0 10px 10px 0;
 		box-shadow:2px 2px 5px #333;
@@ -163,16 +163,25 @@
 		font-size:30px;
 }
 
-#zone1 .input {
-		float:left;
+#zones input {
+    width: 120px;
+    top: 0px;
+    position: relative;
+    display:block;
+}
+		
+#zones .input {
+		width:150px;
 		top:70px;
-		position:absolute
+		position:absolute;
 }
 
-#zone1 input {
-		float:left;
-		top:50px;
-		position:absolute
+#zones .manInput {
+		width:150px;
+		height:50px;
+        left:205px;
+		top:70px;
+		position:absolute;
 }
 
 #hh {
@@ -218,7 +227,7 @@
 }
 
 .buttonP{
-		width:300px;
+		width:140px;
 		height:40px;
 		position:absolute;
 		right:0;
@@ -230,23 +239,25 @@
         background-color:#52A3CC;
 		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
 		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		width:200px;
-		height:80px;
+		width:140px;
+		height:100px;
 		position:absolute;
 		right:0;
 		bottom:0;
-		text-align:center
+		text-align:center;
 }
 		
 .button span {
 		font-size: 35px;
 		font-family:Arial, sans-serif;
 		color:white;
-		width:200px;
-		height:80px;
+		width:140px;
+		height:100px;
 		text-shadow: 1px 1px 2px #333333;
 		vertical-align: middle;
-		line-height: 80px; 
+		line-height: 40px; 
+		position:relative;
+		top: 10px;
 }		
 
 .button:active{
