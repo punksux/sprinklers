@@ -211,6 +211,8 @@ def hello():
             '%s - Canceling for rain - trying again in 24 hours.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         temp = datetime.now() + timedelta(days=1)
         job = sched.add_date_job(hello, temp)
+        templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
+        templateData['rain_total'] = 0.0
     else:
         global cycle_running
         global cycle_has_run
