@@ -21,13 +21,8 @@ templateData = {
     'log': {},
     'next_run_date': '',
     'cycle_count': 0,
-    'uptime': content[6].rstrip('\r\n')
+    'uptime': ''
 }
-
-# Setup
-job = None
-cycle_running = 0
-cycle_has_run = False
 
 # Imports
 from flask import Flask, request, render_template, url_for, redirect
@@ -40,21 +35,24 @@ from socket import timeout
 import logging
 import logging.handlers
 
-# Set up logging
-my_logger = logging.getLogger('MyLogger')
-handler = logging.handlers.RotatingFileHandler('errors.log', maxBytes=1000000, backupCount=3)
-handler.setLevel(logging.DEBUG)
-my_logger.addHandler(handler)
+# Setup
+job = None
+cycle_running = 0
+cycle_has_run = False
+uptime_counter = datetime.now()
 
+# Set up logging
+open('errors.log', 'w').close()
+logging.basicConfig(filename='errors.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
+
+#Set platform
+logging.info("** Running on " + platform.uname()[0] + " **")
+if platform.uname()[0] != 'Windows':
+    on_pi = True
 
 sched = Scheduler()
 sched.start()
-
-if platform.uname()[0] != 'Windows':
-    print(platform.uname()[0])
-    on_pi = True
-else:
-    print(platform.uname()[0])
 
 if on_pi:
     import urllib2
@@ -69,8 +67,7 @@ import json
 app = Flask(__name__)
 
 # Get weather
-time_checked = datetime.now()
-time_checked = time_checked.replace(day=1)
+time_checked = datetime.now().replace(day=1)
 
 
 def check_weather():
@@ -86,32 +83,33 @@ def check_weather():
                     f = urllib2.urlopen(weather_website, timeout=3)
                     something_wrong = False
                 except urllib2.URLError as e:
-                    my_logger.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
-                                    e)
+                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
+                                  e)
                     something_wrong = True
                 except socket.timeout:
-                    my_logger.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                    logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
                     something_wrong = True
             else:
                 try:
                     f = urlopen(weather_website, timeout=3)
                     something_wrong = False
                 except urllib.error.URLError as e:
-                    my_logger.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
-                                    e)
+                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
+                                  e)
                     something_wrong = True
                 except timeout:
-                    my_logger.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                    logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
                     something_wrong = True
 
             if something_wrong:
-                my_logger.error("%s - No Internet" % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                logging.error("%s - No Internet" % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
                 templateData['rain'] = 0.0
             else:
                 json_string = f.read()
                 parsed_json = json.loads(json_string.decode("utf8"))
                 templateData['rain'] = parsed_json['current_observation']['precip_today_in']
                 f.close()
+                logging.info("Checking weather - " + templateData['rain'] + " inches of rain")
             time_checked = datetime.now()
     else:
         templateData['rain'] = weather_test
@@ -128,12 +126,13 @@ if on_pi:
 
 def get_start_time():
     splits = templateData['time_to_start'].split(":")
+    with open('settings.ini') as f:
+        content = f.readlines()
     ini_time = datetime.strptime(content[5].rstrip('\r\n'), '%Y-%m-%d %H:%M:%S')
     global time_to_start
     time_to_start = ini_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
     print(time_to_start)
     if (time_to_start - datetime.now()).total_seconds() < 0:
-        #time_to_start = time_to_start + timedelta(days=1)
         time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
     write_settings(5, time_to_start)
     return time_to_start
@@ -170,7 +169,6 @@ def write_settings(line, value):
     out.writelines(lines)
     out.close()
 
-write_settings(6, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 def is_time_format(tinput):
     try:
@@ -200,66 +198,36 @@ def rain_total():
     check_weather()
     templateData['rain_total'] += float(templateData['rain'])
 
-sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=11, minute=30, second=00,
+sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=23, minute=30, second=00,
                                                                              microsecond=00))
 
 
-def timesince(dt):
-    temp = ""
-    now = datetime.now()
-    diff = now - dt
-    periods = (
-        (diff.days / 365, "year", "years"),
-        (diff.days / 30, "month", "months"),
-        (diff.days / 7, "week", "weeks"),
-        (diff.days, "day", "days"),
-        (diff.seconds / 3600, "hour", "hours"),
-        (diff.seconds / 60, "minute", "minutes"),
-        #(diff.seconds, "second", "seconds"),
-    )
+def time_since(otherdate):
+    dt = datetime.now() - otherdate
+    offset = dt.seconds
+    delta_s = offset % 60
+    offset /= 60
+    delta_m = offset % 60
+    offset /= 60
+    delta_h = offset % 24
+    delta_d = dt.days
 
-    for period, singular, plural in periods:
-        if period:
-            temp += "%d %s " % (period, singular if period == 1 else plural)
-    return temp
-
-
-def humanize_date_difference(now, otherdate=None, offset=None):
-    if otherdate:
-        dt = now - otherdate
-        offset = dt.seconds + (dt.days * 60*60*24)
-    if offset:
-        delta_s = offset % 60
-        offset /= 60
-        delta_m = offset % 60
-        offset /= 60
-        delta_h = offset % 24
-        offset /= 24
-        delta_d = offset
+    if delta_d >= 1:
+        return "%d %s, %d %s, %d %s" % (delta_d, "day" if 2 > delta_d > 1 else "days", delta_h,
+                                        "hour" if 2 > delta_h > 1 else "hours", delta_m,
+                                        "minute" if 2 > delta_m > 1 else "minutes")
+    if delta_h >= 1:
+        return "%d %s, %d %s" % (delta_h, "hour" if 2 > delta_h > 1 else "hours",
+                                 delta_m, "minute" if 2 > delta_m > 1 else "minutes")
+    if delta_m >= 1:
+        return "%d %s, %d %s" % (delta_m, "minute" if 2 > delta_m > 1 else "minutes", delta_s,
+                                 "second" if 2 > delta_s > 1 else "seconds")
     else:
-        raise ValueError("Must supply otherdate or offset (from now)")
-    print (delta_d)
-    print (delta_h)
-    print (delta_m)
-    print (delta_s)
-    if delta_d > 1:
-        if delta_d > 6:
-            date = now + datetime.timedelta(days=-delta_d, hours=-delta_h, minutes=-delta_m)
-            return date.strftime('%A, %Y %B %m, %H:%I')
-        else:
-            wday = now + datetime.timedelta(days=-delta_d)
-            return wday.strftime('%A')
-    if delta_d == 1:
-        return "Yesterday"
-    if delta_h > 0:
-        return "%d hours %d minutes" % (delta_h, delta_m)
-    if delta_m > 0:
-        return "%d minutes %d seconds" % (delta_m, delta_s)
-    else:
-        return "%d seconds" % delta_s
+        return "%d %s" % (delta_s, "second" if 2 > delta_s > 1 else "seconds")
+
 
 # Run program
-def hello():
+def sprinkler_go():
     check_weather()
     print(datetime.now())
     global job
@@ -267,7 +235,7 @@ def hello():
         write_log(
             '%s - Canceling for rain - trying again in 24 hours.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         temp = datetime.now() + timedelta(days=1)
-        job = sched.add_date_job(hello, temp)
+        job = sched.add_date_job(sprinkler_go, temp)
         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
         templateData['rain_total'] = 0.0
     else:
@@ -300,7 +268,7 @@ def hello():
             zones[i]['on'] = False
             time.sleep(5)
 
-        job = sched.add_date_job(hello, next_time)
+        job = sched.add_date_job(sprinkler_go, next_time)
         write_settings(5, next_time.strftime('%Y-%m-%d %H:%M:%S'))
         print(next_time)
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
@@ -318,7 +286,7 @@ try:
     def my_form():
         templateData['log'] = [log.rstrip('\n') for log in open('log.log')]
         check_weather()
-        templateData['uptime'] = humanize_date_difference(datetime.now(),datetime.strptime(content[6].rstrip('\r\n'), '%Y-%m-%d %H:%M:%S'))
+        templateData['uptime'] = time_since(uptime_counter)
         return render_template("index.html", **templateData)
 
     @app.route('/', methods=['POST'])
@@ -344,7 +312,7 @@ try:
                         temp = next_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
                         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
                         check_weather()
-                        job = sched.add_date_job(hello, temp)
+                        job = sched.add_date_job(sprinkler_go, temp)
                     else:
                         templateData['time_to_start'] = str(ttime)
                         write_settings(1, str(ttime))
@@ -356,7 +324,7 @@ try:
                         get_start_time()
                         templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
                         check_weather()
-                        job = sched.add_date_job(hello, time_to_start)
+                        job = sched.add_date_job(sprinkler_go, time_to_start)
                     else:
                         templateData['time_to_start'] = str(ttime)
                         write_settings(1, str(ttime))
@@ -372,6 +340,7 @@ try:
             zones[2]['length'] = int(zone3)
             write_settings(4, zone3)
         templateData['message'] = 'Updated Settings'
+        templateData['uptime'] = time_since(uptime_counter)
         return render_template("index.html", **templateData)
 
     @app.route("/<change_pin>/<action>/<length>")
@@ -411,7 +380,7 @@ try:
             get_start_time()
             templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
             global job
-            job = sched.add_date_job(hello, time_to_start)
+            job = sched.add_date_job(sprinkler_go, time_to_start)
             templateData['system_running'] = True
             templateData['message'] = "System Started"
             write_log('%s - System started.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
@@ -433,6 +402,7 @@ try:
 finally:
     print("Quitting...")
     sched.shutdown()
+    os.rename("errors.log", "errors.log.old")
     if on_pi:
         GPIO.setup(7, GPIO.IN)
         GPIO.setup(11, GPIO.IN)
