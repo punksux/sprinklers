@@ -19,6 +19,9 @@
 		position:relative;
 		width:100%;
 		height:150px;
+        font-family:Arial, sans-serif;
+		color:white;
+		text-shadow: 3px 3px 5px #333333;
 }
 
 #logo {
@@ -33,9 +36,6 @@
 		top:-20px;
 		left:50px;
 		font-size:50px;
-		font-family:Arial, sans-serif;
-		color:white;
-		text-shadow: 3px 3px 5px #333333;
 }
 
 #header h2 {
@@ -43,9 +43,6 @@
 		top:70px;
 		left:55px;
 		font-size:20px;
-		font-family:Arial, sans-serif;
-		color:white;
-		text-shadow: 3px 3px 5px #333333;
 }
 
 #header h3 {
@@ -53,11 +50,21 @@
 		top:100px;
 		left:55px;
 		font-size:20px;
-		font-family:Arial, sans-serif;
-		color:white;
-		text-shadow: 3px 3px 5px #333333;
 }
 
+#uptime {
+    position: absolute;
+    top: 90px;
+    right:5px;
+    font-size:15px;
+}
+
+#cycles {
+    position: absolute;
+    top: 120px;
+    right:5px;
+    font-size:15px;
+}
 
 #system_on_off {
 		position:absolute;

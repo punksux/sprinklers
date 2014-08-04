@@ -19,7 +19,9 @@ templateData = {
     'message': '',
     'system_running': False,
     'log': {},
-    'next_run_date': ''
+    'next_run_date': '',
+    'cycle_count': 0,
+    'uptime': content[6].rstrip('\r\n')
 }
 
 # Setup
@@ -40,8 +42,8 @@ import logging.handlers
 
 # Set up logging
 my_logger = logging.getLogger('MyLogger')
-my_logger.setLevel(logging.DEBUG)
 handler = logging.handlers.RotatingFileHandler('errors.log', maxBytes=1000000, backupCount=3)
+handler.setLevel(logging.DEBUG)
 my_logger.addHandler(handler)
 
 
@@ -168,6 +170,7 @@ def write_settings(line, value):
     out.writelines(lines)
     out.close()
 
+write_settings(6, datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 def is_time_format(tinput):
     try:
@@ -200,6 +203,60 @@ def rain_total():
 sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=11, minute=30, second=00,
                                                                              microsecond=00))
 
+
+def timesince(dt):
+    temp = ""
+    now = datetime.now()
+    diff = now - dt
+    periods = (
+        (diff.days / 365, "year", "years"),
+        (diff.days / 30, "month", "months"),
+        (diff.days / 7, "week", "weeks"),
+        (diff.days, "day", "days"),
+        (diff.seconds / 3600, "hour", "hours"),
+        (diff.seconds / 60, "minute", "minutes"),
+        #(diff.seconds, "second", "seconds"),
+    )
+
+    for period, singular, plural in periods:
+        if period:
+            temp += "%d %s " % (period, singular if period == 1 else plural)
+    return temp
+
+
+def humanize_date_difference(now, otherdate=None, offset=None):
+    if otherdate:
+        dt = now - otherdate
+        offset = dt.seconds + (dt.days * 60*60*24)
+    if offset:
+        delta_s = offset % 60
+        offset /= 60
+        delta_m = offset % 60
+        offset /= 60
+        delta_h = offset % 24
+        offset /= 24
+        delta_d = offset
+    else:
+        raise ValueError("Must supply otherdate or offset (from now)")
+    print (delta_d)
+    print (delta_h)
+    print (delta_m)
+    print (delta_s)
+    if delta_d > 1:
+        if delta_d > 6:
+            date = now + datetime.timedelta(days=-delta_d, hours=-delta_h, minutes=-delta_m)
+            return date.strftime('%A, %Y %B %m, %H:%I')
+        else:
+            wday = now + datetime.timedelta(days=-delta_d)
+            return wday.strftime('%A')
+    if delta_d == 1:
+        return "Yesterday"
+    if delta_h > 0:
+        return "%d hours %d minutes" % (delta_h, delta_m)
+    if delta_m > 0:
+        return "%d minutes %d seconds" % (delta_m, delta_s)
+    else:
+        return "%d seconds" % delta_s
 
 # Run program
 def hello():
@@ -248,6 +305,7 @@ def hello():
         print(next_time)
         templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
         cycle_running = 0
+        templateData['cycle_count'] += 1
         cycle_has_run = True
         templateData['rain_total'] = 0.0
         templateData['message'] = ''
@@ -260,6 +318,7 @@ try:
     def my_form():
         templateData['log'] = [log.rstrip('\n') for log in open('log.log')]
         check_weather()
+        templateData['uptime'] = humanize_date_difference(datetime.now(),datetime.strptime(content[6].rstrip('\r\n'), '%Y-%m-%d %H:%M:%S'))
         return render_template("index.html", **templateData)
 
     @app.route('/', methods=['POST'])
