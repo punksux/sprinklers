@@ -1,6 +1,7 @@
 #body {
 		font-family:"Arial", sans-serif;
 		overflow:hidden;
+		background-color:#f0fff0;
 }
 #content {
 		width:800px;
@@ -12,6 +13,7 @@
 		position:relative;
         background-size:cover;
         background: url("sprinklerbg2.jpg") green right;
+		box-shadow: 4px 4px 10px #222;
 }
 
 #header {
@@ -494,27 +496,29 @@ input[type=number]::outer-spin-button {
 		left:40px;
 }
 
-#cover1 {
+/*#cover1 {
 		width:10px;
 		height:100%;
-		border:1px solid white;
+		border:1px solid #ddffdd;
 		background:white;
 		z-index:5;
 		position:absolute;
 		top:0;
 		left:-moz-calc(50% + 401px);
+		background-color:#ddffdd;
 }
 
 #cover2 {
 		width:100%;
 		height:10px;
-		border:1px solid white;
+		border:1px solid #ddffdd;
 		background:white;
 		z-index:5;
 		position:absolute;
 		left:0;
 		top:745px;
-}
+		background-color:#ddffdd;
+}*/
 
 .line {
 		width:700px;

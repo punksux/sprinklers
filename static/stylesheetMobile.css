@@ -1,6 +1,7 @@
 #body {
 		font-family:Arial, sans-serif;
 		overflow:hidden;
+		background-color:#f0fff0;
 }
 
 #content {
@@ -453,7 +454,7 @@ input[type=submit] {
 		font-size:30px;
 }
 
-#cover1 {
+/*#cover1 {
 		width:10px;
 		height:1000px;
 		border:1px solid white;
@@ -474,4 +475,4 @@ input[type=submit] {
 		position:absolute;
 		left:0;
 		top:1250px;
-}	
+}	*/

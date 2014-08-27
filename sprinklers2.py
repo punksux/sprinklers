@@ -43,7 +43,7 @@ uptime_counter = datetime.now()
 
 # Set up logging
 open('errors.log', 'w').close()
-logging.basicConfig(filename='errors.log', level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s',
+logging.basicConfig(filename='errors.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s: %(message)s',
                     datefmt='%m/%d/%Y %I:%M:%S %p')
 
 #Set platform
@@ -74,7 +74,7 @@ def check_weather():
     global time_checked
     temp = datetime.now() - time_checked
     if weather_test == 100:
-        if temp.total_seconds() > (60 * 60):
+        if temp.total_seconds() > (10 * 60):
             global something_wrong
             global f
             weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' % location)
@@ -109,7 +109,7 @@ def check_weather():
                 parsed_json = json.loads(json_string.decode("utf8"))
                 templateData['rain'] = parsed_json['current_observation']['precip_today_in']
                 f.close()
-                logging.info("Checking weather - " + templateData['rain'] + " inches of rain")
+                logging.info("Checking weather - " + str(templateData['rain']) + " inches of rain")
             time_checked = datetime.now()
     else:
         templateData['rain'] = weather_test
@@ -229,12 +229,19 @@ def time_since(otherdate):
 # Run program
 def sprinkler_go():
     check_weather()
+    templateData['rain_total'] += float(templateData['rain'])
     print(datetime.now())
     global job
-    if float(templateData['rain']) > 0.125 or float(templateData['rain_total']) > 0.5:
-        write_log(
-            '%s - Canceling for rain - trying again in 24 hours.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+    if float(templateData['rain']) > 0.1 or float(templateData['rain_total']) > (int(templateData['days'])*.063):
+        write_log('%s - Canceling for rain - trying again tomorrow.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         temp = datetime.now() + timedelta(days=1)
+        job = sched.add_date_job(sprinkler_go, temp)
+        templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
+        templateData['rain_total'] = 0.0
+    elif float(templateData['rain']) > 0.2 or float(templateData['rain_total']) > (int(templateData['days'])*.125):
+        write_log('%s - Canceling for rain - trying again in %s days.\n' %
+                  (datetime.now().strftime('%m/%d/%Y %I:%M %p'), str(templateData['days'])))
+        temp = datetime.now() + timedelta(days=int(templateData['days']))
         job = sched.add_date_job(sprinkler_go, temp)
         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
         templateData['rain_total'] = 0.0
@@ -399,11 +406,10 @@ try:
     if __name__ == '__main__':
         app.run(host='0.0.0.0')
 
+
 finally:
     print("Quitting...")
     sched.shutdown()
     os.rename("errors.log", "errors.log.old")
     if on_pi:
-        GPIO.setup(7, GPIO.IN)
-        GPIO.setup(11, GPIO.IN)
-        GPIO.setup(13, GPIO.IN)
+        GPIO.cleanup()
