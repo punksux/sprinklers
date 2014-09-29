@@ -197,7 +197,7 @@ def turn_off(zone):
 def rain_total():
     check_weather()
     templateData['rain_total'] += float(templateData['rain'])
-    write_settings(7, templateData['rain_total'])
+    write_settings(6, templateData['rain_total'])
 
 sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=23, minute=30, second=00,
                                                                              microsecond=00))
@@ -240,14 +240,14 @@ def sprinkler_go():
         job = sched.add_date_job(sprinkler_go, temp)
         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
         templateData['rain_total'] = 0.0
-        write_settings(7, templateData['rain_total'])
+        write_settings(6, templateData['rain_total'])
     elif float(templateData['rain']) > 0.1 or float(templateData['rain_total']) > (int(templateData['days'])*.063):
         write_log('%s - Canceling for rain - trying again tomorrow.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         temp = datetime.now() + timedelta(days=1)
         job = sched.add_date_job(sprinkler_go, temp)
         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
         templateData['rain_total'] = 0.0
-        write_settings(7, templateData['rain_total'])
+        write_settings(6, templateData['rain_total'])
     else:
         global cycle_running
         global cycle_has_run
@@ -286,7 +286,7 @@ def sprinkler_go():
         templateData['cycle_count'] += 1
         cycle_has_run = True
         templateData['rain_total'] = 0.0
-        write_settings(7, templateData['rain_total'])
+        write_settings(6, templateData['rain_total'])
         templateData['message'] = ''
 
 
