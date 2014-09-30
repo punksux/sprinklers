@@ -416,4 +416,6 @@ finally:
     sched.shutdown()
     os.rename("errors.log", "errors.log.old")
     if on_pi:
-        GPIO.cleanup()
+        GPIO.setup(7, GPIO.IN)
+        GPIO.setup(11, GPIO.IN)
+        GPIO.setup(13, GPIO.IN)
