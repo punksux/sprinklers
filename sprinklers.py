@@ -14,7 +14,7 @@ templateData = {
     'days': float(content[0].rstrip('\r\n')),
     'zones': zones,
     'rain': 0.0,
-    'rain_total': content[6].rstrip('\r\n'),
+    'rain_total': float(content[6].rstrip('\r\n')),
     'time_to_start': str(content[1].rstrip('\r\n')),
     'message': '',
     'system_running': False,
