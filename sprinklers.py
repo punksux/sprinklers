@@ -74,43 +74,50 @@ def check_weather():
     global time_checked
     temp = datetime.now() - time_checked
     if weather_test == 100:
-        if temp.total_seconds() > (10 * 60):
-            global something_wrong
-            global f
-            weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' % location)
-            if on_pi:
-                try:
-                    f = urllib2.urlopen(weather_website, timeout=3)
-                    something_wrong = False
-                except urllib2.URLError as e:
-                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
-                                  e)
-                    something_wrong = True
-                except socket.timeout:
-                    logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
-                    something_wrong = True
-            else:
-                try:
-                    f = urlopen(weather_website, timeout=3)
-                    something_wrong = False
-                except urllib.error.URLError as e:
-                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
-                                  e)
-                    something_wrong = True
-                except timeout:
-                    logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
-                    something_wrong = True
+        try:
+            f = urlopen('192.168.1.97:88/weather.json', timeout=5)
+            json_string = f.read()
+            parsed_json = json.loads(json_string.decode("utf8"))
+            f.close()
+            templateData['rain'] = parsed_json['rain']
+        except:
+            if temp.total_seconds() > (10 * 60):
+                global something_wrong
+                global f
+                weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/q/%s.json' % location)
+                if on_pi:
+                    try:
+                        f = urllib2.urlopen(weather_website, timeout=3)
+                        something_wrong = False
+                    except urllib2.URLError as e:
+                        logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
+                                      e)
+                        something_wrong = True
+                    except socket.timeout:
+                        logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                        something_wrong = True
+                else:
+                    try:
+                        f = urlopen(weather_website, timeout=3)
+                        something_wrong = False
+                    except urllib.error.URLError as e:
+                        logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
+                                      e)
+                        something_wrong = True
+                    except timeout:
+                        logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                        something_wrong = True
 
-            if something_wrong:
-                logging.error("%s - No Internet" % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
-                templateData['rain'] = 0.0
-            else:
-                json_string = f.read()
-                parsed_json = json.loads(json_string.decode("utf8"))
-                templateData['rain'] = parsed_json['current_observation']['precip_today_in']
-                f.close()
-                logging.info("Checking weather - " + str(templateData['rain']) + " inches of rain")
-            time_checked = datetime.now()
+                if something_wrong:
+                    logging.error("%s - No Internet" % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
+                    templateData['rain'] = 0.0
+                else:
+                    json_string = f.read()
+                    parsed_json = json.loads(json_string.decode("utf8"))
+                    f.close()
+                    templateData['rain'] = parsed_json['current_observation']['precip_today_in']
+                    logging.info("Checking weather - " + str(templateData['rain']) + " inches of rain")
+                time_checked = datetime.now()
     else:
         templateData['rain'] = weather_test
 
