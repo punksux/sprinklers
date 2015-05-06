@@ -1,0 +1,398 @@
+{
+    "response": {
+        "version": "0.1",
+        "termsofService": "http://www.wunderground.com/weather/api/d/terms.html",
+        "features": {
+            "forecast": 1
+        }
+    },
+    "forecast": {
+        "txt_forecast": {
+            "date": "1:15 PM MDT",
+            "forecastday": [
+                {
+                    "period": 0,
+                    "icon": "chancetstorms",
+                    "icon_url": "http://icons.wxug.com/i/c/k/chancetstorms.gif",
+                    "title": "Monday",
+                    "fcttext": "Mixed clouds and sun with scattered thunderstorms. High around 75F. Winds SSE at 5 to 10 mph. Chance of rain 40%.",
+                    "fcttext_metric": "Mostly cloudy skies. High 23C. Winds SSE at 10 to 15 km/h.",
+                    "pop": "40"
+                }
+                ,
+                {
+                    "period": 1,
+                    "icon": "nt_partlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+                    "title": "Monday Night",
+                    "fcttext": "A stray thunderstorm is possible throughout the evening. A few clouds. Low 52F. Winds SE at 5 to 10 mph.",
+                    "fcttext_metric": "A stray thunderstorm is possible throughout the evening. Partly cloudy skies. Low 11C. Winds SSE at 10 to 15 km/h.",
+                    "pop": "20"
+                }
+                ,
+                {
+                    "period": 2,
+                    "icon": "partlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+                    "title": "Tuesday",
+                    "fcttext": "Partly to mostly cloudy. A stray shower or thunderstorm is possible. High 73F. Winds WSW at 5 to 10 mph.",
+                    "fcttext_metric": "Partly to mostly cloudy. A stray shower or thunderstorm is possible. High 23C. Winds WSW at 10 to 15 km/h.",
+                    "pop": "20"
+                }
+                ,
+                {
+                    "period": 3,
+                    "icon": "nt_mostlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/nt_mostlycloudy.gif",
+                    "title": "Tuesday Night",
+                    "fcttext": "Mostly cloudy. A stray shower or thunderstorm is possible. Low 52F. Winds SSE at 5 to 10 mph.",
+                    "fcttext_metric": "Mostly cloudy skies with a few showers late. Thunder possible. Low 11C. Winds S at 10 to 15 km/h. Chance of rain 30%.",
+                    "pop": "20"
+                }
+                ,
+                {
+                    "period": 4,
+                    "icon": "chancerain",
+                    "icon_url": "http://icons.wxug.com/i/c/k/chancerain.gif",
+                    "title": "Wednesday",
+                    "fcttext": "Showers and a few thunderstorms likely. High 67F. Winds S at 5 to 10 mph. Chance of rain 70%.",
+                    "fcttext_metric": "Showers and a few thunderstorms likely. High 19C. Winds S at 10 to 15 km/h. Chance of rain 70%.",
+                    "pop": "70"
+                }
+                ,
+                {
+                    "period": 5,
+                    "icon": "nt_chancetstorms",
+                    "icon_url": "http://icons.wxug.com/i/c/k/nt_chancetstorms.gif",
+                    "title": "Wednesday Night",
+                    "fcttext": "Thunderstorms during the evening, then skies turning partly cloudy overnight. Low 47F. Winds SE at 5 to 10 mph. Chance of rain 80%.",
+                    "fcttext_metric": "Scattered thunderstorms during the evening, then partly cloudy overnight. Low 8C. Winds SE at 10 to 15 km/h. Chance of rain 60%.",
+                    "pop": "80"
+                }
+                ,
+                {
+                    "period": 6,
+                    "icon": "partlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+                    "title": "Thursday",
+                    "fcttext": "Partly cloudy skies. High 71F. Winds SSE at 10 to 20 mph.",
+                    "fcttext_metric": "Generally sunny despite a few afternoon clouds. High 21C. Winds S at 15 to 30 km/h.",
+                    "pop": "10"
+                }
+                ,
+                {
+                    "period": 7,
+                    "icon": "nt_partlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/nt_partlycloudy.gif",
+                    "title": "Thursday Night",
+                    "fcttext": "A few clouds. Low 46F. Winds SE at 10 to 15 mph.",
+                    "fcttext_metric": "A few clouds. Low 8C. Winds SSE at 15 to 25 km/h.",
+                    "pop": "10"
+                }
+            ]
+        },
+        "simpleforecast": {
+            "forecastday": [
+                {
+                    "date": {
+                        "epoch": "1430787600",
+                        "pretty": "7:00 PM MDT on May 04, 2015",
+                        "day": 4,
+                        "month": 5,
+                        "year": 2015,
+                        "yday": 123,
+                        "hour": 19,
+                        "min": "00",
+                        "sec": 0,
+                        "isdst": "1",
+                        "monthname": "May",
+                        "monthname_short": "May",
+                        "weekday_short": "Mon",
+                        "weekday": "Monday",
+                        "ampm": "PM",
+                        "tz_short": "MDT",
+                        "tz_long": "America/Denver"
+                    },
+                    "period": 1,
+                    "high": {
+                        "fahrenheit": "75",
+                        "celsius": "24"
+                    },
+                    "low": {
+                        "fahrenheit": "52",
+                        "celsius": "11"
+                    },
+                    "conditions": "Chance of a Thunderstorm",
+                    "icon": "chancetstorms",
+                    "icon_url": "http://icons.wxug.com/i/c/k/chancetstorms.gif",
+                    "skyicon": "",
+                    "pop": 40,
+                    "qpf_allday": {
+                        "in": 0.01,
+                        "mm": 0
+                    },
+                    "qpf_day": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "qpf_night": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "snow_allday": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_day": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_night": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "maxwind": {
+                        "mph": 10,
+                        "kph": 16,
+                        "dir": "SSE",
+                        "degrees": 167
+                    },
+                    "avewind": {
+                        "mph": 8,
+                        "kph": 13,
+                        "dir": "SSE",
+                        "degrees": 167
+                    },
+                    "avehumidity": 29,
+                    "maxhumidity": 0,
+                    "minhumidity": 0
+                }
+                ,
+                {
+                    "date": {
+                        "epoch": "1430874000",
+                        "pretty": "7:00 PM MDT on May 05, 2015",
+                        "day": 5,
+                        "month": 5,
+                        "year": 2015,
+                        "yday": 124,
+                        "hour": 19,
+                        "min": "00",
+                        "sec": 0,
+                        "isdst": "1",
+                        "monthname": "May",
+                        "monthname_short": "May",
+                        "weekday_short": "Tue",
+                        "weekday": "Tuesday",
+                        "ampm": "PM",
+                        "tz_short": "MDT",
+                        "tz_long": "America/Denver"
+                    },
+                    "period": 2,
+                    "high": {
+                        "fahrenheit": "73",
+                        "celsius": "23"
+                    },
+                    "low": {
+                        "fahrenheit": "52",
+                        "celsius": "11"
+                    },
+                    "conditions": "Partly Cloudy",
+                    "icon": "partlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+                    "skyicon": "",
+                    "pop": 20,
+                    "qpf_allday": {
+                        "in": 0.03,
+                        "mm": 1
+                    },
+                    "qpf_day": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "qpf_night": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "snow_allday": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_day": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_night": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "maxwind": {
+                        "mph": 10,
+                        "kph": 16,
+                        "dir": "WSW",
+                        "degrees": 240
+                    },
+                    "avewind": {
+                        "mph": 8,
+                        "kph": 13,
+                        "dir": "WSW",
+                        "degrees": 240
+                    },
+                    "avehumidity": 43,
+                    "maxhumidity": 0,
+                    "minhumidity": 0
+                }
+                ,
+                {
+                    "date": {
+                        "epoch": "1430960400",
+                        "pretty": "7:00 PM MDT on May 06, 2015",
+                        "day": 6,
+                        "month": 5,
+                        "year": 2015,
+                        "yday": 125,
+                        "hour": 19,
+                        "min": "00",
+                        "sec": 0,
+                        "isdst": "1",
+                        "monthname": "May",
+                        "monthname_short": "May",
+                        "weekday_short": "Wed",
+                        "weekday": "Wednesday",
+                        "ampm": "PM",
+                        "tz_short": "MDT",
+                        "tz_long": "America/Denver"
+                    },
+                    "period": 3,
+                    "high": {
+                        "fahrenheit": "67",
+                        "celsius": "19"
+                    },
+                    "low": {
+                        "fahrenheit": "47",
+                        "celsius": "8"
+                    },
+                    "conditions": "Chance of Rain",
+                    "icon": "chancerain",
+                    "icon_url": "http://icons.wxug.com/i/c/k/chancerain.gif",
+                    "skyicon": "",
+                    "pop": 70,
+                    "qpf_allday": {
+                        "in": 0.21,
+                        "mm": 5
+                    },
+                    "qpf_day": {
+                        "in": 0.15,
+                        "mm": 4
+                    },
+                    "qpf_night": {
+                        "in": 0.06,
+                        "mm": 2
+                    },
+                    "snow_allday": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_day": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_night": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "maxwind": {
+                        "mph": 10,
+                        "kph": 16,
+                        "dir": "S",
+                        "degrees": 171
+                    },
+                    "avewind": {
+                        "mph": 8,
+                        "kph": 13,
+                        "dir": "S",
+                        "degrees": 171
+                    },
+                    "avehumidity": 52,
+                    "maxhumidity": 0,
+                    "minhumidity": 0
+                }
+                ,
+                {
+                    "date": {
+                        "epoch": "1431046800",
+                        "pretty": "7:00 PM MDT on May 07, 2015",
+                        "day": 7,
+                        "month": 5,
+                        "year": 2015,
+                        "yday": 126,
+                        "hour": 19,
+                        "min": "00",
+                        "sec": 0,
+                        "isdst": "1",
+                        "monthname": "May",
+                        "monthname_short": "May",
+                        "weekday_short": "Thu",
+                        "weekday": "Thursday",
+                        "ampm": "PM",
+                        "tz_short": "MDT",
+                        "tz_long": "America/Denver"
+                    },
+                    "period": 4,
+                    "high": {
+                        "fahrenheit": "71",
+                        "celsius": "22"
+                    },
+                    "low": {
+                        "fahrenheit": "46",
+                        "celsius": "8"
+                    },
+                    "conditions": "Partly Cloudy",
+                    "icon": "partlycloudy",
+                    "icon_url": "http://icons.wxug.com/i/c/k/partlycloudy.gif",
+                    "skyicon": "",
+                    "pop": 10,
+                    "qpf_allday": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "qpf_day": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "qpf_night": {
+                        "in": 0.00,
+                        "mm": 0
+                    },
+                    "snow_allday": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_day": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "snow_night": {
+                        "in": 0.0,
+                        "cm": 0.0
+                    },
+                    "maxwind": {
+                        "mph": 20,
+                        "kph": 32,
+                        "dir": "SSE",
+                        "degrees": 168
+                    },
+                    "avewind": {
+                        "mph": 13,
+                        "kph": 21,
+                        "dir": "SSE",
+                        "degrees": 168
+                    },
+                    "avehumidity": 36,
+                    "maxhumidity": 0,
+                    "minhumidity": 0
+                }
+            ]
+        }
+    }
+}

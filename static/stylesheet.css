@@ -1,436 +1,444 @@
-#body {
-		font-family:"Arial", sans-serif;
-		overflow:hidden;
-		background-color:#f0fff0;
+@font-face {
+    font-family: 'gasaltblack';
+    src: url('fonts/gasalt-black-webfont.eot');
+    src: url('fonts/gasalt-black-webfont.eot?#iefix') format('embedded-opentype'),
+         url('fonts/gasalt-black-webfont.woff2') format('woff2'),
+         url('fonts/gasalt-black-webfont.woff') format('woff'),
+         url('fonts/gasalt-black-webfont.ttf') format('truetype'),
+         url('fonts/gasalt-black-webfont.svg#gasaltblack') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
 }
+
+body{margin:0, padding:0}
+
+body {
+    font-family: "gasaltblack", sans-serif;
+    overflow: hidden;
+    background-color: #f0fff0;
+}
+
 #content {
-		width:800px;
-		border:0 solid #000000;
-		border-radius:10px;
-        padding: 1px 1px 0;
-        margin-left:auto;
-		margin-right:auto;
-		position:relative;
-        background-size:cover;
-        background: url("sprinklerbg2.jpg") green right;
-		box-shadow: 4px 4px 10px #222;
+    width: 800px;
+    border: 0 solid #000000;
+    border-radius: 10px;
+    padding: 1px 1px 0;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    background-size: cover;
+    background: url("sprinklerbg2.jpg") green right;
+    box-shadow: 4px 4px 10px #222;
 }
 
 #header {
-		padding-bottom:0;
-		position:relative;
-		width:100%;
-		height:150px;
-        font-family:Arial, sans-serif;
-		color:white;
-		text-shadow: 3px 3px 5px #333333;
+    padding-bottom: 0;
+    position: relative;
+    width: 100%;
+    height: 150px;
+    color: white;
+    text-shadow: 1px 1px 2px #333333;
 }
 
 #logo {
-		width:100px;
-		height:100px;
-		position:absolute;
-		left:20px;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 20px;
 }
 
-#header h1 {
-		position:absolute;
-		top:-20px;
-		left:50px;
-		font-size:50px;
+#headerText {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 75px;
+    text-shadow: 3px 3px 5px #333333;
 }
 
-#header h2 {
-		position:absolute;
-		top:70px;
-		left:55px;
-		font-size:20px;
+#nextRunTime {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+    font-size: 25px;
 }
 
-#header h3 {
-		position:absolute;
-		top:100px;
-		left:55px;
-		font-size:20px;
+#rainTotals {
+    position: absolute;
+    top: 115px;
+    left: 20px;
+    font-size: 25px;
 }
 
 #uptime {
     position: absolute;
-    top: 90px;
-    right:5px;
-    font-size:15px;
+    top: 80px;
+    right: 20px;
+    font-size: 25px;
 }
 
 #cycles {
     position: absolute;
-    top: 120px;
-    right:5px;
-    font-size:15px;
+    top: 115px;
+    right: 20px;
+    font-size: 25px;
 }
 
 #system_on_off {
-		position:absolute;
-		right:00px;
-		top:00px;
+    position: absolute;
+    right: 00px;
+    top: 00px;
 }
 
 #rightC {
-		float:right;
-		width:35%;
-		position:relative;
+    float: right;
+    width: 35%;
+    position: relative;
 }
 
 #leftC {
-		padding-top:0;
-		position:relative;
-		
-}
-		
-#settings {
-		border:0 solid #aaa;
-		border-radius:10px 0 0 10px;
-		width:100%;
-		font-family:Arial, sans-serif;
-		position:relative;
-		z-index: 1;
-		background:white;
-		margin-top:16px;
-		box-shadow:2px 2px 5px #333;
+    padding-top: 0;
+    position: relative;
+    width: 65%;
+
 }
 
-#settings ul {list-style-type:none;}		
-		
-#settings #hh1 {
-		text-align:center;
-		margin:5px;
-		font-family:Arial, sans-serif;
-		font-size:30px;
-		text-decoration:none;
-}	
+#settings {
+    border: 0 solid #aaa;
+    border-radius: 10px 0 0 10px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    background: white;
+    margin-top: 0;
+    box-shadow: 2px 2px 5px #333;
+    font-size: 20px;
+}
+
+#settings ul {
+    list-style-type: none;
+}
 
 #logButton {
-		position:relative;
-		left:65px;
-		width:150px;
-		height:20px;
-		border-top-left-radius:10px;
-		border-top-right-radius:10px;
-		background:pink;
-		text-align:center;
-		font:bold 15px sans-serif;
-		color:white;
-		text-decoration:none;
-		text-shadow:1px 1px 2px #333;
-		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    position: relative;
+    left: 65px;
+    width: 150px;
+    height: 20px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background: pink;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    text-shadow: 1px 1px 2px #333;
+    background: -moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    background: -webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
 }
 
 #logButton:hover {
-		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
-		background:-webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    background: -moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    background: -webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
 }
 
 #settings a {
-		text-decoration:none;
+    text-decoration: none;
 }
 
-.messages {
-		border:1px solid  #b5e026;
-		border-radius:10px 0 0 10px;
-		width:100%;
-		float:right;
-		margin-top:10px;
-		text-align:center;
-		font-family:Arial, sans-serif;
-		font-size:20px;
-		vertical-align: middle;
-		line-height: 25px;
-		background-color: #b5e026;
-		color:white;
-		text-shadow: 1px 1px 2px #333333;
-		opacity:1;
-		transition: opacity 2s linear 4s;
-		background: -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
-		background: -webkit-linear-gradient(top, #b6e026 0%, #94ce04 100%);
-		box-shadow:2px 2px 5px #333;
-    padding-top:7px;
+#messages {
+    border: 1px solid #b5e026;
+    border-radius: 10px 0 0 10px;
+    width: 100%;
+    float: right;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 25px;
+    vertical-align: middle;
+    line-height: 25px;
+    background-color: #b5e026;
+    color: white;
+    text-shadow: 1px 1px 2px #333333;
+    background: -moz-linear-gradient(top, #b6e026 0%, #94ce04 100%);
+    background: -webkit-linear-gradient(top, #b6e026 0%, #94ce04 100%);
+    box-shadow: 2px 2px 5px #333;
+    padding-top: 7px;
     padding-bottom: 7px;
+    display: none;
 }
-			
-#body.loaded .messages {
-		opacity:0;
-}			
+
+/*#body.loaded .messages {
+    opacity: 0;
+}*/
 
 #general {
-		border:0 solid #aaa;
-		border-radius:0 10px 10px 0;
-		width:498px;
-		height:120px;
-		position:relative;
-		margin-top:0;
-		padding-left:10px;
-		padding-top:0;
-		font-family:Arial, sans-serif;
-		background:white;
-		box-shadow:2px 2px 5px #333;
+    border: 0 solid #aaa;
+    border-radius: 0 10px 10px 0;
+    width: 510px;
+    position: relative;
+    background: white;
+    box-shadow: 2px 2px 5px #333;
+    padding-bottom: 5px;
+    line-height: 35px;
 }
 
 #general .input {
-		float:left;
-		top:40px;
-		position:absolute;
+    position: relative;
+    left:40px;
+    font-size: 20px;
 }
 
-.input2 input {
-	left:163px;
-	width:150px;
-	position:absolute;
-}
-		
-#zones {
-		border:0 solid #aaa;
-		border-radius:0 10px 10px 0;
-		box-shadow:2px 2px 5px #333;
-		width:498px;
-		height:120px;
-		position:relative;
-		margin-top:10px;
-		padding-left:10px;
-		padding-top:0;
-		background:white;
+#daysApart input{
+    left: 13px;
+    width: 140px;
+    position: relative;
 }
 
-#zones input {
+#startTime input {
+    left: 80px;
+    width: 140px;
+    position: relative;
+}
+
+#fullAuto input{
+    width:20px;
+    height:20px;
+
+}
+
+.zones {
+    border: 0 solid #aaa;
+    border-radius: 0 10px 10px 0;
+    box-shadow: 2px 2px 5px #333;
+    width: 510px;
+    height: 120px;
+    position: relative;
+    margin-top: 10px;
+    padding-top: 0;
+    background: white;
+    font-size: 20px;
+}
+
+.zones input {
     width: 120px;
     top: 10px;
     position: relative;
-    display:block;
-}
-		
-#zones .input {
-		top:50px;
-		position:absolute;
+    display: block;
 }
 
-#zones .manInput {
-        left:220px;
-		top:50px;
-		position:absolute;
+.zones .input {
+    top: 10px;
+    left:40px;
+    position: relative;
 }
-		
-#hh {
-		font-size:30px;
-		font-family:Arial, sans-serif;
-		float:left;
-		top:5px;
-		position:absolute;
-}	
+
+.zones .manInput {
+    left: 220px;
+    top: 50px;
+    position: absolute;
+}
+
+.manSection{
+    position: relative;
+    right:0;
+    bottom: 0;
+}
+
+.label {
+    font-size: 35px;
+    top: 2px;
+    left:10px;
+    position: relative;
+}
 
 .on-off {
-		position:absolute;
-		right:0;
-		top:0;
-		float:right;
+    position: absolute;
+    right: 0;
+    top: 0;
+    float: right;
 }
 
-.on{
-		background:-moz-radial-gradient(top left, ellipse cover,   #baffbd 0%, #13ff02 100%);
-		background:-webkit-radial-gradient(top left, ellipse cover,   #baffbd 0%, #13ff02 100%);
-		width:20px;
-		height:20px;
-		border-radius:0 10px 0 10px;
-		border:1px solid #11cc11;
-		border-top:0;
-		border-right:0;
-		box-shadow:-1px 1px 10px #33CC33;
+.on {
+    background: -moz-radial-gradient(top left, ellipse cover, #baffbd 0%, #13ff02 100%);
+    background: -webkit-radial-gradient(top left, ellipse cover, #baffbd 0%, #13ff02 100%);
+    width: 20px;
+    height: 20px;
+    border-radius: 0 10px 0 10px;
+    border: 1px solid #11cc11;
+    border-top: 0;
+    border-right: 0;
+    box-shadow: -1px 1px 10px #33CC33;
 }
 
 .off {
-		background:-moz-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
-		background:-webkit-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
-		width:20px;
-		height:20px;
-		border-radius:0 10px 0 10px;
-		border:1px solid #9c0000;
-		border-top:0;
-		border-right:0;
+    background: -moz-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
+    background: -webkit-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
+    width: 20px;
+    height: 20px;
+    border-radius: 0 10px 0 10px;
+    border: 1px solid #9c0000;
+    border-top: 0;
+    border-right: 0;
 }
 
-#system_on_off  .on, #system_on_off  .off {
-		border-radius:0 0 0 10px;
+#system_on_off .on, #system_on_off .off {
+    border-radius: 0 0 0 10px;
 }
 
-.buttonP{
-		width:120px;
-		height:50px;
-		position:absolute;
-		right:0;
-		bottom:0;
-}
-
-.button {
+.manButt {
+    width: 120px;
+    height: 50px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
     border-radius: 15px 0 9px 0;
-    background-color:#52A3CC;
-		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		width:120px;
-		height:50px;
-		position:absolute;
-		right:0;
-		bottom:0;
-		text-align:center;
-}
-		
-.button span {
-		font: bold 1em/1.5em sans-serif;
-		color:white;
-		width:200px;
-		height:40px;
-		text-shadow: 1px 1px 2px #333333;
-		vertical-align: middle;
-		line-height: 50px; 
-}		
-
-.button:hover{
-		background-color:#3081AA;
-		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
-		background:-webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    background-color: #b6e026;
+    background: -moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    background: -webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    text-align: center;
+    cursor: pointer;
 }
 
-.button:active{
-		right:-1px;
-		bottom:-1px;
+.manButt.manOff {
+    background: -moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+    background: -webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+}
+
+.manButt.manOff:hover {
+    background: -moz-linear-gradient(top, #ee1400 0%, #590101 100%);
+    background: -webkit-linear-gradient(top, #ee1400 0%, #590101 100%);
+}
+
+.manButt span {
+    color: white;
+    width: 200px;
+    height: 40px;
+    text-shadow: 1px 1px 2px #333333;
+    vertical-align: middle;
+    line-height: 50px;
+    font-size: 23px;
+}
+
+.manButt:hover {
+    background-color: #3081AA;
+    background: -moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    background: -webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+}
+
+.manButt:active {
+    right: -1px;
+    bottom: -1px;
 }
 
 #startButton {
-		position:absolute;
-		right:80px;
-		bottom:0;
-		text-decoration:none;
+    position: absolute;
+    right: 80px;
+    bottom: 0;
+    text-decoration: none;
 }
 
 #startButton a {
-		text-decoration:none;
+    text-decoration: none;
 }
 
 #stopButton {
-		background:-moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
-		background:-webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
-		border-top-left-radius:15px;
-		border-top-right-radius:15px;
-		width:120px;
-		height:50px;
-		text-align:center;
-		font: bold 1em/1.5em sans-serif;
-		color:white;
-		text-shadow: 1px 1px 2px #333333;
-		vertical-align: middle;
-		line-height: 50px;
-		text-decoration:none;
-		box-shadow:2px 2px 5px #333;
+    background: -moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+    background: -webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    width: 120px;
+    height: 50px;
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 2px #333333;
+    vertical-align: middle;
+    line-height: 50px;
+    text-decoration: none;
+    box-shadow: 2px 2px 5px #333;
 }
-				
+
 #stopButton:hover {
-		background:-moz-linear-gradient(top, #ee1400 0%, #590101 100%);
-		background:-webkit-linear-gradient(top, #ee1400 0%, #590101 100%);
-		
+    background: -moz-linear-gradient(top, #ee1400 0%, #590101 100%);
+    background: -webkit-linear-gradient(top, #ee1400 0%, #590101 100%);
+
 }
 
 #stopButton:active {
-	bottom:-1px;
+    bottom: -1px;
 }
 
 #startButton2 {
-		border-top-left-radius:15px;
-		border-top-right-radius:15px;
-		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		width:120px;
-		height:50px;
-		text-align:center;
-		font: bold 1em/1.5em sans-serif;
-		color:white;
-		text-shadow: 1px 1px 2px #333333;
-		vertical-align: middle;
-		line-height: 50px;
-		text-decoration:none;
-		box-shadow:2px 2px 5px #333;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    background: -moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    background: -webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    width: 120px;
+    height: 50px;
+    text-align: center;
+    color: white;
+    text-shadow: 1px 1px 2px #333333;
+    vertical-align: middle;
+    line-height: 50px;
+    text-decoration: none;
+    box-shadow: 2px 2px 5px #333;
 }
 
 #startButton2:hover {
-		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
-		background:-webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
-		
+    background: -moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    background: -webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+
 }
 
 #startButton2:active {
-	bottom:-1px;
-}			
-				
-.input {
-		float:left;
-		position:absolute;
-		top:50px;
-		left:40px;
-		font-family:Arial,sans-serif;
+    bottom: -1px;
 }
 
-.input2 {
-		float:left;
-		position:absolute;
-		top:80px;
-		left:40px;
-		font-family:Arial,sans-serif;
-}		
-		
 #applyButton {
-		width:100%;
-		position:relative;
-		margin-top:5px;
-		padding-left:10px;
-		padding-top:0;
-		bottom:0;
-		height:55px;
-		
-}	
+    width: 100%;
+    position: relative;
+    margin-top: 5px;
+    padding-left: 10px;
+    padding-top: 0;
+    bottom: 0;
+    height: 55px;
+
+}
 
 input[type=time], input[type=number] {
-	padding:5px; border:2px solid #ccc;
-	border-radius: 5px;
-	-moz-appearance:textfield;
-}	
+    padding: 5px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    -moz-appearance: textfield;
+}
 
 input[type=time]:focus, input[type=number]:focus {
-		border-color:#333;
-		box-shadow:0 0 5px #b6e026;
+    border-color: #333;
+    box-shadow: 0 0 5px #b6e026;
 }
 
 input[type=submit] {
-		background:#ccc;
-		background:-moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		background:-webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
-		cursor:pointer;
-		width:120px;
-		height:50px;
-		border:0;
-    font: bold 1em/1.5em sans-serif;
-		color:white;
-		text-shadow: 1px 1px 2px #333333;
+    background: #ccc;
+    background: -moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    background: -webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
+    cursor: pointer;
+    width: 120px;
+    height: 50px;
+    border: 0;
+    color: white;
+    text-shadow: 1px 1px 2px #333333;
     border-radius: 15px 15px 0 0;
-    position:absolute;
-		bottom:0;
-		left:60px;
-		box-shadow:2px 2px 5px #333;
+    position: absolute;
+    bottom: 0;
+    left: 60px;
+    box-shadow: 2px 2px 5px #333;
 }
 
 input[type=submit]:hover {
-		background:-moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
-		background:-webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
-		cursor:pointer;
+    background: -moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    background: -webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+    cursor: pointer;
 }
 
 input[type=submit]:active {
-		bottom:-1px;
+    bottom: -1px;
 }
 
 /*input[type=number]::inner-spin-button, 
@@ -439,61 +447,61 @@ input[type=number]::outer-spin-button {
 		margin: 0; 
 }*/
 
-.black_overlay{
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: black;
-        z-index:1001;
-        -moz-opacity: 0.8;
-        opacity:.60;
-        
-    }
+.black_overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 1001;
+    -moz-opacity: 0.8;
+    opacity: .60;
+
+}
+
 .white_content {
-        display: none;
-        position: relative;
-		top: -650px;
-        left:-50%;
-        width: 800px;
-        height: 530px;
-        padding: 10px;
-        border: 1px solid black;
-		border-radius:10px;
-        background-color: white;
-        z-index:1002;
-        overflow: auto;
-    }
-	
+    display: none;
+    position: relative;
+    top: -650px;
+    left: -50%;
+    width: 800px;
+    height: 530px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: white;
+    z-index: 1002;
+    overflow: auto;
+}
+
 #logClose {
-		position:absolute;
-		right:0;
-		top:0;
-		border-bottom-left-radius:10px;
-		border-top-right-radius:8px;
-		background:-moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
-		background:-webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
-		width:40px;
-		height:30px;
-		font: bold 18px sans-serif;
-		color:white;
-		text-align:center;
-		vertical-align:middle;
-		line-height:30px;
-		text-shadow:1px 1px 3px #333;		
-}	
+    position: absolute;
+    right: 0;
+    top: 0;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 8px;
+    background: -moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+    background: -webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+    width: 40px;
+    height: 30px;
+    color: white;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 30px;
+    text-shadow: 1px 1px 3px #333;
+}
 
 #logClose:hover {
-		background:-moz-linear-gradient(top, #ffb0a9 0%, #fc1e1e 100%);
-		background:-webkit-linear-gradient(top, #ffb0a9 0%, #fc1e1e 100%);
+    background: -moz-linear-gradient(top, #ffb0a9 0%, #fc1e1e 100%);
+    background: -webkit-linear-gradient(top, #ffb0a9 0%, #fc1e1e 100%);
 }
 
 #log {
-		position:absolute;
-		top:60px;
-		left:40px;
+    position: absolute;
+    top: 60px;
+    left: 40px;
 }
 
 /*#cover1 {
@@ -521,7 +529,41 @@ input[type=number]::outer-spin-button {
 }*/
 
 .line {
-		width:700px;
-		height:1px;
-		background:black;
+    width: 700px;
+    height: 1px;
+    background: black;
+}
+
+input[type=checkbox].css-checkbox {
+    position:absolute; z-index:-1000; left:-1000px; overflow: hidden; clip: rect(0 0 0 0); height:1px; width:1px; margin:-1px; padding:0; border:0;
+    }
+
+input[type=checkbox].css-checkbox + label.css-label {
+    padding-left:22px;
+    height:17px;
+    display:inline-block;
+    line-height:17px;
+    background-repeat:no-repeat;
+    background-position: 0 0;
+    font-size:17px;
+    vertical-align:middle;
+    cursor:pointer;
+
+}
+
+input[type=checkbox].css-checkbox:checked + label.css-label {
+    background-position: 0 -17px;
+}
+label.css-label {
+    background-image:url(http://csscheckbox.com/checkboxes/u/csscheckbox_21d5eacebec645aa81248f38e86b4ee0.png);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.hello {
+    display: none;
 }

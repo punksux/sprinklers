@@ -3,174 +3,247 @@
 <html lang="en">
 
 <head>
-<link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
-<link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-<meta name="viewport" content="width=device-width, initial-scale=.42, maximum-scale=.42, user-scalable=0"/>
-<link type="text/css" rel="stylesheet" href="/static/stylesheet.css" />
-<link type="text/css" rel="stylesheet" href="/static/stylesheetMobile.css" media="only screen and (max-width: 999px)" />
-<script type="text/javascript">
-			window.onload = function(){
-				document.getElementById("body").setAttribute("class","loaded");
-			}
-</script>
-<title>Sprinkler System</title>
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=.42, maximum-scale=.42, user-scalable=0"/>
+    <link type="text/css" rel="stylesheet" href="/static/stylesheet.css"/>
+    <link type="text/css" rel="stylesheet" href="/static/stylesheetMobile.css"
+          media="only screen and (max-width: 999px)"/>
+    <script src="/static/jquery-2.1.1.min.js"></script>
+    <script src="/static/jquery-ui.js"></script>
+    <title>Sprinkler System</title>
 </head>
 
 <body id="body">
 <div id="content">
-	<div id="header">
-		<h1>Sprinkler System</h1>
-		<h2>Next run time: {{ next_run_date }}</h2>
-        {% if rain == 1  %}
+    <div id="header">
+        <div id="headerText">Sprinkler System</div>
+
+        <div id="nextRunTime">Next run time: {{ next_run_date }}</div>
+        {% if rain == 1 %}
             {% set plsi = 'inch' %}
         {% else %}
             {% set plsi = 'inches' %}
         {% endif %}
-        {% if rain_total == 1  %}
+        {% if rain_total == 1 %}
             {% set rt_plsi = 'inch' %}
         {% else %}
             {% set rt_plsi = 'inches' %}
         {% endif %}
-		<h3>{{ rain }} {{ plsi }} of rain today & {{ rain_total }} {{ rt_plsi }} since last run.</h3>
+        <div id="rainTotals">{{ rain }} {{ plsi }} of rain today & {{ rain_total }} {{ rt_plsi }} since last run.</div>
+
         <div id="uptime">Uptime: {{ uptime }}</div>
         <div id="cycles">Cycles run: {{ cycle_count }}</div>
-	</div>
+    </div>
 
 
-
-	<div id="rightC">
-		<div id="settings">
-			<div id="hh1">Settings</div>
-			<ul>
-				<li>Days apart: {{ days }}</li>
-				<li>Start time: {{ time_to_start }}</li>
-				<li>Zone 1 length: {{ zones.0.length }}</li>
-				<li>Zone 2 length: {{ zones.1.length }}</li>
-				<li>Zone 3 length: {{ zones.2.length }}</li>
-			</ul>
-			<a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'"><div id='logButton'>Log</div></a>
-		
-		
-			<div id="system_on_off">
-				{% if system_running %}
-					<div class="on"></div>
-				{% else %}
-					<div class="off"></div>
-				{% endif %}
-			</div>	
-		</div>
-	
-		{% if message != '' %}
-			<div class="messages">{{ message }}</div>
-		{% endif %}
-		
-	</div>
+    <div id="middle">
+        <div id="rightC">
+            <div id="settings">
+                <div id="settingsLabel" class="label">Settings</div>
+                <ul>
+                    <li class="hello">Fully Automated: {{ full_auto }}</li>
+                    <li class="goAway">Days apart: {{ days }}</li>
+                    <li>Start time: {{ time_to_start }}</li>
+                    <li class="goAway">Zone 1 length: {{ zones.0.length }}</li>
+                    <li class="goAway">Zone 2 length: {{ zones.1.length }}</li>
+                    <li class="goAway">Zone 3 length: {{ zones.2.length }}</li>
+                </ul>
+                <a href="javascript:void(0)"
+                   onclick="document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'">
+                    <div id='logButton'>Log</div>
+                </a>
 
 
-	<div id="leftC">
-		<div id="form">
-			<form action="." method="POST">
-			<div id="general">
-				<div id="hh">General</div>
-				<span class="input">
-					<label>
-                        How many days apart:
-                        <input type="number" name="text" min="0" step="any"/>
-                    </label>
-				</span>
-				<p ></p>
-				<span class="input2">
-					Time to start:
-					<input type="time" name="start" id="tp">
-				</span>
-			</div>
+                <div id="system_on_off">
+                    {% if system_running %}
+                        <div class="on"></div>
+                    {% else %}
+                        <div class="off"></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="messages">{{ message }}</div>
+
+        </div>
 
 
+        <div id="leftC">
+            <div id="general">
+                <div id="generalLabel" class="label">General</div>
 
+                <div id="fullAuto2" class="input"><label>Fully Automated? <input type="checkbox" id="fullAuto"{% if full_auto %} checked{% endif %} /></label></div>
 
-			{% for x in range(0,zones|count) %}
-				<div id="zones">
-					<div id="hh">{{ zones[x].name }}</div> 
-					<div class="on-off">
-						{% if zones[x].on %}<div class="on"></div>
-						{% else %}<div class="off"></div>
-						{% endif %}
-					</div>
-					<div class="input">
-						Run length: <input type="number" name="{{ x }}" />
-					</div>
-                    <div class="manInput">
-						Manual Run Time: <input type="number" id="man{{ x }}" />
-					</div>
-					<div class="buttonP">
-						{% if zones[x].on == true %}
-							<a href="/{{x}}/off/0"><div class="button"><span>Manual off</span></div></a>
-						{% else %}
-                            <a href="#" onclick="GetURL{{ x }}();" id="manOn{{ x }}"><div class="button"><span>Manual on</span></div></a>
-						{% endif %}	
-					</div>
+                <div id="daysApart" class="input goAway">
+                    <label>How many days apart: <input type="number" name="text" min="0" step="any"/></label>
+                </div>
+                <div id="startTime" class="input">
+                    <label>Time to start: <input type="time" name="start" id="tp"></label>
+                </div>
+            </div>
 
-				</div>
-                <script>
-                function GetURL{{ x }}()
-                    {
-                        var myAnchor = document.getElementById("manOn{{ x }}");
-                        var myTextBox = document.getElementById("man{{ x }}");
-                        if (myTextBox.value === "") {
-                            myAnchor.href = "/{{ x }}/on/0";
-                        } else {
-                            myAnchor.href = "/{{ x }}/on/" + myTextBox.value;
-                        }
-                    }
-                </script>
+            <div class="zones">
+                <div id="zone1Label" class="label">Zone 1</div>
+                <div id='onOff0' class="on-off {% if zones.0.on %}on{% else %}off{% endif %}"></div>
+                <div class="input goAway">
+                    <label>Run length: <br /><input type="number" name="run0"/></label>
+                </div>
 
-			{% endfor %}
-	
-			<div id="applyButton">
-				<input type="submit" name="my-form" value="Apply" />
-		
-				<div id="startButton">
-					{% if system_running %}
-						<a href="/stop"><div id="stopButton"><span>Stop</span></div></a>
-					{% else %}
-						<a href="/start"><div id="startButton2"><span>Start</span></div></a>
-					{% endif %}	
-				</div>
-			</div>
-	
-			</form>
-		</div>
-	</div>
+                <div class="manInput">
+                    <label>Manual Run Time: <input type="number" id="man0"/></label>
+                </div>
+                <div class="buttonP">
+                    <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}off{% else %}on{% endif %}</span></div>
+                </div>
+
+            </div>
+
+            <div class="zones">
+                <div id="zone2Label" class="label">Zone 2</div>
+                <div id='onOff1' class="on-off {% if zones.1.on %}on{% else %}off{% endif %}"></div>
+                <div class="input goAway">
+                    <label>Run length: <input type="number" name="run1"/></label>
+                </div>
+
+                <div class="manInput">
+                    <label>Manual Run Time: <input type="number" id="man1"/></label>
+                </div>
+                <div class="buttonP">
+                    <div class="manButt {% if zones.1.on %}manOff{% endif %}" id="1"><span>Manual {% if zones.1.on %}off{% else %}on{% endif %}</span></div>
+                </div>
+
+            </div>
+
+            <div class="zones">
+                <div id="zone3Label" class="label">Zone 3</div>
+                <div id='onOff2' class="on-off {% if zones.2.on %}on{% else %}off{% endif %}"></div>
+                <div class="input goAway">
+                    <label>Run length: <input type="number" name="run2"/></label>
+                </div>
+
+                <div class="manInput">
+                    <label>Manual Run Time: <input type="number" id="man2"/></label>
+                </div>
+                <div class="buttonP">
+                    <div class="manButt {% if zones.2.on %}manOff{% endif %}" id="2"><span>Manual {% if zones.2.on %}off{% else %}on{% endif %}</span></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="applyButton">
+            <input type="submit" name="my-form" value="Apply"/>
+
+            <div id="startButton">
+                {% if system_running %}
+                    <a href="/stop">
+                        <div id="stopButton"><span>Stop</span></div>
+                    </a>
+                {% else %}
+                    <a href="/start">
+                        <div id="startButton2"><span>Start</span></div>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
-	
+
 <div id="cover1"></div>
 <div id="cover2"></div>
-	
+
 <div style="position: absolute; left: 50%;">
-	<div id="light" class="white_content"><div id="hh">Log: </div>
-		<div id='log'>
-			{% if log|count >= 12 %}
-				{% for x in range(log|count-12,log|count) %}
-					{% if log[x] == '-=' %}
-						<div class='line'></div>
-					{% else %}
-						<p>{{  log[x] }}</p>
-					{% endif %}
-				{% endfor %}
-			{% else %}
-				{% for x in range(0,log|count) %}
-					{% if log[x] == '-=' %}
-						<div class='line'></div>
-					{% else %}
-						<p>{{  log[x] }}</p>
-					{% endif %}
-				{% endfor %}
-			{% endif %}	
-		</div>
-		<a href = "javascript:void(0)" onclick = "document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'"><div id="logClose">X</div></a>
-	</div>
+    <div id="light" class="white_content">
+        <div id="hh">Log:</div>
+        <div id='log'>
+            {% if log|count >= 12 %}
+                {% for x in range(log|count-12,log|count) %}
+                    {% if log[x] == '-=' %}
+                        <div class='line'></div>
+                    {% else %}
+                        <p>{{ log[x] }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for x in range(0,log|count) %}
+                    {% if log[x] == '-=' %}
+                        <div class='line'></div>
+                    {% else %}
+                        <p>{{ log[x] }}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        <a href="javascript:void(0)"
+           onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">
+            <div id="logClose">X</div>
+        </a>
+    </div>
 </div>
 <div id="fade" class="black_overlay"></div>
+
+<script>
+    $('#fullAuto').change(function () {
+        if (this.checked) {
+            $('.goAway').hide(500);
+            $('.hello').html('Fully Automated: True').show(500);
+        } else {
+            $('.goAway').show(500);
+            $('.hello').html('Fully Automated: False').hide(500);
+        }
+    });
+
+
+    if ($('input#fullAuto').is(':checked')) {
+        $('.goAway').hide(500);
+    } else {
+        $('.goAway').show(500);
+    }
+
+
+    $('.manButt').on('click', function(){
+        GetURL($(this).attr('id'))
+    });
+
+    function GetURL(number) {
+        var length = $("#man" + number).val();
+        if (length === '') length = '0';
+        $.ajax(
+            {
+                type: 'post',
+                url: "/manual",
+                data: {
+                    'number': number,
+                    'length': length
+                }
+            }
+        )
+        .done(function(data){
+            showMessages(data.message);
+            if(data.onOff === 'on'){
+                $('#onOff' + number).switchClass('off', 'on');
+                $('#' + number).addClass('manOff').children().html('Manual Off');
+                if(parseInt(length) > 0){
+                    var man = setTimeout(function(){$('#onOff' + number).switchClass('on', 'off');$('#' + number).removeClass('manOff').children().html('Manual On');}, (parseInt(length)*1000)*60);
+                }
+            } else {
+                $('#onOff' + number).switchClass('on', 'off');
+                $('#' + number).removeClass('manOff').children().html('Manual On');
+                clearTimeout(man)
+            }
+
+
+
+        })
+    }
+
+
+    function showMessages(message){
+        $('#messages').html(message).fadeIn(300).delay(10000).fadeOut(800);
+    }
+</script>
 
 </body>
 </html>
