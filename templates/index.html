@@ -6,11 +6,10 @@
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=.42, maximum-scale=.42, user-scalable=0"/>
-    <link type="text/css" rel="stylesheet" href="/static/stylesheet.css"/>
-    <link type="text/css" rel="stylesheet" href="/static/stylesheetMobile.css"
-          media="only screen and (max-width: 999px)"/>
-    <script src="/static/jquery-2.1.1.min.js"></script>
-    <script src="/static/jquery-ui.js"></script>
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheet.css"/>
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetMobile.css" media="only screen and (max-width: 999px)"/>
+    <script src="/static/scripts/jquery-2.1.1.min.js"></script>
+    <script src="/static/scripts/jquery-ui.min.js"></script>
     <title>Sprinkler System</title>
 </head>
 
@@ -41,18 +40,15 @@
         <div id="rightC">
             <div id="settings">
                 <div id="settingsLabel" class="label">Settings</div>
-                <ul>
-                    <li class="hello">Fully Automated: {{ full_auto }}</li>
-                    <li class="goAway">Days apart: {{ days }}</li>
-                    <li>Start time: {{ time_to_start }}</li>
-                    <li class="goAway">Zone 1 length: {{ zones.0.length }}</li>
-                    <li class="goAway">Zone 2 length: {{ zones.1.length }}</li>
-                    <li class="goAway">Zone 3 length: {{ zones.2.length }}</li>
+                <ul id="settingsText">
+                    <li>Fully Automated: <span>{{ full_auto }}</span></li>
+                    <li class="goAway">Days apart: <span>{{ days }}</span></li>
+                    <li>Start time: <span>{{ time_to_start }}</span></li>
+                    <li class="goAway">Zone 1 length: <span>{{ zones.0.length }}</span></li>
+                    <li class="goAway">Zone 2 length: <span>{{ zones.1.length }}</span></li>
+                    <li class="goAway">Zone 3 length: <span>{{ zones.2.length }}</span></li>
                 </ul>
-                <a href="javascript:void(0)"
-                   onclick="document.getElementById('light').style.display='block';document.getElementById('fade').style.display='block'">
-                    <div id='logButton'>Log</div>
-                </a>
+                <div id='logButton'>Log</div>
 
 
                 <div id="system_on_off">
@@ -70,89 +66,90 @@
 
 
         <div id="leftC">
+            {#   --== General ==--    #}
             <div id="general">
                 <div id="generalLabel" class="label">General</div>
 
-                <div id="fullAuto2" class="input"><label>Fully Automated? <input type="checkbox" id="fullAuto"{% if full_auto %} checked{% endif %} /></label></div>
+                <div id="fullAuto2" class="input"><label>Fully Automated?
+                    {#<input type="checkbox" id="fullAuto" {% if full_auto %} checked{% endif %} />#}</label>
+
+                    <div id="toggleBG">
+                        <div id="toggle"></div>
+                    </div>
+                </div>
 
                 <div id="daysApart" class="input goAway">
-                    <label>How many days apart: <input type="number" name="text" min="0" step="any"/></label>
+                    <label>How many days apart: <input type="number" id="days" min="0" step="any"/></label>
                 </div>
                 <div id="startTime" class="input">
-                    <label>Time to start: <input type="time" name="start" id="tp"></label>
+                    <label>Time to start: <input type="time" id="ttime"/></label>
                 </div>
             </div>
 
+            {#   --== Zone 1 ==--    #}
             <div class="zones">
                 <div id="zone1Label" class="label">Zone 1</div>
                 <div id='onOff0' class="on-off {% if zones.0.on %}on{% else %}off{% endif %}"></div>
                 <div class="input goAway">
-                    <label>Run length: <br /><input type="number" name="run0"/></label>
+                    <label>Run length: <br/><input type="number" id="zone1length"/></label>
                 </div>
 
                 <div class="manInput">
                     <label>Manual Run Time: <input type="number" id="man0"/></label>
                 </div>
                 <div class="buttonP">
-                    <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}off{% else %}on{% endif %}</span></div>
+                    <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}
+                        off{% else %}on{% endif %}</span></div>
                 </div>
 
             </div>
 
+            {#   --== Zone 2 ==--    #}
             <div class="zones">
                 <div id="zone2Label" class="label">Zone 2</div>
                 <div id='onOff1' class="on-off {% if zones.1.on %}on{% else %}off{% endif %}"></div>
                 <div class="input goAway">
-                    <label>Run length: <input type="number" name="run1"/></label>
+                    <label>Run length: <input type="number" id="zone2length"/></label>
                 </div>
 
                 <div class="manInput">
                     <label>Manual Run Time: <input type="number" id="man1"/></label>
                 </div>
                 <div class="buttonP">
-                    <div class="manButt {% if zones.1.on %}manOff{% endif %}" id="1"><span>Manual {% if zones.1.on %}off{% else %}on{% endif %}</span></div>
+                    <div class="manButt {% if zones.1.on %}manOff{% endif %}" id="1"><span>Manual {% if zones.1.on %}
+                        off{% else %}on{% endif %}</span></div>
                 </div>
 
             </div>
 
+            {#   --== Zone 3 ==--    #}
             <div class="zones">
                 <div id="zone3Label" class="label">Zone 3</div>
                 <div id='onOff2' class="on-off {% if zones.2.on %}on{% else %}off{% endif %}"></div>
                 <div class="input goAway">
-                    <label>Run length: <input type="number" name="run2"/></label>
+                    <label>Run length: <input type="number" id="zone3length"/></label>
                 </div>
 
                 <div class="manInput">
                     <label>Manual Run Time: <input type="number" id="man2"/></label>
                 </div>
                 <div class="buttonP">
-                    <div class="manButt {% if zones.2.on %}manOff{% endif %}" id="2"><span>Manual {% if zones.2.on %}off{% else %}on{% endif %}</span></div>
+                    <div class="manButt {% if zones.2.on %}manOff{% endif %}" id="2"><span>Manual {% if zones.2.on %}
+                        off{% else %}on{% endif %}</span></div>
                 </div>
 
             </div>
         </div>
     </div>
     <div id="footer">
-        <div id="applyButton">
-            <input type="submit" name="my-form" value="Apply"/>
+        <div id="applyButton">Apply
+        </div>
 
-            <div id="startButton">
-                {% if system_running %}
-                    <a href="/stop">
-                        <div id="stopButton"><span>Stop</span></div>
-                    </a>
-                {% else %}
-                    <a href="/start">
-                        <div id="startButton2"><span>Start</span></div>
-                    </a>
-                {% endif %}
-            </div>
+        <div id="startButton">
+            {% if system_running %}Stop{% else %}Start{% endif %}
         </div>
     </div>
 </div>
-
-<div id="cover1"></div>
-<div id="cover2"></div>
 
 <div style="position: absolute; left: 50%;">
     <div id="light" class="white_content">
@@ -176,74 +173,14 @@
                 {% endfor %}
             {% endif %}
         </div>
-        <a href="javascript:void(0)"
-           onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">
-            <div id="logClose">X</div>
-        </a>
+        <div id="logClose">X</div>
     </div>
 </div>
 <div id="fade" class="black_overlay"></div>
 
 <script>
-    $('#fullAuto').change(function () {
-        if (this.checked) {
-            $('.goAway').hide(500);
-            $('.hello').html('Fully Automated: True').show(500);
-        } else {
-            $('.goAway').show(500);
-            $('.hello').html('Fully Automated: False').hide(500);
-        }
-    });
-
-
-    if ($('input#fullAuto').is(':checked')) {
-        $('.goAway').hide(500);
-    } else {
-        $('.goAway').show(500);
-    }
-
-
-    $('.manButt').on('click', function(){
-        GetURL($(this).attr('id'))
-    });
-
-    function GetURL(number) {
-        var length = $("#man" + number).val();
-        if (length === '') length = '0';
-        $.ajax(
-            {
-                type: 'post',
-                url: "/manual",
-                data: {
-                    'number': number,
-                    'length': length
-                }
-            }
-        )
-        .done(function(data){
-            showMessages(data.message);
-            if(data.onOff === 'on'){
-                $('#onOff' + number).switchClass('off', 'on');
-                $('#' + number).addClass('manOff').children().html('Manual Off');
-                if(parseInt(length) > 0){
-                    var man = setTimeout(function(){$('#onOff' + number).switchClass('on', 'off');$('#' + number).removeClass('manOff').children().html('Manual On');}, (parseInt(length)*1000)*60);
-                }
-            } else {
-                $('#onOff' + number).switchClass('on', 'off');
-                $('#' + number).removeClass('manOff').children().html('Manual On');
-                clearTimeout(man)
-            }
-
-
-
-        })
-    }
-
-
-    function showMessages(message){
-        $('#messages').html(message).fadeIn(300).delay(10000).fadeOut(800);
-    }
+    var fullAuto = {{ full_auto|lower }};
 </script>
-
+<script src="/static/scripts/script.js"></script>
 </body>
 </html>

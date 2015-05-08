@@ -1,10 +1,10 @@
 try:
     with open('settings.ini') as f:
         content = f.readlines()
-    for i in range(0, 7):
+    for i in range(0, 8):
         a = content[i].rstrip('\r\n')
 except:
-    content = ['3', '22:00', '40', '40', '30', '1980-1-1 01:01:01', '0']
+    content = ['3', '22:00', '40', '40', '30', '1980-1-1 01:01:01', '0', False]
     f = open('settings.ini', 'w')
     for i in content:
         f.write('%s\n' % i)
@@ -32,8 +32,10 @@ templateData = {
     'next_run_date': '',
     'cycle_count': 0,
     'uptime': '',
-    'full_auto': False
+    'full_auto': str(content[7].rstrip('\r\n'))
 }
+
+templateData['full_auto'] = True if templateData['full_auto'] == 'True' else False
 
 forecast = []
 
@@ -94,14 +96,12 @@ def check_weather():
         except:
             if time_since_last_check.total_seconds() > (10 * 60):
                 global something_wrong
-                weather_website = (
-                'http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/forecast10day/q/%s.json' % location)
+                weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/forecast10day/q/%s.json' % location)
                 try:
                     f = urlopen(weather_website, timeout=3)
                     something_wrong = False
                 except urllib.error.URLError as e:
-                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'),
-                                  e)
+                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'), e)
                     something_wrong = True
                 except timeout:
                     logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
@@ -314,20 +314,32 @@ try:
         templateData['uptime'] = time_since(uptime_start)
         return render_template("index.html", **templateData)
 
-    @app.route('/', methods=['POST'])
-    def my_form_post():
-        text = request.form['text']
-        ttime = request.form['start']
-        zone1 = request.form['run0']
-        zone2 = request.form['run1']
-        zone3 = request.form['run2']
-        if text != '':
-            templateData['days'] = float(text)
-            write_settings(0, text)
+    @app.route('/full_auto', methods=['POST'])
+    def full_auto():
+        full_auto = request.form.get('full_auto', '', type=str)
+        if full_auto.title() == 'True':
+            templateData['full_auto'] = True
+            write_settings(7, True)
+        else:
+            templateData['full_auto'] = False
+            write_settings(7, False)
+        return jsonify({'message': templateData['message']})
+
+    @app.route('/apply', methods=['POST'])
+    def apply():
+        global cycle_has_run, job
+        send_message = 0
+        days = request.form.get('days', '', type=int)
+        ttime = request.form.get('time', '', type=str)
+        zone1length = request.form.get('zone1length', '', type=int)
+        zone2length = request.form.get('zone2length', '', type=int)
+        zone3length = request.form.get('zone3length', '', type=int)
+        if days != '':
+            templateData['days'] = days
+            write_settings(0, days)
+            send_message += 1
         if ttime != '':
             if is_time_format(ttime):
-                global cycle_has_run
-                global job
                 if cycle_has_run:
                     if templateData['system_running']:
                         sched.unschedule_job(job)
@@ -355,25 +367,31 @@ try:
                         write_settings(1, str(ttime))
             else:
                 templateData['message'] = 'Error: Incorrect Time'
-        if zone1 != '':
-            zones[0]['length'] = int(zone1)
-            write_settings(2, zone1)
-        if zone2 != '':
-            zones[1]['length'] = int(zone2)
-            write_settings(3, zone2)
-        if zone3 != '':
-            zones[2]['length'] = int(zone3)
-            write_settings(4, zone3)
-        templateData['message'] = 'Updated Settings'
+            send_message += 1
+        if zone1length != '':
+            zones[0]['length'] = zone1length
+            write_settings(2, zone1length)
+            send_message += 1
+        if zone2length != '':
+            zones[1]['length'] = zone2length
+            write_settings(3, zone2length)
+            send_message += 1
+        if zone3length != '':
+            zones[2]['length'] = zone3length
+            write_settings(4, zone3length)
+            send_message += 1
+        if send_message > 0:
+            templateData['message'] = 'Updated Settings'
+        else:
+            templateData['message'] = ''
         templateData['uptime'] = time_since(uptime_start)
-        return render_template("index.html", **templateData)
+        return jsonify({'message': templateData['message']})
 
     @app.route("/manual", methods=['POST'])
-    def action():
+    def manual():
         on_off = 'on'
         number = request.form.get('number', 'something is wrong', type=int)
         length = request.form.get('length', 'something is wrong', type=str)
-        print(str(number) + ' - ' + str(length))
 
         if cycle_running:
             templateData['message'] = 'Cycle Running'
@@ -404,7 +422,6 @@ try:
 
         return jsonify({'message': templateData['message'], 'onOff': on_off})
 
-
     @app.route("/start", methods=['POST'])
     def start_program():
         if templateData['system_running'] is False:
@@ -417,7 +434,6 @@ try:
             write_log('%s - System started.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         return redirect(url_for('my_form'))
 
-
     @app.route("/stop")
     def stop_program():
         if templateData['system_running']:
@@ -428,10 +444,8 @@ try:
             write_log('%s - System stopped.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
         return redirect(url_for('my_form'))
 
-
     if __name__ == '__main__':
         app.run(host='0.0.0.0')
-
 
 finally:
     print("Quitting...")
