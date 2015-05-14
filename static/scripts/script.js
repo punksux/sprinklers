@@ -1,8 +1,9 @@
 $('.manButt').on('click', function () {
-    GetURL($(this).attr('id'))
+    manual($(this).attr('id'));
+    getUptimeCount();
 });
 
-function GetURL(number) {
+function manual(number) {
     var length = $("#man" + number).val();
     if (length === '') length = '0';
     $.ajax(
@@ -35,7 +36,10 @@ function GetURL(number) {
         })
 }
 
-$('#applyButton').click(apply);
+$('#applyButton').click(function(){
+    apply();
+    getUptimeCount();
+});
 
 function apply() {
     var days = $('#days').val();
@@ -86,10 +90,31 @@ function flash(tis) {
     })
 }
 
+function getLog(){
+    $.ajax(
+        {
+            type: 'post',
+            url: "/log"
+        }
+    ).done(function (data) {
+            $('div#log').html('');
+            for(var i = 0 ; i < data.log.length ; i++){
+                if (data.log[i] === '-='){
+                    $('#log').append("<div class='line'></div>");
+                } else {
+                    $('#log').append('<p>' + data.log[i] + '</p>')
+                }
+
+            }
+        $('#fade').fadeIn(200);
+        $('#light').fadeIn(200);
+    })
+}
+
 
 $('#logButton').click(function () {
-    $('#fade').fadeIn(200);
-    $('#light').fadeIn(200);
+    getLog();
+    getUptimeCount()
 });
 
 $('#logClose, #fade').click(function () {
@@ -100,7 +125,7 @@ $('#logClose, #fade').click(function () {
 
 function showMessages(message) {
     if (message != ''){
-        $('#messages').html(message).fadeIn(300).delay(10000).fadeOut(800);
+        $('#messages').html(message).fadeIn(300).delay(5000).fadeOut(800);
     }
 }
 
@@ -120,7 +145,7 @@ if (fullAuto) {
 $('div#toggleBG').on('click', function () {
     fullAuto = !fullAuto;
     fullAutoFunc(fullAuto);
-
+    getUptimeCount()
 });
 
 
@@ -147,3 +172,61 @@ function fullAutoFunc(fullAuto) {
             }
         })
 }
+
+
+var startStopVar = 'stop';
+
+$('div#startButton').click(function(){
+    if (startStopVar === 'start'){
+        startStopVar = 'stop';
+    } else if (startStopVar === 'stop') {
+        startStopVar = 'start';
+    }
+    startStop(startStopVar);
+    getUptimeCount()
+});
+
+function startStop(startStopVar){
+    $.ajax(
+        {
+            type: 'post',
+            url: "/start_stop",
+            data: {
+                'start_stop': startStopVar
+            }
+        }
+    ).done(function (data) {
+        showMessages(data.message);
+        $("div#nextRunTime span").html(data.nextRunDate);
+            if (startStopVar === 'start') {
+                $('#startButton').addClass('stopButton').html('Stop');
+                $('#system_on_off').switchClass('off', 'on');
+            } else {
+                $('#startButton').removeClass('stopButton').html('Start');
+                $('#system_on_off').switchClass('on', 'off');
+            }
+
+        });
+}
+
+if(systemRunning){
+    $('#startButton').addClass('stopButton').html('Stop');
+    $('#system_on_off').switchClass('off', 'on');
+} else {
+    $('#startButton').removeClass('stopButton').html('Start');
+    $('#system_on_off').switchClass('on', 'off');
+}
+
+function getUptimeCount() {
+    $.ajax(
+        {
+            type: 'post',
+            url: "/uptime"
+        }
+    ).done(function (data) {
+        $('div#uptime span').html(data.uptime);
+            $('div#cycles span').html(data.count);
+    });
+}
+
+$('#uptime, #cycles').click(getUptimeCount);

@@ -86,8 +86,13 @@ body {
 
 #system_on_off {
     position: absolute;
-    right: 00px;
-    top: 00px;
+    right: 0;
+    top: 0;
+    border-radius: 0 0 0 10px;
+    width: 20px;
+    height: 20px;
+    border-top: 0;
+    border-right: 0;
 }
 
 #rightC {
@@ -113,15 +118,21 @@ body {
     margin-top: 0;
     box-shadow: 2px 2px 5px #333;
     font-size: 20px;
+    padding-bottom: 15px;
 }
 
 #settings ul {
     list-style-type: none;
 }
 
+#settings span {
+    color: #93b81a;
+}
+
 #logButton {
-    position: relative;
+    position: absolute;
     left: 65px;
+    bottom: 0;
     width: 150px;
     height: 20px;
     border-top-left-radius: 10px;
@@ -134,11 +145,16 @@ body {
     background: -moz-linear-gradient(top, #b6e026 0%, #89b505 100%);
     background: -webkit-linear-gradient(top, #b6e026 0%, #89b505 100%);
     cursor: pointer;
+    margin-top: 5px;
 }
 
 #logButton:hover {
     background: -moz-linear-gradient(top, #93b81a 0%, #6d9004 100%);
     background: -webkit-linear-gradient(top, #93b81a 0%, #6d9004 100%);
+}
+
+#logButton:active {
+    height: 19px;
 }
 
 #settings a {
@@ -165,10 +181,6 @@ body {
     padding-bottom: 7px;
     display: none;
 }
-
-/*#body.loaded .messages {
-    opacity: 0;
-}*/
 
 #general {
     border: 0 solid #aaa;
@@ -208,6 +220,7 @@ body {
     display: inline-block;
     position: relative;
     top: 2px;
+    left: 46px;
     box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
     cursor: pointer;
 }
@@ -235,6 +248,7 @@ body {
     padding-top: 0;
     background: white;
     font-size: 20px;
+    line-height: 20px;
 }
 
 .zones input {
@@ -245,15 +259,17 @@ body {
 }
 
 .zones .input {
-    top: 10px;
-    left:40px;
-    position: relative;
+    bottom: 20px;
+    left: 40px;
+    position: absolute;
+    display: inline-block;
 }
 
 .zones .manInput {
-    left: 220px;
-    top: 50px;
+    left: 223px;
+    bottom: 20px;
     position: absolute;
+    display: inline-block;
 }
 
 .manSection{
@@ -264,9 +280,13 @@ body {
 
 .label {
     font-size: 35px;
-    top: 2px;
+    top: 12px;
     left:10px;
     position: relative;
+}
+
+#general .label {
+    top: 2px;
 }
 
 .on-off {
@@ -274,33 +294,26 @@ body {
     right: 0;
     top: 0;
     float: right;
+    width: 20px;
+    height: 20px;
+    border-radius: 0 10px 0 10px;
 }
 
 .on {
     background: -moz-radial-gradient(top left, ellipse cover, #baffbd 0%, #13ff02 100%);
     background: -webkit-radial-gradient(top left, ellipse cover, #baffbd 0%, #13ff02 100%);
-    width: 20px;
-    height: 20px;
-    border-radius: 0 10px 0 10px;
     border: 1px solid #11cc11;
-    border-top: 0;
-    border-right: 0;
     box-shadow: -1px 1px 10px #33CC33;
+    border-top-width: 0;
+    border-right-width: 0;
 }
 
 .off {
     background: -moz-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
     background: -webkit-radial-gradient(top left, ellipse cover, #ffb0a9 0%, #fc1e1e 100%);
-    width: 20px;
-    height: 20px;
-    border-radius: 0 10px 0 10px;
     border: 1px solid #9c0000;
-    border-top: 0;
-    border-right: 0;
-}
-
-#system_on_off .on, #system_on_off .off {
-    border-radius: 0 0 0 10px;
+    border-top-width: 0;
+    border-right-width: 0;
 }
 
 .manButt {
@@ -387,13 +400,13 @@ body {
 }
 
 .stopButton {
-    background: -moz-linear-gradient(top, #ff8075 0%, #8c0202 100%);
-    background: -webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%);
+    background: -moz-linear-gradient(top, #ff8075 0%, #8c0202 100%) !important;
+    background: -webkit-linear-gradient(top, #ff8075 0%, #8c0202 100%) !important;
 }
 
 .stopButton:hover {
-    background: -moz-linear-gradient(top, #ee1400 0%, #590101 100%);
-    background: -webkit-linear-gradient(top, #ee1400 0%, #590101 100%);
+    background: -moz-linear-gradient(top, #ee1400 0%, #590101 100%) !important;
+    background: -webkit-linear-gradient(top, #ee1400 0%, #590101 100%) !important;
 }
 
 #applyButton {
@@ -450,11 +463,8 @@ input[type=number]::outer-spin-button {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: black;
+    background-color: rgba(0,0,0,0.6);
     z-index: 1001;
-    -moz-opacity: 0.8;
-    opacity: .60;
-
 }
 
 .white_content {
@@ -500,30 +510,6 @@ input[type=number]::outer-spin-button {
     top: 60px;
     left: 40px;
 }
-
-/*#cover1 {
-		width:10px;
-		height:100%;
-		border:1px solid #ddffdd;
-		background:white;
-		z-index:5;
-		position:absolute;
-		top:0;
-		left:-moz-calc(50% + 401px);
-		background-color:#ddffdd;
-}
-
-#cover2 {
-		width:100%;
-		height:10px;
-		border:1px solid #ddffdd;
-		background:white;
-		z-index:5;
-		position:absolute;
-		left:0;
-		top:745px;
-		background-color:#ddffdd;
-}*/
 
 .line {
     width: 700px;

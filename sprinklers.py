@@ -1,33 +1,35 @@
 try:
     with open('settings.ini') as f:
         content = f.readlines()
-    for i in range(0, 8):
+    for i in range(0, 9):
         a = content[i].rstrip('\r\n')
 except:
-    content = ['3', '22:00', '40', '40', '30', '1980-1-1 01:01:01', '0', False]
+    content = ['3', '22:00', '40', '40', '30', '1980-1-1 01:01:01', '0', 'False', 'False']
     f = open('settings.ini', 'w')
     for i in content:
         f.write('%s\n' % i)
     f.close()
+# ini settings - days apart, time to start, zone 1 length, zone 2 length, zone 3 length, next run date, rain total, full auto, system running
+
 
 # Settings
 on = True
 location = "84123"
 on_pi = False
-weather_test = 70
+weather_test = 1
 zones = [
     {'length': int(content[2].rstrip('\r\n')), 'on': False, 'pinNo': 7, 'name': 'Zone 1', 'man_timer':False},
     {'length': int(content[3].rstrip('\r\n')), 'on': False, 'pinNo': 11, 'name': 'Zone 2', 'man_timer':False},
     {'length': int(content[4].rstrip('\r\n')), 'on': False, 'pinNo': 13, 'name': 'Zone 3', 'man_timer':False},
 ]
 templateData = {
-    'days': float(content[0].rstrip('\r\n')),
+    'days': int(content[0].rstrip('\r\n')),
     'zones': zones,
     'rain': 0.0,
     'rain_total': float(content[6].rstrip('\r\n')),
     'time_to_start': str(content[1].rstrip('\r\n')),
     'message': '',
-    'system_running': False,
+    'system_running': str(content[8].rstrip('\r\n')),
     'log': {},
     'next_run_date': '',
     'cycle_count': 0,
@@ -40,7 +42,7 @@ templateData['full_auto'] = True if templateData['full_auto'] == 'True' else Fal
 forecast = []
 
 # Imports
-from flask import Flask, request, render_template, url_for, redirect, jsonify
+from flask import Flask, request, render_template, jsonify
 from datetime import datetime, timedelta
 import time
 import os
@@ -52,9 +54,11 @@ import logging.handlers
 from urllib.request import urlopen
 import urllib.error
 import json
+import random
 
 # Set up Flask
 app = Flask(__name__)
+
 
 # Setup
 job = None
@@ -116,15 +120,14 @@ def check_weather():
                     f.close()
                     templateData['rain'] = parsed_json['current_observation']['precip_today_in']
 
-                    for i in range(1, 4):
+                    for i in range(1, 6):
                         forecast.append([parsed_json['forecast']['simpleforecast']['forecastday'][i]['pop'],
-                                         parsed_json['forecast']['simpleforecast']['forecastday'][i]['high'][
-                                             'fahrenheit']])
+                                         parsed_json['forecast']['simpleforecast']['forecastday'][i]['high']['fahrenheit']])
 
                 time_checked = datetime.now()
     else:
         templateData['rain'] = weather_test
-        forecast = [['30', '75'], ['0', '80'], ['75', '65']]
+        forecast = [[random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)]]
 
 #Set up GPIO
 if on_pi:
@@ -142,9 +145,9 @@ def get_start_time():
         content = f.readlines()
     ini_time = datetime.strptime(content[5].rstrip('\r\n'), '%Y-%m-%d %H:%M:%S')
     time_to_start = ini_time.replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
-    print(time_to_start)
     if (time_to_start - datetime.now()).total_seconds() < 0:
         time_to_start = datetime.now().replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
+    print(time_to_start)
     write_settings(5, time_to_start)
     return time_to_start
 
@@ -240,16 +243,54 @@ def time_since(otherdate):
         return "%d %s" % (delta_s, "second" if 2 > delta_s > 1 else "seconds")
 
 
+def scheduled_turn_on(i):
+    write_log('%s - %s on: %s min.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
+    if on_pi:
+        GPIO.output(zones[i]['pinNo'], False)
+    else:
+        print('%s - %s on: %s min.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
+    zones[i]['on'] = True
+
+
+def scheduled_turn_off(i):
+    write_log('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
+    if on_pi:
+        GPIO.output(zones[i]['pinNo'], True)
+    else:
+        print('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
+    zones[i]['on'] = False
+
+
+def schedule_finish(dt):
+    global job, cycle_running, cycle_has_run, next_time
+    if templateData['full_auto']:
+        set_full_auto()
+    splits = templateData['time_to_start'].split(":")
+    next_time = (dt + timedelta(days=templateData['days'])).replace(hour=int(splits[0]), minute=int(splits[1]), second=00, microsecond=0)
+    print(next_time)
+    job = sched.add_date_job(sprinkler_go, next_time)
+    write_settings(5, next_time.strftime('%Y-%m-%d %H:%M:%S'))
+    if next_time.strftime('%B %d') == datetime.now().strftime('%B %d'):
+        templateData['next_run_date'] = next_time.strftime('Today at %I:%M %p')
+    else:
+        templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
+    cycle_running = False
+    templateData['cycle_count'] += 1
+    cycle_has_run = True
+    templateData['rain_total'] = 0.0
+    write_settings(6, templateData['rain_total'])
+    templateData['message'] = ''
+
+
 # Run program
 def sprinkler_go():
-    global job
+    global job, cycle_running, cycle_has_run, next_time
     check_weather()
     templateData['rain_total'] += float(templateData['rain'])
     print(datetime.now())
 
     if float(templateData['rain']) > 0.2 or float(templateData['rain_total']) > (int(templateData['days']) * .125):
-        write_log('%s - Canceling for rain - trying again in %s days.\n' %
-                  (datetime.now().strftime('%m/%d/%Y %I:%M %p'), str(templateData['days'])))
+        write_log('%s - Canceling for rain - trying again in %s days.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), str(templateData['days'])))
         temp = datetime.now() + timedelta(days=int(templateData['days']))
         job = sched.add_date_job(sprinkler_go, temp)
         templateData['next_run_date'] = temp.strftime('%a, %B %d at %I:%M %p')
@@ -263,44 +304,98 @@ def sprinkler_go():
         templateData['rain_total'] = 0.0
         write_settings(6, templateData['rain_total'])
     else:
-        global cycle_running, cycle_has_run, next_time
         cycle_running = True
         templateData['message'] = 'Running Cycle'
-        next_time = datetime.now() + timedelta(days=templateData['days'])
-
+        tt = 0
+        scheduled_turn_on(0)
         for i in range(0, len(zones)):
-            write_log('%s - %s on: %s min.\n' % (
-                datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
-            if on_pi:
-                GPIO.output(zones[i]['pinNo'], False)
+            sched.add_date_job(scheduled_turn_off, datetime.now() + timedelta(seconds=(zones[i]['length'] * 60) + tt), args=[i], name=('zone_off_' + str(i)))
+            if i + 1 < len(zones):
+                sched.add_date_job(scheduled_turn_on, datetime.now() + timedelta(seconds=(zones[i]['length'] * 60) + tt - 5), args=[i + 1], name=('zone_on_' + str(i + 1)))
+                tt += zones[i]['length'] * 60
             else:
-                print('%s - %s on: %s min.\n' % (
-                    datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name'], zones[i]['length']))
-            zones[i]['on'] = True
-            time.sleep((int(zones[i]['length'])) * 60)
+                sched.add_date_job(schedule_finish, datetime.now() + timedelta(seconds=(zones[i]['length'] * 60) + tt), args=datetime.now(), name='schedule_finish')
 
-            write_log('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
-            if on_pi:
-                if i < len(zones) - 1:
-                    GPIO.output(zones[i + 1]['pinNo'], False)
-                time.sleep(5)
-                GPIO.output(zones[i]['pinNo'], True)
-            else:
-                print('%s - %s off.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), zones[i]['name']))
-            zones[i]['on'] = False
-            time.sleep(5)
 
-        job = sched.add_date_job(sprinkler_go, next_time)
-        write_settings(5, next_time.strftime('%Y-%m-%d %H:%M:%S'))
-        print(next_time)
-        templateData['next_run_date'] = next_time.strftime('%a, %B %d at %I:%M %p')
-        cycle_running = False
-        templateData['cycle_count'] += 1
-        cycle_has_run = True
-        templateData['rain_total'] = 0.0
-        write_settings(6, templateData['rain_total'])
-        templateData['message'] = ''
+def set_length(add):
+    zone1 = 40
+    zone2 = 40
+    zone3 = 30
 
+    zones[0]['length'] = zone1 + add
+    zones[1]['length'] = zone2 + add
+    zones[2]['length'] = zone3 + add
+    print(str(zones[0]['length']) + ' - ' + str(zones[1]['length']) + ' - ' + str(zones[2]['length']))
+
+
+def set_full_auto():
+    temp = [0, 0, 0, 0]
+    rain = [0, 0, 0, 0]
+    check_weather()
+    print(forecast)
+    for j in range(2, 6):
+        for i in range(0, j):
+            temp[j - 2] += float(forecast[i][1])
+            if float(forecast[i][0]) > rain[j - 2]:
+                rain[j - 2] = float(forecast[i][0])
+        temp[j - 2] /= j
+    print(temp)
+    if temp[0] > 100:
+        templateData['days'] = 2
+        set_length(10)
+    elif 100 > temp[0] > 90:
+        if rain[0] > 60:
+            templateData['days'] = 3
+        else:
+            templateData['days'] = 2
+        set_length(0)
+    elif 90 > temp[1] > 80:
+        if rain[1] > 60:
+            templateData['days'] = 4
+        else:
+            templateData['days'] = 3
+        set_length(0)
+    elif 80 > temp[2] > 70:
+        if rain[2] > 60:
+            templateData['days'] = 5
+        else:
+            templateData['days'] = 4
+        set_length(0)
+    elif 70 > temp[3] > 60:
+        if rain[3] > 60:
+            templateData['days'] = 6
+        else:
+            templateData['days'] = 5
+        set_length(0)
+    elif temp[3] < 60:
+        templateData['days'] = 6
+        set_length(-10)
+    print(templateData['days'])
+    print(rain)
+
+
+def st_program(st):
+    global job
+    if st == 'False':
+        for i in sched.get_jobs():
+            if i.name == 'sprinkler_go':
+                sched.unschedule_job(job)
+        templateData['system_running'] = False
+        templateData['message'] = "System Stopped"
+        templateData['next_run_date'] = ''
+        write_log('%s - System stopped.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+    else:
+        time_to_start = get_start_time()
+        if time_to_start.strftime('%B %d') == datetime.now().strftime('%B %d'):
+            templateData['next_run_date'] = time_to_start.strftime('Today at %I:%M %p')
+        else:
+            templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
+        job = sched.add_date_job(sprinkler_go, time_to_start)
+        templateData['system_running'] = True
+        templateData['message'] = "System Started"
+        write_log('%s - System started.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+
+st_program(templateData['system_running'])
 
 print('Running')
 
@@ -389,12 +484,12 @@ try:
 
     @app.route("/manual", methods=['POST'])
     def manual():
-        on_off = 'on'
         number = request.form.get('number', 'something is wrong', type=int)
         length = request.form.get('length', 'something is wrong', type=str)
 
         if cycle_running:
             templateData['message'] = 'Cycle Running'
+            on_off = 'off'
         else:
             if zones[number]['on'] is False:
                 if length != "0":
@@ -422,30 +517,47 @@ try:
 
         return jsonify({'message': templateData['message'], 'onOff': on_off})
 
-    @app.route("/start", methods=['POST'])
+    @app.route("/start_stop", methods=['POST'])
     def start_program():
-        if templateData['system_running'] is False:
-            time_to_start = get_start_time()
-            templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
-            global job
-            job = sched.add_date_job(sprinkler_go, time_to_start)
-            templateData['system_running'] = True
-            templateData['message'] = "System Started"
-            write_log('%s - System started.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
-        return redirect(url_for('my_form'))
-
-    @app.route("/stop")
-    def stop_program():
-        if templateData['system_running']:
-            sched.unschedule_job(job)
+        global job
+        start_stop = request.form.get('start_stop', '', type=str)
+        if start_stop == 'stop':
+            for i in sched.get_jobs():
+                if i.name == 'sprinkler_go':
+                    sched.unschedule_job(job)
             templateData['system_running'] = False
             templateData['message'] = "System Stopped"
             templateData['next_run_date'] = ''
             write_log('%s - System stopped.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
-        return redirect(url_for('my_form'))
+            start_stop = 'start'
+        else:
+            time_to_start = get_start_time()
+            if time_to_start.strftime('%B %d') == datetime.now().strftime('%B %d'):
+                templateData['next_run_date'] = time_to_start.strftime('Today at %I:%M %p')
+            else:
+                templateData['next_run_date'] = time_to_start.strftime('%a, %B %d at %I:%M %p')
+            job = sched.add_date_job(sprinkler_go, time_to_start)
+            templateData['system_running'] = True
+            templateData['message'] = "System Started"
+            write_log('%s - System started.\n' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
+            start_stop = 'stop'
+        return jsonify({'message': templateData['message'], 'sysRunning': start_stop, 'nextRunDate': templateData['next_run_date']})
+
+    @app.route('/log', methods=['POST'])
+    def get_log():
+        logs = [log.rstrip('\n') for log in open('log.log')]
+        if len(logs) > 13:
+            logs = logs[len(logs) - 13:]
+
+        return jsonify({'log': logs})
+
+    @app.route('/uptime', methods=['POST'])
+    def get_uptime_count():
+        templateData['uptime'] = time_since(uptime_start)
+        return jsonify({'uptime': templateData['uptime'], 'count': templateData['cycle_count']})
 
     if __name__ == '__main__':
-        app.run(host='0.0.0.0')
+        app.run(host='0.0.0.0', port='80')
 
 finally:
     print("Quitting...")

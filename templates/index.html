@@ -5,9 +5,11 @@
 <head>
     <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=.42, maximum-scale=.42, user-scalable=0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/static/manifest.json">
     <link type="text/css" rel="stylesheet" href="/static/styles/stylesheet.css"/>
-    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetMobile.css" media="only screen and (max-width: 999px)"/>
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetN6.css" media="only screen and (max-device-width: 420px) and (min-device-width: 410px)"/>
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetI6.css" media="only screen and (max-device-width: 380px)"/>
     <script src="/static/scripts/jquery-2.1.1.min.js"></script>
     <script src="/static/scripts/jquery-ui.min.js"></script>
     <title>Sprinkler System</title>
@@ -18,7 +20,7 @@
     <div id="header">
         <div id="headerText">Sprinkler System</div>
 
-        <div id="nextRunTime">Next run time: {{ next_run_date }}</div>
+        <div id="nextRunTime">Next run time: <span>{{ next_run_date }}</span></div>
         {% if rain == 1 %}
             {% set plsi = 'inch' %}
         {% else %}
@@ -31,8 +33,8 @@
         {% endif %}
         <div id="rainTotals">{{ rain }} {{ plsi }} of rain today & {{ rain_total }} {{ rt_plsi }} since last run.</div>
 
-        <div id="uptime">Uptime: {{ uptime }}</div>
-        <div id="cycles">Cycles run: {{ cycle_count }}</div>
+        <div id="uptime">Uptime: <span>{{ uptime }}</span></div>
+        <div id="cycles">Cycles run: <span>{{ cycle_count }}</span></div>
     </div>
 
 
@@ -51,12 +53,7 @@
                 <div id='logButton'>Log</div>
 
 
-                <div id="system_on_off">
-                    {% if system_running %}
-                        <div class="on"></div>
-                    {% else %}
-                        <div class="off"></div>
-                    {% endif %}
+                <div id="system_on_off" class="{% if system_running %}on{% else %}off{% endif %}">
                 </div>
             </div>
 
@@ -70,9 +67,7 @@
             <div id="general">
                 <div id="generalLabel" class="label">General</div>
 
-                <div id="fullAuto2" class="input"><label>Fully Automated?
-                    {#<input type="checkbox" id="fullAuto" {% if full_auto %} checked{% endif %} />#}</label>
-
+                <div id="fullAuto2" class="input">Fully Automated?
                     <div id="toggleBG">
                         <div id="toggle"></div>
                     </div>
@@ -91,16 +86,14 @@
                 <div id="zone1Label" class="label">Zone 1</div>
                 <div id='onOff0' class="on-off {% if zones.0.on %}on{% else %}off{% endif %}"></div>
                 <div class="input goAway">
-                    <label>Run length: <br/><input type="number" id="zone1length"/></label>
+                    <label>Run length: <input type="number" id="zone1length"/></label>
                 </div>
 
                 <div class="manInput">
                     <label>Manual Run Time: <input type="number" id="man0"/></label>
                 </div>
-                <div class="buttonP">
                     <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}
-                        off{% else %}on{% endif %}</span></div>
-                </div>
+                        Off{% else %}On{% endif %}</span></div>
 
             </div>
 
@@ -117,7 +110,7 @@
                 </div>
                 <div class="buttonP">
                     <div class="manButt {% if zones.1.on %}manOff{% endif %}" id="1"><span>Manual {% if zones.1.on %}
-                        off{% else %}on{% endif %}</span></div>
+                        Off{% else %}On{% endif %}</span></div>
                 </div>
 
             </div>
@@ -135,12 +128,14 @@
                 </div>
                 <div class="buttonP">
                     <div class="manButt {% if zones.2.on %}manOff{% endif %}" id="2"><span>Manual {% if zones.2.on %}
-                        off{% else %}on{% endif %}</span></div>
+                        Off{% else %}On{% endif %}</span></div>
                 </div>
 
             </div>
         </div>
     </div>
+
+    {#   --== Footer ==--    #}
     <div id="footer">
         <div id="applyButton">Apply
         </div>
@@ -151,9 +146,10 @@
     </div>
 </div>
 
+{#   --== Log Popup ==--    #}
 <div style="position: absolute; left: 50%;">
     <div id="light" class="white_content">
-        <div id="hh">Log:</div>
+        <div id="logLabel" class="label">Log:</div>
         <div id='log'>
             {% if log|count >= 12 %}
                 {% for x in range(log|count-12,log|count) %}
@@ -180,6 +176,8 @@
 
 <script>
     var fullAuto = {{ full_auto|lower }};
+    var systemRunning = {{ system_running|lower }};
+
 </script>
 <script src="/static/scripts/script.js"></script>
 </body>

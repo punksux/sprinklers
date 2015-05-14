@@ -1,0 +1,11 @@
+{
+    "name": "Sprinkler System",
+    "icons": [
+    {
+      "src": "/static/images/SPi.png",
+      "type": "image/png"
+    }
+    ],
+    "display": "standalone",
+    "orientation": "portrait"
+}
