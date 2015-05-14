@@ -81,6 +81,7 @@ sched.start()
 
 if on_pi:
     import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
 
 # Get weather
 time_checked = datetime.now() - timedelta(days=1)
