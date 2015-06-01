@@ -72,7 +72,8 @@ uptime_start = datetime.now()
 
 # Set up logging
 if on_pi:
-    open('errors.log', 'w').close()
+    file = open('errors.log', 'w+')
+    file.close()
     logging.basicConfig(filename='errors.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 #Set platform
