@@ -3,7 +3,7 @@ try:
         content = f.readlines()
     for i in range(0, 9):
         a = content[i].rstrip('\r\n')
-except OSError:
+except (OSError, IndexError):
     content = ['3', '22:00', '40', '40', '30', '1980-1-1 01:01:01', '0', 'False', 'False']
     f = open('settings.ini', 'w')
     for i in content:

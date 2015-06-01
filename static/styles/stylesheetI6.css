@@ -1,3 +1,7 @@
+body {
+    overflow: hidden;
+}
+
 #content {
     width:360px;
     left: 5px;
@@ -93,6 +97,20 @@
 
 #fullAuto2 {
     padding-top: 5px;
+}
+
+#startTime #ttime {
+    width: 45px;
+}
+
+#startTime #amPM {
+    display: block;
+    left: 147px;
+    position: relative;
+}
+
+#amPM input {
+    width:15px;
 }
 
 .label {
