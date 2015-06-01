@@ -585,6 +585,9 @@ finally:
         GPIO.setup(11, GPIO.IN)
         GPIO.setup(13, GPIO.IN)
     print("Rename Error File...")
-    os.remove("errors.log.old")
-    os.rename("errors.log", "errors.log.old")
+    try:
+        os.remove("errors.log.old")
+        os.rename("errors.log", "errors.log.old")
+    except FileNotFoundError:
+        pass
     print("Done.")
