@@ -576,9 +576,14 @@ try:
 
 finally:
     print("Quitting...")
+    print('Shutting Down Scheduler...')
     sched.shutdown(wait=False)
-    os.rename("errors.log", "errors.log.old")
+    print("Reseting GPIO Pins...")
     if on_pi:
         GPIO.setup(7, GPIO.IN)
         GPIO.setup(11, GPIO.IN)
         GPIO.setup(13, GPIO.IN)
+    print("Rename Error File...")
+    os.remove("errors.log.old")
+    os.rename("errors.log", "errors.log.old")
+    print("Done.")
