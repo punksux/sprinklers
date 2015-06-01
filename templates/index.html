@@ -45,7 +45,7 @@
                 <ul id="settingsText">
                     <li>Fully Automated: <span>{{ full_auto }}</span></li>
                     <li class="goAway">Days apart: <span>{{ days }}</span></li>
-                    <li>Start time: <span>{{ time_to_start }}</span></li>
+                    <li>Start time: <span>{{ time_to_start_display }}</span></li>
                     <li class="goAway">Zone 1 length: <span>{{ zones.0.length }}</span></li>
                     <li class="goAway">Zone 2 length: <span>{{ zones.1.length }}</span></li>
                     <li class="goAway">Zone 3 length: <span>{{ zones.2.length }}</span></li>
@@ -77,7 +77,13 @@
                     <label>How many days apart: <input type="number" id="days" min="0" step="any"/></label>
                 </div>
                 <div id="startTime" class="input">
-                    <label>Time to start: <input type="time" id="ttime"/></label>
+                    <div id="t">
+                        <label>Time to start: <input type="time" id="ttime"/></label>
+                    </div>
+                    <div id="amPM">
+                        <label>AM<input name="amPM" type="radio" id="tAM" value="AM" /></label>
+                        <label>PM<input name="amPM" type="radio" id="tPM" value="PM" checked /></label>
+                    </div>
                 </div>
             </div>
 

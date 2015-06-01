@@ -44,6 +44,7 @@ $('#applyButton').click(function(){
 function apply() {
     var days = $('#days').val();
     var ttime = $('#ttime').val();
+    var amPM = $('input[name="amPM"]:checked').val();
     var zone1length = $('#zone1length').val();
     var zone2length = $('#zone2length').val();
     var zone3length = $('#zone3length').val();
@@ -53,7 +54,7 @@ function apply() {
             url: "/apply",
             data: {
                 'days': days,
-                'time': ttime,
+                'time': ttime + ' ' + amPM,
                 'zone1length': zone1length,
                 'zone2length': zone2length,
                 'zone3length': zone3length
@@ -66,8 +67,9 @@ function apply() {
                 flash($('#days'));
             }
             if (ttime != '') {
-                $('ul li:nth-child(3) span').html(ttime).val('');
+                $('ul li:nth-child(3) span').html(ttime + ' ' + amPM).val('');
                 flash($('#ttime'));
+                $('div#nextRunTime span').html(data.nextTime)
             }
             if (zone1length != '') {
                 $('ul li:nth-child(4) span').html(zone1length).val('');
@@ -131,14 +133,14 @@ function showMessages(message) {
 
 
 if (fullAuto) {
-    $('#toggle').animate({left: '28px'});
-    $('#toggleBG').animate({backgroundColor: '#b6e026'});
-    $('.goAway').hide(500);
+    $('#toggle').css({left: '28px'});
+    $('#toggleBG').css({backgroundColor: '#b6e026'});
+    $('.goAway').hide();
     $('ul li:nth-child(1) span').html(' True');
 } else {
-    $('#toggle').animate({left: '2px'});
-    $('#toggleBG').animate({backgroundColor: '#bbb'});
-    $('.goAway').show(500);
+    $('#toggle').css({left: '2px'});
+    $('#toggleBG').css({backgroundColor: '#bbb'});
+    $('.goAway').show();
     $('ul li:nth-child(1) span').html(' False');
 }
 
