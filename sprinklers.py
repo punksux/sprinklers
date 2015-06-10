@@ -72,7 +72,7 @@ uptime_start = datetime.now()
 
 # Set up logging
 if on_pi:
-    file = open('errors.log', 'w+')
+    file = open('errors.log', 'w')
     file.close()
     logging.basicConfig(filename='errors.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
@@ -238,14 +238,15 @@ def turn_off(zone):
 
 
 def rain_total():
-    check_weather()
-    try:
-        templateData['rain_total'] += float(templateData['rain'])
-    except ValueError:
-        pass
-    except TypeError:
-        pass
-    write_settings(6, templateData['rain_total'])
+    if templateData['system_running']:
+        templateData['rain_total'] = 0.0
+    else:
+        check_weather()
+        try:
+            templateData['rain_total'] += float(templateData['rain'])
+        except (ValueError, TypeError):
+            pass
+        write_settings(6, templateData['rain_total'])
 
 
 sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=23, minute=30, second=00,
@@ -309,12 +310,19 @@ def schedule_finish(dt):
 
 
 # Run program
-def sprinkler_go():
-    global job, cycle_running, cycle_has_run
-    check_weather()
-    templateData['rain_total'] += float(templateData['rain'])
+high_rain = 0.2
+low_rain = 0.1
 
-    if float(templateData['rain']) > 0.2 or float(templateData['rain_total']) > (int(templateData['days']) * .125):
+
+def sprinkler_go():
+    global job, cycle_running, cycle_has_run, temp_length
+    try:
+        check_weather()
+        templateData['rain_total'] += float(templateData['rain'])
+    except:
+        pass
+
+    if float(templateData['rain']) > high_rain or float(templateData['rain_total']) > (int(templateData['days']) * (high_rain / 2)):
         write_log('%s - Canceling for rain ( %s - %s ) - trying again in %s days.' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), templateData['rain'], templateData['rain_total'], str(templateData['days'])))
         temp = datetime.now() + timedelta(days=int(templateData['days']))
         job = sched.add_date_job(sprinkler_go, temp)
@@ -322,7 +330,7 @@ def sprinkler_go():
         templateData['rain_total'] = 0.0
         write_settings(6, templateData['rain_total'])
         write_settings(5, temp.strftime('%Y-%m-%d %H:%M:%S'))
-    elif float(templateData['rain']) > 0.1 or float(templateData['rain_total']) > (int(templateData['days']) * .063):
+    elif float(templateData['rain_total']) > (int(templateData['days']) * (low_rain / 2)):
         write_log('%s - Canceling for rain ( %s - %s ) - trying again tomorrow.' % (datetime.now().strftime('%m/%d/%Y %I:%M %p'), templateData['rain'], templateData['rain_total']))
         temp = datetime.now() + timedelta(days=1)
         job = sched.add_date_job(sprinkler_go, temp)
@@ -331,6 +339,14 @@ def sprinkler_go():
         write_settings(6, templateData['rain_total'])
         write_settings(5, temp.strftime('%Y-%m-%d %H:%M:%S'))
     else:
+        if templateData['rain'] > 0:
+            temp_length = []
+            percent = templateData['rain'] / high_rain
+            for i in zones:
+                r = i['length']
+                temp_length.append(r)
+                i['length'] -= int(r * percent)
+                print(str(i['name']) + ' - ' + str(i['length']))
         cycle_running = True
         templateData['message'] = 'Running Cycle'
         tt = 0
@@ -342,6 +358,10 @@ def sprinkler_go():
                 tt += zones[i]['length'] * 60
             else:
                 sched.add_date_job(schedule_finish, datetime.now() + timedelta(seconds=(zones[i]['length'] * 60) + tt), name='schedule_finish', args=[datetime.now()])
+            if templateData['rain'] > 0:
+                zones[i]['length'] = temp_length[i]
+                print(str(zones[i]['name']) + ' - ' + str(zones[i]['length']))
+
 
 
 def set_length(add):
@@ -545,6 +565,7 @@ try:
                 if i.name == 'sprinkler_go':
                     sched.unschedule_job(job)
             templateData['system_running'] = False
+            write_settings(8, False)
             templateData['message'] = "System Stopped"
             templateData['next_run_date'] = ''
             write_log('%s - System stopped.' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
@@ -554,6 +575,7 @@ try:
             set_next_run(time_to_start)
             job = sched.add_date_job(sprinkler_go, time_to_start)
             templateData['system_running'] = True
+            write_settings(8, True)
             templateData['message'] = "System Started"
             write_log('%s - System started.' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
             start_stop = 'stop'
