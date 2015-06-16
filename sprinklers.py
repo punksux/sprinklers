@@ -124,7 +124,12 @@ def check_weather():
                     json_string = f.read()
                     parsed_json = json.loads(json_string.decode("utf8"))
                     f.close()
-                    templateData['rain'] = float(parsed_json['current_observation']['precip_today_in'])
+                    with open('weather.json', 'w') as outfile:
+                        json.dump(parsed_json, outfile)
+                    if parsed_json['current_observation']['precip_today_in'] == '':
+                        templateData['rain'] = 0.0
+                    else:
+                        templateData['rain'] = float(parsed_json['current_observation']['precip_today_in'])
 
                     for i in range(1, 6):
                         forecast.append([parsed_json['forecast']['simpleforecast']['forecastday'][i]['pop'],
