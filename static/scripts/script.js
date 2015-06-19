@@ -69,7 +69,8 @@ function apply() {
             if (ttime != '') {
                 $('ul li:nth-child(3) span').html(ttime + ' ' + amPM).val('');
                 flash($('#ttime'));
-                $('div#nextRunTime span').html(data.nextTime)
+                $('div#nextRunTime span').html(data.nextTime);
+                fancyNextTime();
             }
             if (zone1length != '') {
                 $('ul li:nth-child(4) span').html(zone1length).val('');
@@ -219,6 +220,8 @@ if(systemRunning){
     $('#system_on_off').switchClass('on', 'off');
 }
 
+var plsi, rt_plsi;
+
 function getUptimeCount() {
     $.ajax(
         {
@@ -227,8 +230,39 @@ function getUptimeCount() {
         }
     ).done(function (data) {
         $('div#uptime span').html(data.uptime);
-            $('div#cycles span').html(data.count);
+        $('div#cycles span').html(data.count);
+        $('div#nextRunTime span').html(data.next);
+        fancyNextTime();
+        if (parseFloat(data.rain) === 1.0) {
+            plsi = 'inch'
+        } else {
+            plsi = 'inches'
+        }
+        if (parseFloat(data.rainTotal) === 1.0) {
+            rt_plsi = 'inch'
+        } else {
+            rt_plsi = 'inches'
+        }
+        $('#rainTotals').html(data.rain + ' ' + plsi + ' of rain today & ' + data.rainTotal + ' ' + rt_plsi + ' since last run.')
     });
 }
 
 $('#uptime, #cycles').click(getUptimeCount);
+
+ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', "September", 'October', 'November', 'December'];
+
+function fancyNextTime(){
+    var dt = new Date();
+    var $nt2 = $('div#nextRunTime span');
+    var nt = $nt2.html();
+    if (months[dt.getMonth()] === nt.split(' ')[1] && dt.getDate() === parseInt(nt.split(' ')[2])){
+        if (parseInt(nt.split(' ')[4].split(':')[0]) > 6 && nt.split(' ')[5] === 'PM'){
+            $nt2.html('Tonight at ' + nt.split(' ')[4] + ' ' + nt.split(' ')[5])
+        } else {
+            $nt2.html('Today at ' + nt.split(' ')[4] + ' ' + nt.split(' ')[5])
+        }
+
+    }
+}
+
+fancyNextTime();

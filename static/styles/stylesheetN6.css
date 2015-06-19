@@ -3,11 +3,13 @@ body {
 }
 
 #content {
-    width:400px;
-    left: 5px;
-    top:5px;
+    width:100%;
+    height:100%;
+    left: 0;
+    top: 0;
     margin: 0;
     position: absolute;
+    border-radius: 0;
 }
 
 #header {
@@ -42,14 +44,40 @@ body {
     left: 20px;
 }
 
+#middle {
+    width: 200%;
+    position: absolute;
+}
+
+#leftC {
+    width: 45%;
+    display: inline-block;
+}
+
+#rightC {
+    float: none;
+    display: inline-block;
+    top: 0;
+    position: absolute;
+    left: 44.25%;
+}
+
 #settings {
     width: 96%;
     position: absolute;
-    right: 0;
+    cursor: pointer;
+}
+
+#settingsLabel {
+    -moz-transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    position: absolute;
+    left: -22px;
+    top: 93px;
 }
 
 #settingsText {
-    padding-left: 5px;
+    padding-left: 50px;
 }
 
 #settingsText li {
@@ -58,7 +86,7 @@ body {
 
 #logButton {
     width: 120px;
-    left: 10px;
+    left: 50px;
 }
 
 #general{
@@ -142,6 +170,8 @@ body {
 
 #footer {
     height: 45px;
+    position: fixed;
+    bottom: 0;
 }
 
 #applyButton {

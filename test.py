@@ -1,2 +1,2 @@
 from datetime import datetime, timedelta
-print(datetime.now().strftime('%p') == 'PM')
+print(datetime.strptime('1-1', '%M-%d').strftime('%B'))

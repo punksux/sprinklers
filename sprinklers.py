@@ -16,7 +16,7 @@ except (OSError, IndexError):
 on = True
 location = "84123"
 on_pi = False
-weather_test = 100
+weather_test = 0.05
 zones = [
     {'length': int(content[2].rstrip('\r\n')), 'on': False, 'pinNo': 7, 'name': 'Zone 1', 'man_timer':False},
     {'length': int(content[3].rstrip('\r\n')), 'on': False, 'pinNo': 11, 'name': 'Zone 2', 'man_timer':False},
@@ -176,13 +176,7 @@ def get_next_time(dt):
 
 
 def set_next_run(dt):
-    if dt.strftime('%B %d') == datetime.now().strftime('%B %d'):
-        if int(dt.strftime('%H')) < 18:
-            templateData['next_run_date'] = dt.strftime('Today at %I:%M %p')
-        else:
-            templateData['next_run_date'] = dt.strftime('Tonight at %I:%M %p')
-    else:
-        templateData['next_run_date'] = dt.strftime('%a, %B %d at %I:%M %p')
+    templateData['next_run_date'] = dt.strftime('%a, %B %d at %I:%M %p')
 
 
 nday = datetime.now()
@@ -302,6 +296,9 @@ def scheduled_turn_off(i):
 
 def schedule_finish(dt):
     global job, cycle_running, cycle_has_run
+    if templateData['rain'] > 0:
+        for i in range(0, len(zones)):
+            zones[i]['length'] = temp_length[i]
     if templateData['full_auto']:
         set_full_auto()
     next_time = get_next_time(dt)
@@ -317,6 +314,7 @@ def schedule_finish(dt):
 # Run program
 high_rain = 0.2
 low_rain = 0.1
+temp_length = []
 
 
 def sprinkler_go():
@@ -363,10 +361,6 @@ def sprinkler_go():
                 tt += zones[i]['length'] * 60
             else:
                 sched.add_date_job(schedule_finish, datetime.now() + timedelta(seconds=(zones[i]['length'] * 60) + tt), name='schedule_finish', args=[datetime.now()])
-            if templateData['rain'] > 0:
-                zones[i]['length'] = temp_length[i]
-                print(str(zones[i]['name']) + ' - ' + str(zones[i]['length']))
-
 
 
 def set_length(add):
@@ -433,7 +427,7 @@ def st_program(st):
         write_log('%s - System stopped.' % (datetime.now().strftime('%m/%d/%Y %I:%M %p')))
     else:
         time_to_start = get_start_time()
-        get_next_time(time_to_start)
+        set_next_run(time_to_start)
         job = sched.add_date_job(sprinkler_go, time_to_start)
         templateData['system_running'] = True
         templateData['message'] = "System Started"
@@ -597,7 +591,7 @@ try:
     @app.route('/uptime', methods=['POST'])
     def get_uptime_count():
         templateData['uptime'] = time_since(uptime_start)
-        return jsonify({'uptime': templateData['uptime'], 'count': templateData['cycle_count']})
+        return jsonify({'uptime': templateData['uptime'], 'count': templateData['cycle_count'], 'next': templateData['next_run_date'], 'rain': templateData['rain'], 'rainTotal': templateData['rain_total']})
 
     if __name__ == '__main__':
         app.run(host='0.0.0.0', port='5001')

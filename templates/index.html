@@ -8,8 +8,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/static/manifest.json">
     <link type="text/css" rel="stylesheet" href="/static/styles/stylesheet.css"/>
-    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetN6.css" media="only screen and (max-device-width: 420px) and (min-device-width: 410px)"/>
-    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetI6.css" media="only screen and (max-device-width: 380px)"/>
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetN6.css"
+          media="only screen and (max-device-width: 420px)"/>
+    {#    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetI6.css" media="only screen and (max-device-width: 380px)"/>#}
     <script src="/static/scripts/jquery-2.1.1.min.js"></script>
     <script src="/static/scripts/jquery-ui.min.js"></script>
     <title>Sprinkler System</title>
@@ -39,7 +40,8 @@
 
 
     <div id="middle">
-        <div id="rightC">
+
+    <div id="rightC">
             <div id="settings">
                 <div id="settingsLabel" class="label">Settings</div>
                 <ul id="settingsText">
@@ -60,8 +62,6 @@
             <div id="messages">{{ message }}</div>
 
         </div>
-
-
         <div id="leftC">
             {#   --== General ==--    #}
             <div id="general">
@@ -81,8 +81,8 @@
                         <label>Time to start: <input type="time" id="ttime"/></label>
                     </div>
                     <div id="amPM">
-                        <label>AM<input name="amPM" type="radio" id="tAM" value="AM" /></label>
-                        <label>PM<input name="amPM" type="radio" id="tPM" value="PM" checked /></label>
+                        <label>AM<input name="amPM" type="radio" id="tAM" value="AM"/></label>
+                        <label>PM<input name="amPM" type="radio" id="tPM" value="PM" checked/></label>
                     </div>
                 </div>
             </div>
@@ -98,8 +98,8 @@
                 <div class="manInput">
                     <label>Manual Run Time: <input type="number" id="man0"/></label>
                 </div>
-                    <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}
-                        Off{% else %}On{% endif %}</span></div>
+                <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}
+                    Off{% else %}On{% endif %}</span></div>
 
             </div>
 
@@ -183,7 +183,37 @@
 <script>
     var fullAuto = {{ full_auto|lower }};
     var systemRunning = {{ system_running|lower }};
+    var $settings = $('#settings');
+    var $general = $('#general');
 
+    function settingsPlacement(){
+    if ($(window).width() < 420) {
+        var ww = $general.width() - 122;
+        var ww2 = $general.width() - ww;
+        ww2 = $(window).width() - ww2 - 5;
+        $settings.css({width: ww2});
+        $('#rightC').css({left: $general.width() + 5});
+
+        var settingsOut = false;
+        $settings.not('#logButton').click(function () {
+            if (settingsOut) {
+                $('#middle').animate({left: '0'}, 500);
+                $('div#leftC .label').animate({left: '10px'}, 500);
+            } else {
+                $('#middle').animate({left: -ww}, 500);
+                $('div#leftC .label').animate({left: ww + 10}, 500)
+            }
+            settingsOut = !settingsOut;
+        });
+
+        $('#leftC').not('.manButt').click(function () {
+            $('#middle').animate({left: '0'}, 500);
+            $('div#leftC .label').animate({left: '10px'}, 500)
+        })
+    }
+    }
+    settingsPlacement();
+    $(window).resize(function(){settingsPlacement()});
 </script>
 <script src="/static/scripts/script.js"></script>
 </body>
