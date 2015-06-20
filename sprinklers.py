@@ -16,7 +16,7 @@ except (OSError, IndexError):
 on = True
 location = "84123"
 on_pi = False
-weather_test = 0.05
+weather_test = 100
 zones = [
     {'length': int(content[2].rstrip('\r\n')), 'on': False, 'pinNo': 7, 'name': 'Zone 1', 'man_timer':False},
     {'length': int(content[3].rstrip('\r\n')), 'on': False, 'pinNo': 11, 'name': 'Zone 2', 'man_timer':False},
