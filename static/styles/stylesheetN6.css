@@ -10,6 +10,7 @@ body {
     margin: 0;
     position: absolute;
     border-radius: 0;
+    overflow: hidden;
 }
 
 #header {
@@ -20,6 +21,17 @@ body {
     font-size: 40px;
     top: 0;
     left: 5px;
+}
+
+#settingsButton {
+    display: block;
+    font-size: 40px;
+    right: 5px;
+    position: absolute;
+}
+
+#warped {
+    display: none;
 }
 
 #nextRunTime, #rainTotals, #uptime, #cycles {
@@ -45,12 +57,12 @@ body {
 }
 
 #middle {
-    width: 200%;
+    width: 100%;
     position: absolute;
 }
 
 #leftC {
-    width: 45%;
+    width: 100%;
     display: inline-block;
 }
 
@@ -59,13 +71,23 @@ body {
     display: inline-block;
     top: 0;
     position: absolute;
-    left: 44.25%;
+    left: 0;
+    width: 100%;
 }
 
 #settings {
-    width: 96%;
+    width: 98%;
     position: absolute;
     cursor: pointer;
+    min-height: 196px;
+    display: none;
+    left: 2px;
+    border-radius: 10px;
+    z-index: 1002;
+}
+
+#system_on_off {
+    border-radius: 0 10px 0 10px;
 }
 
 #settingsLabel {
@@ -85,18 +107,23 @@ body {
 }
 
 #logButton {
-    width: 120px;
-    left: 50px;
+    width: 80%;
+    left: 10%;
+    z-index: 1004;
 }
 
 #general{
-    width:100%;
+    width:98%;
     line-height: 25px;
+    left:2px;
+    border-radius: 10px;
 }
 
 .zones {
-     width:100%;
+     width:98%;
      line-height: 20px;
+    left:2px;
+    border-radius: 10px;
  }
 
 #general .input {
@@ -104,21 +131,26 @@ body {
 }
 
 #general input {
-    width: 45px;
+    width: 65px;
 }
 
 #fullAuto2 {
     padding-top: 5px;
 }
 
+#startTime #t {
+    vertical-align: top;
+    width: auto;
+}
+
 #startTime #ttime {
-    width: 45px;
+    width: 65px;
 }
 
 #startTime #amPM {
-    display: block;
-    left: 147px;
+    left: 100px;
     position: relative;
+    line-height: 10px;
 }
 
 #amPM input {
@@ -139,7 +171,7 @@ body {
 }
 
 .zones input {
-    width: 65px;
+    width: 100px;
 }
 
 .zones label {
@@ -147,12 +179,12 @@ body {
 }
 
 .zones .manInput {
-    left: 100px;
+    left: 136px;
     width: 100px;
 }
 
 .manButt {
-    width: 70px;
+    width: 110px;
     height: 50px;
 }
 
@@ -197,6 +229,6 @@ body {
 .white_content {
     top: 20px;
     left:-49.75%;
-    width: 380px;
+    width: 94%;
     height: 530px;
 }

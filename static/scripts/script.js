@@ -1,4 +1,4 @@
-$('.manButt').on('click', function () {
+$('div.manButt').click(function () {
     manual($(this).attr('id'));
     getUptimeCount();
 });
@@ -18,20 +18,52 @@ function manual(number) {
     )
         .done(function (data) {
             showMessages(data.message);
+            var screenW = $(window).width();
             var man;
+            var $number = $('#' + number);
             if (data.onOff === 'on') {
                 $('#onOff' + number).switchClass('off', 'on');
-                $('#' + number).addClass('manOff').children().html('Manual Off');
-                if (parseInt(length) > 0) {
+
+                if (parseInt(length) === 0) {
+                    if(pass < 3) {
+                        $number.addClass('manGrey').children().html('30');
+                        var t = 29;
+                        var p = setInterval(function () {
+                            $number.children().html(t);
+                            if (t === 0) {
+                                clearInterval(p);
+                                $number.switchClass('manGrey', 'manOff').children().html('Manual Off');
+                            }
+                            t--;
+                        }, 1000);
+                    } else {
+                        $number.addClass('manOff').children().html('Manual Off');
+                    }
+                } else if (parseInt(length) > 0) {
+                    $number.addClass('manOff').children().html('Manual Off');
                     man = setTimeout(function () {
                         $('#onOff' + number).switchClass('on', 'off');
-                        $('#' + number).removeClass('manOff').children().html('Manual On');
+                        $number.removeClass('manOff').children().html('Manual On');
                     }, (parseInt(length) * 1000) * 60);
                 }
+
             } else {
                 $('#onOff' + number).switchClass('on', 'off');
-                $('#' + number).removeClass('manOff').children().html('Manual On');
-                clearTimeout(man)
+                if(pass < 3) {
+                    $number.switchClass('manOff', 'manGrey').children().html('30');
+                    var t2 = 29;
+                    var p2 = setInterval(function () {
+                        $number.children().html(t2);
+                        if (t2 === 0) {
+                            clearInterval(p2);
+                            $number.removeClass('manGrey').children().html('Manual On');
+                        }
+                        t2--;
+                    }, 1000);
+                    clearTimeout(man)
+                } else {
+                    $number.removeClass('manOff').children().html('Manual On');
+                }
             }
         })
 }
@@ -121,14 +153,19 @@ $('#logButton').click(function () {
 });
 
 $('#logClose, #fade').click(function () {
-    $('#fade').fadeOut(200);
-    $('#light').fadeOut(200);
+    if ($('div#light').css('display') === 'block') {
+        $('#light').fadeOut(200);
+    } else {
+        $('#settings, #fade').fadeOut(200);
+    }
 });
 
 
 function showMessages(message) {
     if (message != ''){
-        $('#messages').html(message).fadeIn(300).delay(5000).fadeOut(800);
+        if($(window).width() > 215){
+            $('#messages').html(message).fadeIn(300).delay(5000).fadeOut(800);
+        }
     }
 }
 
@@ -136,12 +173,16 @@ function showMessages(message) {
 if (fullAuto) {
     $('#toggle').css({left: '28px'});
     $('#toggleBG').css({backgroundColor: '#b6e026'});
-    $('.goAway').hide();
+    if($(window).width() > 215) {
+        $('.goAway').hide();
+    }
     $('ul li:nth-child(1) span').html(' True');
 } else {
     $('#toggle').css({left: '2px'});
     $('#toggleBG').css({backgroundColor: '#bbb'});
-    $('.goAway').show();
+    if($(window).width() > 215) {
+        $('.goAway').show();
+    }
     $('ul li:nth-child(1) span').html(' False');
 }
 
@@ -165,12 +206,16 @@ function fullAutoFunc(fullAuto) {
             if (fullAuto) {
                 $('#toggle').animate({left: '28px'}, 'fast');
                 $('#toggleBG').animate({backgroundColor: '#b6e026'}, 'fast');
-                $('.goAway').hide(500);
+                if($(window).width() > 215) {
+                    $('.goAway').hide(500);
+                }
                 $('ul li:nth-child(1) span').html(' True');
             } else {
                 $('#toggle').animate({left: '2px'}, 'fast');
                 $('#toggleBG').animate({backgroundColor: '#bbb'}, 'fast');
-                $('.goAway').show(500);
+                if($(window).width() > 215) {
+                    $('.goAway').show(500);
+                }
                 $('ul li:nth-child(1) span').html(' False');
             }
         })
@@ -266,3 +311,41 @@ function fancyNextTime(){
 }
 
 fancyNextTime();
+
+
+$('#headerText').on('click', function(){
+    if ($(window).width() < 215) {
+            $('.zones, #general, #settings').fadeToggle(250);
+    }
+});
+
+var pass = 0;
+$('#zone3Label').click(function(){
+    if(pass < 3){
+        pass = 1;
+    }
+});
+
+$('#zone2Label').click(function(){
+    if(pass === 1){
+        pass = 2;
+    } else {
+        pass = 0;
+        $('#headerText span').css('color', 'white');
+    }
+});
+
+$('#zone1Label').click(function(){
+    if(pass === 2){
+        pass = 3;
+        $('#headerText span').css('color', 'red');
+    } else {
+        pass = 0;
+        $('#headerText span').css('color', 'white');
+    }
+});
+
+$('#settingsButton').click(function(){
+    $('#fade').fadeToggle(250);
+   $('#settings').fadeToggle(250);
+});

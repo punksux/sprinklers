@@ -1,0 +1,299 @@
+#watchCover {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    border: 1px solid red;
+    z-index: 100000;
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    pointer-events: none;
+}
+
+body {
+    overflow: hidden;
+}
+
+#content {
+    width: 214px;
+    height: 214px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+    padding: 0;
+}
+
+#header {
+    height: 50%;
+    text-align: center;
+}
+
+#headerText {
+    font-size: 24px;
+    margin-top: 25px;
+    left: 0;
+    position: relative;
+}
+
+#settingsButton {
+    display: none;
+}
+
+#nextRunTime, #rainTotals, #uptime, #cycles {
+    font-size: 11px;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+#nextRunTime {
+    margin-top: 6px;
+}
+
+
+#rightC {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    height: 50%;
+}
+
+#leftC {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    height: 50%;
+}
+
+#settings {
+    width: 100%;
+    position: absolute;
+    right: 0;
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    height:100%;
+    padding-bottom: 0;
+    display: none;
+}
+
+#settings .label {
+    top: 20px;
+    display: none;
+}
+
+#settingsText {
+    padding-left: 5px;
+    display: none;
+}
+
+#settingsText li {
+    padding-bottom: 5px;
+    display: none;
+}
+
+#settings span {
+    color: #93b81a;
+}
+
+#system_on_off {
+    width: 100%;
+    height: 4px;
+    border-radius: 0;
+}
+
+#logButton {
+    width: 85px;
+    margin: 0 auto;
+    height: 30px;
+    z-index: 5;
+}
+
+#logButton:active {
+    width: 85px;
+    height: 30px;
+}
+
+#general{
+    width:100%;
+    line-height: 22px;
+    border-radius: 0;
+    height: 100%;
+    text-align: center;
+    display: none;
+}
+
+.zones, .manButt {
+    bottom: 0;
+    margin-top: 0;
+}
+
+.zones {
+    width:34%;
+    height: 100%;
+    display: inline-block;
+    border-radius: 5px 5px 0 0;
+    text-align: center;
+}
+
+div.zones:nth-child(3) {
+    width: 28%
+}
+
+.on-off {
+    width: 100%;
+    height: 4px;
+    border-radius: 5px 5px 0 0;
+    z-index: 2;
+    border-width: 0 0 1px 0;
+}
+
+#general .label {
+    padding-top: 12px;
+    font-size: 20px;
+}
+
+#general .input {
+    left: 0;
+    font-size: 15px;
+}
+
+#general input {
+    width: 45px;
+}
+
+#fullAuto2 {
+}
+
+#toggleBG {
+    height: 12px;
+    left: 0;
+}
+
+#toggle {
+    width: 7px;
+    height: 7px;
+}
+
+#startTime, #daysApart {
+    display: none;
+}
+
+#startTime #t {
+    width: auto;
+}
+
+#startTime #ttime {
+    width: 45px;
+    left: 0;
+    height: 9px;
+}
+
+#startTime #amPM {
+    left: 0;
+    position: relative;
+}
+
+#amPM input {
+    width:15px;
+}
+
+.label {
+    font-size: 17px;
+    top: 11px;
+    left: 0;
+}
+
+.zones .input {
+    left: 10px;
+    display: none;
+}
+
+.zones input {
+    width: 65px;
+}
+
+.zones label {
+    line-height: 20px;
+}
+
+.zones .manInput {
+    left: 100px;
+    width: 100px;
+    display: none;
+}
+
+.manButt {
+    width: 100%;
+    height: 72px;
+    border-radius: 0;
+    background: -moz-linear-gradient(top, #b6e026 0%, #657D1E 100%);
+    background: -webkit-linear-gradient(top, #b6e026 0%, #657D1E 100%);
+}
+
+.manButt:active {
+    width: 100%;
+    height: 72px;
+    box-shadow: 0 0 0 0;
+}
+
+.manButt span {
+    line-height: 15px;
+    font-size: 15px;
+    width: 40px;
+    position: absolute;
+    top: 7px;
+}
+
+div.zones:nth-child(2) .manButt span {
+    left:22px;
+    text-align: right;
+}
+
+div.zones:nth-child(3) .manButt span {
+    right: 9px;
+    text-align: center;
+    top: 23px;
+}
+
+div.zones:nth-child(4) .manButt span {
+    left: 10px;
+    text-align: left;
+}
+
+#footer {
+    height: 45px;
+    display: none;
+}
+
+#applyButton {
+    left: 40px;
+    height: 40px;
+    line-height: 40px;
+}
+
+#applyButton:active{
+    height: 39px;
+}
+
+#startButton {
+    right: 40px;
+    height: 40px;
+    line-height: 40px;
+}
+
+#startButton:active{
+    height: 39px;
+}
+
+.white_content {
+    top: 00px;
+    left: -48%;
+    width: 96%;
+    height: 214px;
+    padding: 0;
+}
+
+#logLabel {
+    display: none;
+}

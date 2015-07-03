@@ -7,10 +7,10 @@
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/static/manifest.json">
+
     <link type="text/css" rel="stylesheet" href="/static/styles/stylesheet.css"/>
-    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetN6.css"
-          media="only screen and (max-device-width: 420px)"/>
-    {#    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetI6.css" media="only screen and (max-device-width: 380px)"/>#}
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetGWR.css" media="only screen and (max-device-width: 320px)"/>
+    <link type="text/css" rel="stylesheet" href="/static/styles/stylesheetN6.css" media="only screen and (max-device-width: 800px) and (min-device-width: 321px)"/>
     <script src="/static/scripts/jquery-2.1.1.min.js"></script>
     <script src="/static/scripts/jquery-ui.min.js"></script>
     <title>Sprinkler System</title>
@@ -19,8 +19,8 @@
 <body id="body">
 <div id="content">
     <div id="header">
-        <div id="headerText">Sprinkler System</div>
-
+        <div id="headerText"><span>S</span>prinkler System</div>
+        <div id="settingsButton">?</div>
         <div id="nextRunTime">Next run time: <span>{{ next_run_date }}</span></div>
         {% if rain == 1 %}
             {% set plsi = 'inch' %}
@@ -78,7 +78,7 @@
                 </div>
                 <div id="startTime" class="input">
                     <div id="t">
-                        <label>Time to start: <input type="time" id="ttime"/></label>
+                        <label>Time to start: <input type="text" id="ttime" pattern="([01]?[0-9]|2[0-3])(:[0-5][0-9]){2}" placeholder="hh:mm" /></label>
                     </div>
                     <div id="amPM">
                         <label>AM<input name="amPM" type="radio" id="tAM" value="AM"/></label>
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="manInput">
-                    <label>Manual Run Time: <input type="number" id="man0"/></label>
+                    <label>Manual<br />Run Time: <input type="number" id="man0"/></label>
                 </div>
                 <div class="manButt {% if zones.0.on %}manOff{% endif %}" id="0"><span>Manual {% if zones.0.on %}
                     Off{% else %}On{% endif %}</span></div>
@@ -112,11 +112,10 @@
                 </div>
 
                 <div class="manInput">
-                    <label>Manual Run Time: <input type="number" id="man1"/></label>
+                    <label>Manual<br />Run Time: <input type="number" id="man1"/></label>
                 </div>
-                <div class="buttonP">
-                    <div class="manButt {% if zones.1.on %}manOff{% endif %}" id="1"><span>Manual {% if zones.1.on %}
-                        Off{% else %}On{% endif %}</span></div>
+                <div class="manButt {% if zones.1.on %}manOff{% endif %}" id="1"><span>Manual {% if zones.1.on %}
+                    Off{% else %}On{% endif %}</span>
                 </div>
 
             </div>
@@ -130,11 +129,10 @@
                 </div>
 
                 <div class="manInput">
-                    <label>Manual Run Time: <input type="number" id="man2"/></label>
+                    <label>Manual<br />Run Time: <input type="number" id="man2"/></label>
                 </div>
-                <div class="buttonP">
-                    <div class="manButt {% if zones.2.on %}manOff{% endif %}" id="2"><span>Manual {% if zones.2.on %}
-                        Off{% else %}On{% endif %}</span></div>
+                <div class="manButt {% if zones.2.on %}manOff{% endif %}" id="2"><span>Manual {% if zones.2.on %}
+                    Off{% else %}On{% endif %}</span>
                 </div>
 
             </div>
@@ -153,7 +151,7 @@
 </div>
 
 {#   --== Log Popup ==--    #}
-<div style="position: absolute; left: 50%;">
+<div style="position: absolute; left: 50%; top: 0; width: 100%;">
     <div id="light" class="white_content">
         <div id="logLabel" class="label">Log:</div>
         <div id='log'>
@@ -179,15 +177,16 @@
     </div>
 </div>
 <div id="fade" class="black_overlay"></div>
+<div id="watchCover"></div>
 
 <script>
     var fullAuto = {{ full_auto|lower }};
     var systemRunning = {{ system_running|lower }};
-    var $settings = $('#settings');
+    {#var $settings = $('#settings');
     var $general = $('#general');
 
     function settingsPlacement(){
-    if ($(window).width() < 420) {
+    if (215 < $(window).width() < 800) {
         var ww = $general.width() - 122;
         var ww2 = $general.width() - ww;
         ww2 = $(window).width() - ww2 - 5;
@@ -197,23 +196,23 @@
         var settingsOut = false;
         $settings.not('#logButton').click(function () {
             if (settingsOut) {
-                $('#middle').animate({left: '0'}, 500);
-                $('div#leftC .label').animate({left: '10px'}, 500);
+                $('#middle').animate({left: '0'}, 250);
+                $('div#leftC .label').animate({left: '10px'}, 250);
             } else {
-                $('#middle').animate({left: -ww}, 500);
-                $('div#leftC .label').animate({left: ww + 10}, 500)
+                $('#middle').animate({left: -ww}, 250);
+                $('div#leftC .label').animate({left: ww + 10}, 250)
             }
             settingsOut = !settingsOut;
         });
 
         $('#leftC').not('.manButt').click(function () {
-            $('#middle').animate({left: '0'}, 500);
-            $('div#leftC .label').animate({left: '10px'}, 500)
+            $('#middle').animate({left: '0'}, 250);
+            $('div#leftC .label').animate({left: '10px'}, 250)
         })
     }
     }
     settingsPlacement();
-    $(window).resize(function(){settingsPlacement()});
+    $(window).resize(function(){settingsPlacement()});#}
 </script>
 <script src="/static/scripts/script.js"></script>
 </body>

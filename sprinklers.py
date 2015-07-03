@@ -383,7 +383,7 @@ def set_full_auto():
             if float(forecast[i][0]) > rain[j - 2]:
                 rain[j - 2] = float(forecast[i][0])
         temp[j - 2] /= j
-    if temp[0] > 100:
+    if temp[0] >= 100:
         templateData['days'] = 2
         set_length(10)
     elif 100 > temp[0] > 90:
@@ -522,7 +522,7 @@ try:
 
     @app.route("/manual", methods=['POST'])
     def manual():
-        number = request.form.get('number', 'something is wrong', type=int)
+        number = request.form.get('number', 0, type=int)
         length = request.form.get('length', 'something is wrong', type=str)
 
         if cycle_running:

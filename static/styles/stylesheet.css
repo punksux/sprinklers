@@ -56,6 +56,14 @@ body {
     text-shadow: 3px 3px 5px #333333;
 }
 
+#settingsButton {
+    display: none;
+}
+
+#warped {
+    display: none;
+}
+
 #nextRunTime {
     position: absolute;
     top: 80px;
@@ -350,6 +358,12 @@ body {
     background: -webkit-linear-gradient(top, #ee1400 0%, #590101 100%);
 }
 
+.manButt.manGrey {
+    background: -moz-linear-gradient(top, #ede7e9 0%, #8a8c89 100%);
+    background: -webkit-linear-gradient(top, #ede7e9 0%, #8a8c89 100%);
+    pointer-events: none;
+}
+
 .manButt span {
     color: white;
     width: 200px;
@@ -448,7 +462,7 @@ body {
     height: 49px;
 }
 
-input[type=time], input[type=number] {
+input[type=text], input[type=number] {
     padding: 5px;
     border: 2px solid #ccc;
     border-radius: 5px;
@@ -480,9 +494,9 @@ input[type=number]::outer-spin-button {
 .white_content {
     display: none;
     position: relative;
-    top: -650px;
+    top: 30px;
     left: -50%;
-    width: 800px;
+    width: 780px;
     height: 530px;
     padding: 10px;
     border: 1px solid black;
