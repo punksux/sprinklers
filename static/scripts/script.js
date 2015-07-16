@@ -153,10 +153,14 @@ $('#logButton').click(function () {
 });
 
 $('#logClose, #fade').click(function () {
-    if ($('div#light').css('display') === 'block') {
-        $('#light').fadeOut(200);
+    if ($(window).width() < 800) {
+        if ($('div#light').css('display') === 'block') {
+            $('#light').fadeOut(200);
+        } else {
+            $('#settings, #fade').fadeOut(200);
+        }
     } else {
-        $('#settings, #fade').fadeOut(200);
+        $('#light, #fade').fadeOut(200);
     }
 });
 
@@ -249,6 +253,7 @@ function startStop(startStopVar){
             if (startStopVar === 'start') {
                 $('#startButton').addClass('stopButton').html('Stop');
                 $('#system_on_off').switchClass('off', 'on');
+
             } else {
                 $('#startButton').removeClass('stopButton').html('Start');
                 $('#system_on_off').switchClass('on', 'off');
@@ -260,9 +265,11 @@ function startStop(startStopVar){
 if(systemRunning){
     $('#startButton').addClass('stopButton').html('Stop');
     $('#system_on_off').switchClass('off', 'on');
+    startStopVar = 'start';
 } else {
     $('#startButton').removeClass('stopButton').html('Start');
     $('#system_on_off').switchClass('on', 'off');
+    startStopVar = 'stop';
 }
 
 var plsi, rt_plsi;
@@ -315,7 +322,7 @@ fancyNextTime();
 
 $('#headerText').on('click', function(){
     if ($(window).width() < 215) {
-            $('.zones, #general, #settings').fadeToggle(250);
+            $('.zones, #general').fadeToggle(250);
     }
 });
 
@@ -326,22 +333,24 @@ $('#zone3Label').click(function(){
     }
 });
 
+var $root = $('div#headerText span');
+
 $('#zone2Label').click(function(){
     if(pass === 1){
         pass = 2;
     } else {
         pass = 0;
-        $('#headerText span').css('color', 'white');
+        $root.css('color', 'white');
     }
 });
 
 $('#zone1Label').click(function(){
     if(pass === 2){
         pass = 3;
-        $('#headerText span').css('color', 'red');
+        $root.animate({'color': 'red'}, 500);
     } else {
         pass = 0;
-        $('#headerText span').css('color', 'white');
+        $root.css({'color': 'white'});
     }
 });
 

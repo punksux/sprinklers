@@ -57,6 +57,7 @@ body {
     position: absolute;
     top: 50%;
     height: 50%;
+    display: none;
 }
 
 #leftC {

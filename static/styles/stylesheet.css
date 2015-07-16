@@ -11,7 +11,7 @@
 
 }
 
-body{margin:0, padding:0}
+body{margin:0; padding:0}
 
 body {
     font-family: "gasaltblack", sans-serif;
@@ -495,7 +495,7 @@ input[type=number]::outer-spin-button {
     display: none;
     position: relative;
     top: 30px;
-    left: -50%;
+    left: -21%;
     width: 780px;
     height: 530px;
     padding: 10px;
