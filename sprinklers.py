@@ -72,8 +72,6 @@ uptime_start = datetime.now()
 
 # Set up logging
 if on_pi:
-    file = open('errors.log', 'w')
-    file.close()
     logging.basicConfig(filename='errors.log', level=logging.ERROR, format='%(asctime)s - %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 #Set platform
@@ -111,7 +109,10 @@ def check_weather():
                     f = urlopen(weather_website, timeout=3)
                     something_wrong = False
                 except urllib.error.URLError as e:
-                    logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'), e)
+                    try:
+                        logging.error('%s - Data not retrieved because %s' % datetime.now().strftime('%m/%d/%Y %I:%M %p'), e)
+                    except TypeError:
+                        logging.error('%s - Data not retrieved because it sucks' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
                     something_wrong = True
                 except timeout:
                     logging.error('%s - Socket timed out' % datetime.now().strftime('%m/%d/%Y %I:%M %p'))
@@ -605,10 +606,4 @@ finally:
         GPIO.setup(7, GPIO.IN)
         GPIO.setup(11, GPIO.IN)
         GPIO.setup(13, GPIO.IN)
-    print("Rename Error File...")
-    try:
-        os.remove("errors.log.old")
-        os.rename("errors.log", "errors.log.old")
-    except FileNotFoundError:
-        pass
     print("Done.")
