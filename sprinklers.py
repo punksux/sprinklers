@@ -16,7 +16,7 @@ except (OSError, IndexError):
 on = True
 location = "84123"
 on_pi = False
-weather_test = 100
+weather_test = 0
 zones = [
     {'length': int(content[2].rstrip('\r\n')), 'on': False, 'pinNo': 7, 'name': 'Zone 1', 'man_timer':False},
     {'length': int(content[3].rstrip('\r\n')), 'on': False, 'pinNo': 11, 'name': 'Zone 2', 'man_timer':False},
@@ -69,6 +69,7 @@ job = None
 cycle_running = False
 cycle_has_run = False
 uptime_start = datetime.now()
+yesterday_rain = 0
 
 # Set up logging
 if on_pi:
@@ -93,7 +94,7 @@ time_checked = datetime.now() - timedelta(days=1)
 
 
 def check_weather():
-    global time_checked, forecast, f
+    global time_checked, forecast, f, yesterday_rain
     time_since_last_check = datetime.now() - time_checked
     if weather_test == 100:
         try:
@@ -106,7 +107,7 @@ def check_weather():
         except urllib.error.URLError:
             if time_since_last_check.total_seconds() > (10 * 60):
                 global something_wrong
-                weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/forecast10day/q/%s.json' % location)
+                weather_website = ('http://api.wunderground.com/api/c5e9d80d2269cb64/conditions/forecast10day/yesterday/q/%s.json' % location)
                 try:
                     f = urlopen(weather_website, timeout=3)
                     something_wrong = False
@@ -135,12 +136,14 @@ def check_weather():
                         forecast.append([parsed_json['forecast']['simpleforecast']['forecastday'][i]['pop'],
                                          parsed_json['forecast']['simpleforecast']['forecastday'][i]['high']['fahrenheit']])
 
+                    yesterday_rain = parsed_json["history"]["dailysummary"][0]["precipi"]
+
                 time_checked = datetime.now()
     else:
         templateData['rain'] = float(weather_test)
         forecast = [[random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)], [random.randint(0, 100), random.randint(0, 110)]]
 
-#Set up GPIO
+# Set up GPIO
 if on_pi:
     GPIO.setup(7, GPIO.OUT)
     GPIO.setup(11, GPIO.OUT)
@@ -237,18 +240,18 @@ def turn_off(zone):
 
 
 def rain_total():
-    if templateData['system_running']:
+    if templateData['system_running'] is False:
         templateData['rain_total'] = 0.0
     else:
         check_weather()
         try:
-            templateData['rain_total'] += float(templateData['rain'])
+            templateData['rain_total'] += float(yesterday_rain)
         except (ValueError, TypeError):
             pass
         write_settings(6, templateData['rain_total'])
 
 
-sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=23, minute=30, second=00,
+sched.add_interval_job(rain_total, days=1, start_date=datetime.now().replace(hour=00, minute=10, second=00,
                                                                              microsecond=00))
 
 
@@ -383,6 +386,8 @@ def set_full_auto():
             if float(forecast[i][0]) > rain[j - 2]:
                 rain[j - 2] = float(forecast[i][0])
         temp[j - 2] /= j
+    print(forecast)
+    print(temp)
     if temp[0] >= 100:
         templateData['days'] = 2
         set_length(10)
@@ -414,6 +419,7 @@ def set_full_auto():
         templateData['days'] = 6
         set_length(-10)
 
+set_full_auto()
 
 def st_program(st):
     global job
